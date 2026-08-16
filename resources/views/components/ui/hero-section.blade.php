@@ -11,8 +11,8 @@
 ])
 
 <section class="container-shell section-lg">
-    <div class="luxury-grid items-start md:grid-cols-2 md:gap-10">
-        <div class="max-w-3xl">
+    <div class="flex flex-col gap-8 md:flex-row md:items-stretch md:gap-10">
+        <div class="flex max-w-3xl flex-col justify-center md:w-1/2">
             @if ($kicker)
                 <p class="kicker">{{ $kicker }}</p>
             @endif
@@ -58,24 +58,46 @@
                 })->values()->all();
             @endphp
 
+            <div class="relative h-80 w-full md:h-auto md:w-1/2">
             <div
-                class="surface relative overflow-hidden"
-                x-data="{ active: 0, total: {{ count($normalizedSlides) }}, timer: null }"
-                x-init="if (total > 1) { timer = setInterval(() => { active = (active + 1) % total }, 5500) }"
-                @mouseenter="if (timer) { clearInterval(timer); timer = null }"
-                @mouseleave="if (!timer && total > 1) { timer = setInterval(() => { active = (active + 1) % total }, 5500) }"
+                class="hero-carousel surface absolute inset-0 overflow-hidden"
+                role="region"
+                aria-roledescription="carousel"
+                aria-label="Featured collections"
+                tabindex="0"
+                x-data="{
+                    active: 0,
+                    total: {{ count($normalizedSlides) }},
+                    timer: null,
+                    start() { if (this.total > 1) { this.timer = setInterval(() => this.next(), 6000) } },
+                    stop() { if (this.timer) { clearInterval(this.timer); this.timer = null } },
+                    next() { this.active = (this.active + 1) % this.total },
+                    prev() { this.active = (this.active - 1 + this.total) % this.total },
+                    go(index) { this.active = index }
+                }"
+                x-init="start()"
+                @mouseenter="stop()"
+                @mouseleave="start()"
+                @focusin="stop()"
+                @focusout="start()"
+                @keydown.arrow-right.prevent="next()"
+                @keydown.arrow-left.prevent="prev()"
             >
-                <div class="relative aspect-[16/9]">
+                <div class="absolute inset-0">
                     @foreach ($normalizedSlides as $idx => $slide)
                         <div
                             x-show="active === {{ $idx }}"
+                            @if ($idx !== 0) x-cloak @endif
                             x-transition:enter="transition ease-out duration-700"
-                            x-transition:enter-start="opacity-0 scale-105"
-                            x-transition:enter-end="opacity-100 scale-100"
+                            x-transition:enter-start="opacity-0"
+                            x-transition:enter-end="opacity-100"
                             x-transition:leave="transition ease-in duration-500"
                             x-transition:leave-start="opacity-100"
                             x-transition:leave-end="opacity-0"
                             class="absolute inset-0"
+                            role="group"
+                            aria-roledescription="slide"
+                            aria-label="Slide {{ $idx + 1 }} of {{ count($normalizedSlides) }}"
                         >
                             <img
                                 src="{{ $slide['src'] }}"
@@ -84,23 +106,17 @@
                                 decoding="async"
                                 width="1400"
                                 height="788"
-                                class="h-full w-full object-cover transition-transform duration-[5500ms] ease-out"
-                                :class="{ 'scale-110': active === {{ $idx }} }"
-                                x-on:error="$el.src='https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1400&q=70'"
+                                class="hero-carousel__image h-full w-full object-cover"
+                                x-on:error="$el.src='/images/site/hero.webp'"
                             >
 
-                            <div class="absolute inset-0 bg-gradient-to-t from-zinc-950/55 via-zinc-900/20 to-transparent"></div>
+                            <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-zinc-950/70 via-zinc-950/20 to-transparent"></div>
 
-                            <div
-                                class="absolute bottom-4 left-4 right-4 md:bottom-6 md:left-6 md:right-6"
-                                x-transition:enter="transition ease-out duration-700 delay-150"
-                                x-transition:enter-start="opacity-0 translate-y-3"
-                                x-transition:enter-end="opacity-100 translate-y-0"
-                            >
-                                <div class="inline-flex items-center rounded-full border border-white/35 bg-white/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-white backdrop-blur">
+                            <div class="absolute inset-x-4 bottom-16 z-10 md:inset-x-6 md:bottom-[4.75rem]">
+                                <span class="inline-flex items-center rounded-full border border-white/30 bg-white/15 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-white backdrop-blur-md">
                                     {{ $slide['label'] }}
-                                </div>
-                                <p class="mt-3 max-w-lg text-sm font-medium text-white/95 md:text-base">{{ $slide['headline'] }}</p>
+                                </span>
+                                <p class="mt-2 max-w-md text-sm font-medium leading-snug text-white drop-shadow-sm md:text-base">{{ $slide['headline'] }}</p>
                             </div>
                         </div>
                     @endforeach
@@ -109,33 +125,39 @@
                 @if (count($normalizedSlides) > 1)
                     <button
                         type="button"
-                        class="absolute left-3 top-1/2 -translate-y-1/2 rounded-full border border-white/25 bg-white/20 px-3 py-2 text-xs font-semibold text-white backdrop-blur transition hover:bg-white/30"
-                        @click="active = (active - 1 + total) % total"
+                        class="hero-carousel__nav left-3"
+                        @click="prev()"
                         aria-label="Previous slide"
                     >
-                        ‹
+                        <svg class="h-4 w-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                            <path d="M10 3.5 5.5 8 10 12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
                     </button>
                     <button
                         type="button"
-                        class="absolute right-3 top-1/2 -translate-y-1/2 rounded-full border border-white/25 bg-white/20 px-3 py-2 text-xs font-semibold text-white backdrop-blur transition hover:bg-white/30"
-                        @click="active = (active + 1) % total"
+                        class="hero-carousel__nav right-3"
+                        @click="next()"
                         aria-label="Next slide"
                     >
-                        ›
+                        <svg class="h-4 w-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                            <path d="M6 3.5 10.5 8 6 12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
                     </button>
 
-                    <div class="absolute bottom-3 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full border border-white/20 bg-zinc-900/45 px-3 py-2 backdrop-blur">
+                    <div class="absolute bottom-4 left-1/2 z-20 flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-zinc-950/55 px-2.5 py-1.5 backdrop-blur-md">
                         @foreach ($normalizedSlides as $idx => $slide)
                             <button
                                 type="button"
-                                class="h-2 w-2 rounded-full bg-white/45 transition-all"
-                                :class="{ 'w-5 bg-white': active === {{ $idx }} }"
-                                @click="active = {{ $idx }}"
-                                aria-label="Go to slide {{ $idx + 1 }}"
+                                class="h-2.5 w-2.5 rounded-full bg-white/40 transition-all duration-300 hover:bg-white/80"
+                                :class="{ 'w-6 bg-white': active === {{ $idx }} }"
+                                @click="go({{ $idx }})"
+                                :aria-current="active === {{ $idx }} ? 'true' : 'false'"
+                                aria-label="Go to {{ $slide['label'] }}"
                             ></button>
                         @endforeach
                     </div>
                 @endif
+            </div>
             </div>
         @endif
     </div>

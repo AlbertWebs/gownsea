@@ -1,7 +1,16 @@
 @extends('layouts.public')
 
 @section('content')
-    <section class="container-shell section-lg">
+    <x-ui.page-banner
+        title="Legal Attire"
+        subtitle="Courtroom-standard legal attire"
+        ctaLabel="Shop Now"
+        ctaHref="#shop"
+        image="/images/site/Amazon-seller-lawyer-renaldo-matamoro-86JiKaHF4I8-unsplash-min.jpg"
+        alt="Premium legal attire for advocates and barristers"
+    />
+
+    <section id="shop" class="container-shell section-lg scroll-mt-24">
         <x-ui.section-header
             kicker="Legal Attire"
             title="Legal Wear in Kenya"
@@ -29,6 +38,8 @@
             </article>
         </div>
     </section>
+
+    @include('partials.clients')
 
     <x-ui.cta-band
         title="Need legal attire tailored for your practice?"

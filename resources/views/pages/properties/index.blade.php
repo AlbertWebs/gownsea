@@ -108,7 +108,7 @@
                                 <span class="font-semibold text-[#d42127]" x-text="quickView.price"></span>
                                 <span class="text-zinc-500" x-text="quickView.location"></span>
                             </div>
-                            <a :href="quickView.url || '/shop-attire/graduation-attire'" class="btn-primary mt-5">Open detail page</a>
+                            <a :href="'/product/' + (quickView.slug || 'graduation-stoles')" class="btn-primary mt-5">Open detail page</a>
                         </div>
                     </div>
                 </template>

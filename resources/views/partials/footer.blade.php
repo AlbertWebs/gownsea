@@ -40,6 +40,7 @@
                     <a href="{{ route('about-us') }}" class="block transition-colors hover:text-[#d42127]">About Us</a>
                     <a href="{{ route('journal.index') }}" class="block transition-colors hover:text-[#d42127]">The Gown Journal</a>
                     <a href="{{ route('bulk-inquiry') }}" class="block transition-colors hover:text-[#d42127]">Bulk Hire</a>
+                    <a href="{{ route('gown-for-hire') }}" class="block transition-colors hover:text-[#d42127]">Hire a Gown</a>
                     <a href="{{ route('contact-us') }}" class="block transition-colors hover:text-[#d42127]">Contact Us</a>
                     <a href="{{ route('sitemap') }}" class="block transition-colors hover:text-[#d42127]">Sitemap.xml</a>
                 </div>
@@ -48,9 +49,10 @@
             <div class="text-sm text-zinc-700">
                 <p class="font-semibold text-zinc-900">Attire Categories</p>
                 <div class="mt-4 space-y-2">
-                    <a href="{{ route('shop-attire.collection', 'graduation-attire') }}" class="block transition-colors hover:text-[#d42127]">Graduation Attire</a>
-                    <a href="{{ route('shop-attire.collection', 'legal-attire') }}" class="block transition-colors hover:text-[#d42127]">Legal Attire</a>
-                    <a href="{{ route('shop-attire.collection', 'church-wear') }}" class="block transition-colors hover:text-[#d42127]">Church Wear</a>
+                    <a href="{{ route('graduation-attire') }}" class="block transition-colors hover:text-[#d42127]">Graduation Attire</a>
+                    <a href="{{ route('legal-attire') }}" class="block transition-colors hover:text-[#d42127]">Legal Attire</a>
+                    <a href="{{ route('church-wear') }}" class="block transition-colors hover:text-[#d42127]">Church Wear</a>
+                    <a href="{{ route('gown-for-hire') }}" class="block transition-colors hover:text-[#d42127]">Gown for Hire</a>
                     <a href="/shop-attire-collection/graduation-attire/graduation-cap" class="block transition-colors hover:text-[#d42127]">Graduation Cap</a>
                     <a href="/shop-attire-collection/graduation-attire/graduation-hoods" class="block transition-colors hover:text-[#d42127]">Graduation Hoods</a>
                     <a href="/shop-attire-collection/graduation-attire/masters-gowns" class="block transition-colors hover:text-[#d42127]">Masters Gowns</a>

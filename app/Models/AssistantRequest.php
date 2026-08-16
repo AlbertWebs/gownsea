@@ -2,16 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
-class AssistantRequest extends Model
+class AssistantRequest extends Inquiry
 {
-    protected $fillable = [
-        'name',
-        'email',
-        'phone',
-        'message',
-        'ip_address',
-        'user_agent',
-    ];
 }

@@ -6,6 +6,9 @@ These routes are preserved for SEO/indexing parity against production discovery.
 - /about-us
 - /contact-us
 - /legal-attire
+- /graduation-attire
+- /church-wear
+- /gown-for-hire
 - /shop-attire/graduation-attire
 - /shop-attire/legal-attire
 - /shop-attire/church-wear
@@ -18,6 +21,7 @@ These routes are preserved for SEO/indexing parity against production discovery.
 - /copyright
 - /shop-attire-collection/graduation-attire/*
 - /our-products/*
+- /product/*
 - /sitemap.xml
 - /assistant/submit (POST)
 

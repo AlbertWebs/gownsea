@@ -9,6 +9,9 @@ Route::get('/', [PageController::class, 'home'])->name('home');
 Route::get('/about-us', [PageController::class, 'about'])->name('about-us');
 Route::get('/contact-us', [PageController::class, 'contact'])->name('contact-us');
 Route::get('/legal-attire', [PageController::class, 'legalAttire'])->name('legal-attire');
+Route::get('/graduation-attire', [PageController::class, 'graduationAttire'])->name('graduation-attire');
+Route::get('/church-wear', [PageController::class, 'churchWear'])->name('church-wear');
+Route::get('/gown-for-hire', [PageController::class, 'gownForHire'])->name('gown-for-hire');
 
 Route::get('/the-gown-journal', [PageController::class, 'journalIndex'])->name('journal.index');
 Route::get('/the-gown-journal/{slug}', [PageController::class, 'journalShow'])->name('journal.show');
@@ -20,6 +23,7 @@ Route::get('/copyright', [PageController::class, 'copyright'])->name('copyright'
 // Shopping & product discovery (URL parity with gownsea.com)
 Route::get('/shop-attire/{slug}', [PageController::class, 'shopAttireCollection'])->name('shop-attire.collection');
 Route::get('/shop-attire-collection/{mainSlug}/{slug}', [PageController::class, 'shopAttireCategory'])->name('shop-attire.category');
+Route::get('/product/{slug}', [PageController::class, 'productShow'])->name('products.show');
 Route::get('/our-products/{slug}', [PageController::class, 'ourProduct'])->name('our-products.show');
 
 Route::get('/bulk-inquiry', [PageController::class, 'bulkInquiry'])->name('bulk-inquiry');

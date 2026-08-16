@@ -1,3 +1,25 @@
+@php
+    $isGraduationNav = request()->routeIs('graduation-attire')
+        || request()->routeIs('gown-for-hire')
+        || request()->is('shop-attire/graduation-attire*')
+        || request()->is('shop-attire-collection/graduation-attire*')
+        || request()->is('our-products/*');
+    $isLegalNav = request()->routeIs('legal-attire')
+        || request()->is('shop-attire/legal-attire*')
+        || request()->is('shop-attire-collection/legal-attire*');
+    $isChurchNav = request()->routeIs('church-wear')
+        || request()->is('shop-attire/church-wear*')
+        || request()->is('shop-attire-collection/church-wear*');
+    $isShopNav = ! $isGraduationNav && ! $isLegalNav && ! $isChurchNav && (
+        request()->is('shop-attire*')
+        || request()->is('shop-attire-collection*')
+        || request()->is('our-products*')
+    );
+    $isAboutNav = request()->routeIs('about-us');
+    $isJournalNav = request()->routeIs('journal.index', 'journal.show');
+    $isBulkNav = request()->routeIs('bulk-inquiry');
+@endphp
+
 <header
     class="fixed inset-x-0 top-0 z-50 border-b border-zinc-200/80 bg-white/95 backdrop-blur"
     x-data="{ shopOpen: false, mobileOpen: false }"
@@ -8,19 +30,20 @@
         </a>
 
         <nav class="hidden items-center gap-6 text-sm font-medium md:flex">
-            <a href="{{ route('shop-attire.collection', 'graduation-attire') }}" class="relative py-2 transition-colors hover:text-[#d42127] after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-[#d42127] after:transition-all hover:after:w-full">Graduation Attire</a>
-            <a href="{{ route('legal-attire') }}" class="relative py-2 transition-colors hover:text-[#d42127] after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-[#d42127] after:transition-all hover:after:w-full">Legal Attire</a>
-            <a href="{{ route('shop-attire.collection', 'church-wear') }}" class="relative py-2 transition-colors hover:text-[#d42127] after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-[#d42127] after:transition-all hover:after:w-full">Church Wear</a>
-            <a href="{{ route('about-us') }}" class="relative py-2 transition-colors hover:text-[#d42127] after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-[#d42127] after:transition-all hover:after:w-full">About Us</a>
+            <a href="{{ route('graduation-attire') }}" class="nav-link {{ $isGraduationNav ? 'is-active' : '' }}" @if ($isGraduationNav) aria-current="page" @endif>Graduation Attire</a>
+            <a href="{{ route('legal-attire') }}" class="nav-link {{ $isLegalNav ? 'is-active' : '' }}" @if ($isLegalNav) aria-current="page" @endif>Legal Attire</a>
+            <a href="{{ route('church-wear') }}" class="nav-link {{ $isChurchNav ? 'is-active' : '' }}" @if ($isChurchNav) aria-current="page" @endif>Church Wear</a>
+            <a href="{{ route('about-us') }}" class="nav-link {{ $isAboutNav ? 'is-active' : '' }}" @if ($isAboutNav) aria-current="page" @endif>About Us</a>
 
             <div class="relative">
                 <button
                     type="button"
-                    class="inline-flex items-center gap-2 rounded-md py-2 transition-colors hover:text-[#d42127]"
+                    class="inline-flex items-center gap-2 rounded-md py-2 transition-colors hover:text-[#d42127] {{ $isShopNav ? 'text-[#d42127]' : '' }}"
                     @click="shopOpen = !shopOpen"
                     @mouseenter="shopOpen = true"
                     aria-haspopup="true"
                     :aria-expanded="shopOpen"
+                    @if ($isShopNav) aria-current="page" @endif
                 >
                     Shop Attire
                     <svg class="h-4 w-4 text-zinc-500 transition-transform duration-200" :class="{ 'rotate-180': shopOpen }" viewBox="0 0 20 20" fill="none" aria-hidden="true">
@@ -56,15 +79,14 @@
                     </div>
 
                     <div class="mt-4 flex items-center justify-between border-t border-zinc-100 pt-4">
-                        <a href="{{ route('shop-attire.collection', 'graduation-attire') }}" class="text-xs font-semibold text-zinc-900 transition-colors hover:text-[#d42127]">Browse collections</a>
+                        <a href="{{ route('graduation-attire') }}" class="text-xs font-semibold text-zinc-900 transition-colors hover:text-[#d42127]">Browse collections</a>
                         <a href="{{ route('contact-us') }}" class="rounded-full bg-[#d42127] px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-[#b51a22]">Get help</a>
                     </div>
                 </div>
             </div>
 
-            <a href="{{ route('journal.index') }}" class="relative py-2 transition-colors hover:text-[#d42127] after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-[#d42127] after:transition-all hover:after:w-full">The Gown Journal</a>
-            <a href="{{ route('bulk-inquiry') }}" class="relative py-2 transition-colors hover:text-[#d42127] after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-[#d42127] after:transition-all hover:after:w-full">Bulk Hire</a>
-            <a href="{{ route('contact-us') }}" class="relative py-2 transition-colors hover:text-[#d42127] after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-[#d42127] after:transition-all hover:after:w-full">Contact Us</a>
+            <a href="{{ route('journal.index') }}" class="nav-link {{ $isJournalNav ? 'is-active' : '' }}" @if ($isJournalNav) aria-current="page" @endif>The Gown Journal</a>
+            <a href="{{ route('bulk-inquiry') }}" class="nav-link {{ $isBulkNav ? 'is-active' : '' }}" @if ($isBulkNav) aria-current="page" @endif>Bulk Hire</a>
         </nav>
 
         <a href="{{ route('contact-us') }}" class="btn-primary hidden md:inline-flex">Let's talk</a>
@@ -107,13 +129,12 @@
         class="border-t border-zinc-200 bg-white/95 backdrop-blur md:hidden"
     >
         <nav class="flex w-full flex-col gap-2 px-4 py-4 text-sm font-medium md:px-8">
-            <a href="{{ route('shop-attire.collection', 'graduation-attire') }}" class="rounded-lg px-2 py-2 transition-colors hover:bg-zinc-50 hover:text-[#d42127]">Graduation Attire</a>
-            <a href="{{ route('legal-attire') }}" class="rounded-lg px-2 py-2 transition-colors hover:bg-zinc-50 hover:text-[#d42127]">Legal Attire</a>
-            <a href="{{ route('shop-attire.collection', 'church-wear') }}" class="rounded-lg px-2 py-2 transition-colors hover:bg-zinc-50 hover:text-[#d42127]">Church Wear</a>
-            <a href="{{ route('about-us') }}" class="rounded-lg px-2 py-2 transition-colors hover:bg-zinc-50 hover:text-[#d42127]">About Us</a>
-            <a href="{{ route('journal.index') }}" class="rounded-lg px-2 py-2 transition-colors hover:bg-zinc-50 hover:text-[#d42127]">The Gown Journal</a>
-            <a href="{{ route('bulk-inquiry') }}" class="rounded-lg px-2 py-2 transition-colors hover:bg-zinc-50 hover:text-[#d42127]">Bulk Hire</a>
-            <a href="{{ route('contact-us') }}" class="rounded-lg px-2 py-2 transition-colors hover:bg-zinc-50 hover:text-[#d42127]">Contact Us</a>
+            <a href="{{ route('graduation-attire') }}" class="nav-link-mobile {{ $isGraduationNav ? 'is-active' : '' }}" @if ($isGraduationNav) aria-current="page" @endif>Graduation Attire</a>
+            <a href="{{ route('legal-attire') }}" class="nav-link-mobile {{ $isLegalNav ? 'is-active' : '' }}" @if ($isLegalNav) aria-current="page" @endif>Legal Attire</a>
+            <a href="{{ route('church-wear') }}" class="nav-link-mobile {{ $isChurchNav ? 'is-active' : '' }}" @if ($isChurchNav) aria-current="page" @endif>Church Wear</a>
+            <a href="{{ route('about-us') }}" class="nav-link-mobile {{ $isAboutNav ? 'is-active' : '' }}" @if ($isAboutNav) aria-current="page" @endif>About Us</a>
+            <a href="{{ route('journal.index') }}" class="nav-link-mobile {{ $isJournalNav ? 'is-active' : '' }}" @if ($isJournalNav) aria-current="page" @endif>The Gown Journal</a>
+            <a href="{{ route('bulk-inquiry') }}" class="nav-link-mobile {{ $isBulkNav ? 'is-active' : '' }}" @if ($isBulkNav) aria-current="page" @endif>Bulk Hire</a>
             <a href="{{ route('contact-us') }}" class="btn-primary mt-2">Let's talk</a>
         </nav>
     </div>

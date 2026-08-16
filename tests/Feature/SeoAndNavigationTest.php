@@ -13,6 +13,9 @@ class SeoAndNavigationTest extends TestCase
             '/about-us',
             '/contact-us',
             '/legal-attire',
+            '/graduation-attire',
+            '/church-wear',
+            '/gown-for-hire',
             '/the-gown-journal',
             '/privacy-policy',
         ];
@@ -49,8 +52,7 @@ class SeoAndNavigationTest extends TestCase
         $response->assertSee('Church Wear');
         $response->assertSee('The Gown Journal');
         $response->assertSee('Bulk Hire');
-        $response->assertSee('Contact Us');
-        $response->assertSee('Shop Attire');
+        $response->assertSee('Gown for Hire');
     }
 
     public function test_robots_file_exposes_sitemap_directive(): void

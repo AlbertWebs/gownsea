@@ -20,7 +20,7 @@
         </div>
 
         <div class="mt-4 flex items-center gap-4">
-            <a href="{{ $property['url'] ?? route('shop-attire.collection', 'graduation-attire') }}" class="text-sm font-semibold text-zinc-900 underline">
+            <a href="{{ route('products.show', $property['slug'] ?? 'graduation-attire') }}" class="text-sm font-semibold text-zinc-900 underline">
                 View details
             </a>
 

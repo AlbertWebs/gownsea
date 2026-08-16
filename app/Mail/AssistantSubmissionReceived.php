@@ -3,6 +3,7 @@
 namespace App\Mail;
 
 use App\Models\AssistantRequest;
+use App\Models\Inquiry;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
@@ -13,7 +14,7 @@ class AssistantSubmissionReceived extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public function __construct(public AssistantRequest $assistantRequest)
+    public function __construct(public AssistantRequest|Inquiry $assistantRequest)
     {
     }
 

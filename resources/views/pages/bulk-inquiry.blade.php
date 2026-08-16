@@ -37,6 +37,8 @@
                 <form method="POST" action="{{ route('assistant.submit') }}" class="mt-5 grid gap-4 md:grid-cols-2">
                     @csrf
                     <input type="text" name="website" class="hidden" tabindex="-1" autocomplete="off">
+                    <input type="text" name="company" class="hidden" tabindex="-1" autocomplete="off">
+                    <input type="hidden" name="form_token" value="{{ \App\Support\InquiryFormGuard::token() }}">
 
                     <label class="text-xs font-semibold text-zinc-700">
                         Full Name

@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="font-sans">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ $meta['title'] ?? config('app.name') }}</title>
     <meta name="description" content="{{ $meta['description'] ?? 'Gownsea premium ceremonial attire.' }}">
@@ -23,7 +24,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&family=Nunito:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
     <link rel="preconnect" href="https://images.unsplash.com">
     <link rel="dns-prefetch" href="//images.unsplash.com">
 
@@ -34,7 +35,7 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     @endif
 </head>
-<body id="top" class="bg-white text-zinc-900 antialiased">
+<body id="top" class="font-sans bg-white text-zinc-900 antialiased">
     @include('partials.header')
 
     @if (session('assistant_status'))

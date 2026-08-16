@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\CatalogueService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Arr;
 
 class PageController extends Controller
 {
+    public function __construct(private CatalogueService $catalogue)
+    {
+    }
     public function home(): View
     {
         return view('pages.home', [
@@ -14,7 +18,7 @@ class PageController extends Controller
                 'Graduation Gowns for Hire & Sale in Kenya | Gownsea LTD',
                 'High-quality graduation, legal, and church attire for hire and sale in Kenya.'
             ),
-            'properties' => config('gownsea.properties', []),
+            'properties' => $this->catalogue->featuredItems(),
             'posts' => array_slice(config('gownsea.journal_posts', []), 0, 2),
         ]);
     }
@@ -47,7 +51,42 @@ class PageController extends Controller
                 'Legal Wear in Kenya | Barrister Wigs & Advocates Robes',
                 'Premium legal attire for advocates, barristers, and institutions in Kenya.'
             ),
-            'properties' => config('gownsea.properties', []),
+            'properties' => $this->catalogue->itemsByCategory('legal'),
+        ]);
+    }
+
+    public function graduationAttire(): View
+    {
+        return view('pages.graduation-attire', [
+            'meta' => $this->meta(
+                'Graduation Attire in Kenya | Gowns, Caps, Hoods & Sets',
+                'University-standard graduation attire for hire and sale in Kenya.'
+            ),
+            'properties' => $this->catalogue->itemsByCategory('graduation'),
+        ]);
+    }
+
+    public function churchWear(): View
+    {
+        return view('pages.church-wear', [
+            'meta' => $this->meta(
+                'Church Wear in Kenya | Clergy Robes, Cassocks & Vestments',
+                'Premium church and choral wear for hire and sale in Kenya.'
+            ),
+            'properties' => $this->catalogue->itemsByCategory('church'),
+            'faqs' => config('gownsea.hire_faqs', []),
+        ]);
+    }
+
+    public function gownForHire(): View
+    {
+        return view('pages.gown-for-hire', [
+            'meta' => $this->meta(
+                'Graduation Gowns for Hire in Kenya | Affordable Gown Rental',
+                'Hire quality graduation gowns, caps, hoods, and accessories in Kenya.'
+            ),
+            'properties' => $this->catalogue->hireItems(),
+            'faqs' => config('gownsea.hire_faqs', []),
         ]);
     }
 
@@ -58,20 +97,29 @@ class PageController extends Controller
                 'Available Collections | Graduation, Legal & Church Wear',
                 'Browse Gownsea collections for graduation, legal, and church attire.'
             ),
-            'properties' => config('gownsea.properties', []),
+            'properties' => $this->catalogue->featuredItems(),
         ]);
     }
 
     public function propertyShow(string $slug): View
     {
-        $property = collect(config('gownsea.properties', []))
-            ->firstWhere('slug', $slug);
+        return $this->productShow($slug);
+    }
 
-        abort_if(! $property, 404);
+    public function productShow(string $slug): View
+    {
+        $property = $this->catalogue->enrich($this->catalogue->findBySlug($slug) ?? $this->syntheticProduct($slug));
+
+        $related = collect($this->catalogue->itemsByCategory($property['category'] ?? 'graduation'))
+            ->reject(fn (array $item) => ($item['slug'] ?? '') === $slug)
+            ->take(4)
+            ->values()
+            ->all();
 
         return view('pages.properties.show', [
             'meta' => $this->meta($property['title'].' | Gownsea', $property['description']),
             'property' => $property,
+            'related' => $related,
         ]);
     }
 
@@ -124,16 +172,33 @@ class PageController extends Controller
     {
         $title = $this->titleFromSlug($slug);
 
+        $category = match ($slug) {
+            'graduation-attire' => 'graduation',
+            'legal-attire' => 'legal',
+            'church-wear' => 'church',
+            default => null,
+        };
+
+        $items = $category
+            ? $this->catalogue->itemsByCategory($category)
+            : [];
+
         return view('pages.shop.show', [
             'meta' => $this->meta($title.' | Gownsea LTD', 'Shop graduation and ceremonial attire at Gownsea.'),
             'heading' => $title,
             'subheading' => 'Explore our collection.',
-            'items' => [],
+            'items' => $items,
         ]);
     }
 
     public function shopAttireCategory(string $mainSlug, string $slug): View
     {
+        $matched = $this->catalogue->findBySlug($slug);
+
+        if ($matched) {
+            return $this->productShow($slug);
+        }
+
         $mainTitle = $this->titleFromSlug($mainSlug);
         $title = $this->titleFromSlug($slug);
 
@@ -141,20 +206,13 @@ class PageController extends Controller
             'meta' => $this->meta($title.' | Gownsea LTD', 'Find premium regalia for purchase and hire.'),
             'heading' => $title,
             'subheading' => $mainTitle.' collection',
-            'items' => config('gownsea.properties', []),
+            'items' => $this->catalogue->itemsByCategory($this->categoryFromSlug($mainSlug) ?? 'graduation'),
         ]);
     }
 
     public function ourProduct(string $slug): View
     {
-        $title = $this->titleFromSlug($slug);
-
-        return view('pages.shop.show', [
-            'meta' => $this->meta($title.' | Gownsea LTD', 'Premium graduation and ceremonial products for sale and hire.'),
-            'heading' => $title,
-            'subheading' => 'Explore products',
-            'items' => config('gownsea.properties', []),
-        ]);
+        return $this->productShow($slug);
     }
 
     public function bulkInquiry(): View
@@ -204,5 +262,31 @@ class PageController extends Controller
     private function titleFromSlug(string $slug): string
     {
         return trim(ucwords(str_replace(['-', '_'], ' ', $slug)));
+    }
+
+    private function categoryFromSlug(string $slug): ?string
+    {
+        return match ($slug) {
+            'graduation-attire' => 'graduation',
+            'legal-attire' => 'legal',
+            'church-wear' => 'church',
+            default => null,
+        };
+    }
+
+    private function syntheticProduct(string $slug): array
+    {
+        $title = $this->titleFromSlug($slug);
+
+        return [
+            'slug' => $slug,
+            'title' => $title,
+            'location' => 'Nairobi',
+            'price' => 'Request quote',
+            'cta' => 'Request Quote',
+            'description' => 'Premium '.$title.' available for hire and sale through Gownsea.',
+            'category' => 'graduation',
+            'image' => '/images/site/hero.webp',
+        ];
     }
 }

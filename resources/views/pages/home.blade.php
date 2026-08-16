@@ -25,22 +25,22 @@
         title="Premium academic gowns for hire and sale, tailored for every ceremony."
         description="University-standard graduation attire, courtroom-ready legal wear, and church garments delivered with reliable support."
         primaryLabel="Purchase Now"
-        :primaryHref="route('shop-attire.collection', 'graduation-attire')"
+        :primaryHref="route('graduation-attire')"
         secondaryLabel="Hire Now"
-        :secondaryHref="route('bulk-inquiry')"
+        :secondaryHref="route('gown-for-hire')"
         :images="[
             [
-                'src' => 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1400&q=70',
+                'src' => '/images/site/hero.webp',
                 'label' => 'Graduation Attire',
                 'headline' => 'University-standard graduation gowns tailored for every ceremony.',
             ],
             [
-                'src' => 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=1400&q=70',
+                'src' => '/images/site/Amazon-seller-lawyer-renaldo-matamoro-86JiKaHF4I8-unsplash-min.jpg',
                 'label' => 'Legal Wear',
                 'headline' => 'Courtroom-ready legal attire with a premium professional finish.',
             ],
             [
-                'src' => 'https://images.unsplash.com/photo-1519491050282-cf00c82424b4?auto=format&fit=crop&w=1400&q=70',
+                'src' => '/images/site/clergy-wear.webp',
                 'label' => 'Church Wear',
                 'headline' => 'Elegant church and choral wear designed for reverence and unity.',
             ],
@@ -52,7 +52,7 @@
             <article class="surface p-6">
                 <p class="kicker">Graduation Attire</p>
                 <h3 class="mt-3 font-semibold">University-standard Graduation Attire for Hire/Sale</h3>
-                <a href="{{ route('shop-attire.collection', 'graduation-attire') }}" class="mt-5 inline-block text-sm font-semibold underline">Shop Graduation Attire</a>
+                <a href="{{ route('graduation-attire') }}" class="mt-5 inline-block text-sm font-semibold underline">Shop Graduation Attire</a>
             </article>
             <article class="surface p-6">
                 <p class="kicker">Legal Wear</p>
@@ -62,7 +62,7 @@
             <article class="surface p-6">
                 <p class="kicker">Church Wear</p>
                 <h3 class="mt-3 font-semibold">Elegant church and choral wear for your community</h3>
-                <a href="{{ route('shop-attire.collection', 'church-wear') }}" class="mt-5 inline-block text-sm font-semibold underline">Shop Church Wear</a>
+                <a href="{{ route('church-wear') }}" class="mt-5 inline-block text-sm font-semibold underline">Shop Church Wear</a>
             </article>
         </div>
     </section>
@@ -99,21 +99,7 @@
         </div>
     </section>
 
-    <section class="container-shell section-md">
-        <x-ui.section-header
-            kicker="Our Clients"
-            title="Trusted by institutions across Kenya"
-            description="A growing network of universities, colleges, and organizations rely on Gownsea for dependable ceremonial attire."
-        />
-
-        <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            @foreach (range(1, 8) as $client)
-                <div class="surface flex min-h-20 items-center justify-center p-5 text-sm font-semibold text-zinc-700">
-                    Company Name
-                </div>
-            @endforeach
-        </div>
-    </section>
+    @include('partials.clients')
 
     <section class="container-shell section-md">
         <x-ui.section-header
@@ -139,7 +125,7 @@
         description="Get a tailored bulk quote with timeline planning, delivery support, and custom options."
         primaryLabel="Start Bulk Inquiry"
         :primaryHref="route('bulk-inquiry')"
-        secondaryLabel="Talk to Team"
-        :secondaryHref="route('contact-us')"
+        secondaryLabel="Hire a Gown"
+        :secondaryHref="route('gown-for-hire')"
     />
 @endsection
