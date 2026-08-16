@@ -157,10 +157,22 @@ class ProductController extends Controller
             'cta' => ['nullable', 'string', 'max:80'],
             'location' => ['nullable', 'string', 'max:120'],
             'url_path' => ['nullable', 'string', 'max:190'],
+            'brand' => ['nullable', 'string', 'max:80'],
+            'min_order_qty' => ['nullable', 'integer', 'min:1'],
             'fit_note' => ['nullable', 'string'],
             'seo_title' => ['nullable', 'string', 'max:190'],
             'seo_description' => ['nullable', 'string', 'max:500'],
+            'seo_keywords' => ['nullable', 'string', 'max:255'],
             'details_text' => ['nullable', 'string'],
+            'option_labels' => ['nullable', 'array'],
+            'option_labels.*' => ['nullable', 'string', 'max:80'],
+            'option_values' => ['nullable', 'array'],
+            'option_values.*' => ['nullable', 'string', 'max:500'],
+            'size_labels' => ['nullable', 'array'],
+            'size_labels.*' => ['nullable', 'string', 'max:40'],
+            'size_guides' => ['nullable', 'array'],
+            'size_guides.*' => ['nullable', 'string', 'max:190'],
+            'tags_text' => ['nullable', 'string', 'max:255'],
             'is_hire' => ['sometimes', 'boolean'],
             'image' => ['nullable', 'image', 'max:4096'],
         ]);
@@ -168,17 +180,47 @@ class ProductController extends Controller
         $data['slug'] = $data['slug'] ?: Str::slug($data['name']);
         $data['featured'] = $request->boolean('featured');
         $data['is_hire'] = $request->boolean('is_hire');
+        $data['description'] = strip_tags((string) ($data['description'] ?? ''), '<p><br><strong><b><em><i><u><ul><ol><li><a><h2><h3><blockquote>');
         $data['details'] = collect(preg_split('/\r\n|\r|\n/', (string) $request->input('details_text')))
             ->map(fn ($line) => trim($line))
             ->filter()
             ->values()
             ->all();
+        $data['min_order_qty'] = $data['min_order_qty'] ?? 1;
+        $data['tags'] = collect(explode(',', (string) $request->input('tags_text')))
+            ->map(fn ($tag) => trim($tag))
+            ->filter()
+            ->values()
+            ->all();
+        $options = [];
+        foreach ($request->input('option_labels', []) as $index => $label) {
+            $label = trim((string) $label);
+            $values = collect(explode(',', (string) ($request->input('option_values.'.$index) ?? '')))
+                ->map(fn ($value) => trim($value))
+                ->filter()
+                ->values()
+                ->all();
+            if ($label !== '' && $values !== []) {
+                $options[$label] = $values;
+            }
+        }
+        $data['options'] = $options;
+        $data['size_guide'] = collect($request->input('size_labels', []))
+            ->map(function ($size, $index) use ($request) {
+                $size = trim((string) $size);
+                $guide = trim((string) ($request->input('size_guides.'.$index) ?? ''));
+
+                return $size === '' ? null : ['size' => $size, 'guide' => $guide];
+            })
+            ->filter()
+            ->values()
+            ->all();
+
+        unset($data['details_text'], $data['image'], $data['option_labels'], $data['option_values'], $data['size_labels'], $data['size_guides'], $data['tags_text']);
 
         if (! $data['price_amount'] && ! empty($data['price_label'])) {
             $data['price_amount'] = Money::parseLabel($data['price_label']);
         }
-
-        unset($data['details_text'], $data['image']);
 
         if ($request->hasFile('image')) {
             $file = $request->file('image');

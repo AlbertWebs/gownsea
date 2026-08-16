@@ -1,22 +1,59 @@
 @extends('layouts.admin')
 @section('title', 'Customers')
 @section('content')
-    <div class="flex items-end justify-between"><div><h1>Customers</h1></div><div class="flex gap-2"><a class="btn-secondary" href="{{ route('admin.customers.export') }}">Export CSV</a><a class="btn-primary" href="{{ route('admin.customers.create') }}">Add customer</a></div></div>
-    <form class="mt-6" method="GET"><input class="admin-input max-w-md" name="q" value="{{ request('q') }}" placeholder="Search customers..."></form>
-    <div class="mt-6 overflow-x-auto rounded-2xl border border-zinc-200 bg-white">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+        <div>
+            <h1>Customers</h1>
+            <p class="text-sm text-zinc-600">People matched from inquiries, leads and sales.</p>
+        </div>
+        <div class="flex gap-2">
+            <x-admin.btn :href="route('admin.customers.export')" variant="teal" icon="download">Export CSV</x-admin.btn>
+            <x-admin.btn :href="route('admin.customers.create')" icon="user">Add customer</x-admin.btn>
+        </div>
+    </div>
+    <form class="mt-6 flex flex-nowrap items-center gap-3" method="GET">
+        <input class="admin-input min-w-0 flex-1 !w-auto" name="q" value="{{ request('q') }}" placeholder="Search customers...">
+        <x-admin.btn class="shrink-0" variant="violet" icon="filter">Filter</x-admin.btn>
+    </form>
+    <div class="admin-table-wrap">
         <table class="admin-table min-w-[800px]">
-            <thead><tr><th>Name</th><th>Contact</th><th>Inquiries</th><th>Leads</th><th>Sales</th></tr></thead>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Contact</th>
+                    <th>Inquiries</th>
+                    <th>Leads</th>
+                    <th>Sales</th>
+                    <th class="text-right">Actions</th>
+                </tr>
+            </thead>
             <tbody>
             @forelse ($customers as $customer)
                 <tr>
-                    <td><a class="text-[#d42127]" href="{{ route('admin.customers.show', $customer) }}">{{ $customer->name }}</a><div class="text-xs">{{ $customer->company }}</div></td>
-                    <td>{{ $customer->email }}<div class="text-xs">{{ $customer->phone }}</div></td>
+                    <td>
+                        <a class="admin-table__name" href="{{ route('admin.customers.show', $customer) }}">{{ $customer->name }}</a>
+                        <p class="admin-table__meta">{{ $customer->company ?: '—' }}</p>
+                    </td>
+                    <td>
+                        {{ $customer->email ?: '—' }}
+                        <p class="admin-table__meta">{{ $customer->phone ?: '—' }}</p>
+                    </td>
                     <td>{{ $customer->inquiries_count }}</td>
                     <td>{{ $customer->leads_count }}</td>
                     <td>{{ $customer->sales_count }}</td>
+                    <td>
+                        <div class="flex items-center justify-end gap-2 whitespace-nowrap">
+                            <a class="btn-navy btn-sm" href="{{ route('admin.customers.edit', $customer) }}"><x-admin.icon name="edit" /> Edit</a>
+                        </div>
+                    </td>
                 </tr>
             @empty
-                <tr><td colspan="5" class="py-8 text-center text-zinc-500">No customers have been added yet. <a class="text-[#d42127]" href="{{ route('admin.customers.create') }}">Add customer</a></td></tr>
+                <tr>
+                    <td colspan="6" class="admin-table__empty">
+                        <p>No customers yet</p>
+                        <p><a class="font-semibold text-[#d42127]" href="{{ route('admin.customers.create') }}">Add a customer</a>.</p>
+                    </td>
+                </tr>
             @endforelse
             </tbody>
         </table>

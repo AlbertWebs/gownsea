@@ -283,7 +283,7 @@
                     </ul>
 
                     <h3 class="mt-10 text-xl font-semibold">About {{ $property['title'] }}</h3>
-                    <p class="mt-4 max-w-2xl text-[17px] leading-8 text-zinc-600">{{ $property['about'] }}</p>
+                    <p class="product-story__html mt-4 max-w-2xl text-[17px] leading-8 text-zinc-600">{!! $property['about'] !!}</p>
                 </div>
 
                 <div>

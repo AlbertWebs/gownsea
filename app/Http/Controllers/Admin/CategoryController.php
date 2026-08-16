@@ -11,10 +11,50 @@ use Illuminate\View\View;
 
 class CategoryController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
+        $categories = Category::query()
+            ->withCount('products')
+            ->with('parent')
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get();
+
+        $grouped = $categories->groupBy(fn (Category $category) => $category->parent_id);
+        $flatten = function (?int $parentId, int $depth) use (&$flatten, $grouped) {
+            return collect($grouped->get($parentId, collect()))->flatMap(function (Category $category) use ($flatten, $depth) {
+                $category->setAttribute('depth', $depth);
+
+                return collect([$category])->concat($flatten($category->id, $depth + 1));
+            });
+        };
+
+        $tree = $flatten(null, 0);
+        $seen = $tree->pluck('id');
+        $tree = $tree->concat(
+            $categories->reject(fn (Category $category) => $seen->contains($category->id))->each(fn (Category $category) => $category->setAttribute('depth', 0))
+        );
+
+        $query = trim((string) $request->get('q'));
+        if ($query !== '') {
+            $tree = $tree->filter(fn (Category $category) => str_contains(mb_strtolower($category->name.' '.$category->slug), mb_strtolower($query)));
+        }
+
+        $status = (string) $request->get('status');
+        if ($status === 'active') {
+            $tree = $tree->where('is_active', true);
+        } elseif ($status === 'inactive') {
+            $tree = $tree->where('is_active', false);
+        }
+
         return view('admin.catalogue.categories.index', [
-            'categories' => Category::query()->withCount('products')->with('parent')->orderBy('sort_order')->orderBy('name')->get(),
+            'categories' => $tree->values(),
+            'stats' => [
+                'total' => $categories->count(),
+                'active' => $categories->where('is_active', true)->count(),
+                'inactive' => $categories->where('is_active', false)->count(),
+                'with_products' => $categories->where('products_count', '>', 0)->count(),
+            ],
         ]);
     }
 
@@ -77,6 +117,7 @@ class CategoryController extends Controller
         $data['slug'] = $data['slug'] ?: Str::slug($data['name']);
         $data['is_active'] = $request->boolean('is_active');
         $data['sort_order'] = $data['sort_order'] ?? 0;
+        $data['description'] = strip_tags((string) ($data['description'] ?? ''), '<p><br><strong><b><em><i><u><ul><ol><li><a>');
 
         return $data;
     }

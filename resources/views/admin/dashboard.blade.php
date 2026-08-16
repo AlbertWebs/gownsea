@@ -7,10 +7,10 @@
             <p class="mt-1 text-sm text-zinc-600">Operational view of catalogue, inquiries, leads and sales.</p>
         </div>
         <div class="flex flex-wrap gap-2">
-            @if(auth()->user()->hasPermission('catalogue'))<a class="btn-secondary" href="{{ route('admin.catalogue.products.create') }}">Add Product</a>@endif
-            @if(auth()->user()->hasPermission('leads'))<a class="btn-secondary" href="{{ route('admin.leads.create') }}">Add Lead</a>@endif
-            @if(auth()->user()->hasPermission('sales'))<a class="btn-secondary" href="{{ route('admin.sales.create') }}">Create Sale</a>@endif
-            @if(auth()->user()->hasPermission('customers'))<a class="btn-primary" href="{{ route('admin.customers.create') }}">Add Customer</a>@endif
+            @if(auth()->user()->hasPermission('catalogue'))<x-admin.btn :href="route('admin.catalogue.products.create')" variant="ghost" icon="plus">Add Product</x-admin.btn>@endif
+            @if(auth()->user()->hasPermission('leads'))<x-admin.btn :href="route('admin.leads.create')" variant="ghost" icon="plus">Add Lead</x-admin.btn>@endif
+            @if(auth()->user()->hasPermission('sales'))<x-admin.btn :href="route('admin.sales.create')" variant="navy" icon="plus">Create Sale</x-admin.btn>@endif
+            @if(auth()->user()->hasPermission('customers'))<x-admin.btn :href="route('admin.customers.create')" icon="user">Add Customer</x-admin.btn>@endif
         </div>
     </div>
 

@@ -35,13 +35,22 @@ class LeadController extends Controller
 
     public function pipeline(Request $request): View
     {
-        $query = $this->filtered($request);
-        $grouped = $query->get()->groupBy('stage');
+        $request->query->remove('stage');
+        $leads = $this->filtered($request)->get();
+        $open = $leads->whereNotIn('stage', ['won', 'lost']);
 
         return view('admin.leads.pipeline', [
-            'grouped' => $grouped,
+            'leads' => $leads,
+            'grouped' => $leads->groupBy('stage'),
             'stages' => config('admin.lead_stages'),
             'users' => User::query()->where('status', 'active')->orderBy('name')->get(),
+            'stats' => [
+                'total' => $leads->count(),
+                'open' => $open->count(),
+                'value' => (int) $open->sum('estimated_value'),
+                'weighted' => (int) $open->sum(fn (Lead $lead) => $lead->weightedForecast()),
+                'won' => $leads->where('stage', 'won')->count(),
+            ],
         ]);
     }
 

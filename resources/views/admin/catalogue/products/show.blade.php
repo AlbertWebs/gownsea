@@ -7,7 +7,7 @@
             <h1>{{ $product->name }}</h1>
             <p class="text-sm text-zinc-600">{{ $product->displayPrice() }} · {{ $product->status }}</p>
         </div>
-        <a class="btn-secondary" href="{{ route('admin.catalogue.products.edit', $product) }}">Edit</a>
+        <x-admin.btn :href="route('admin.catalogue.products.edit', $product)" variant="navy" icon="edit">Edit</x-admin.btn>
     </div>
     <div class="mt-6 grid gap-4 md:grid-cols-4">
         @foreach ([['Inquiries', $inquiryCount], ['Leads', $leadCount], ['Sales lines', $salesCount], ['Revenue', 'KES '.number_format($revenue)]] as [$label, $value])

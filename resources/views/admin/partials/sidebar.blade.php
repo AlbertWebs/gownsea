@@ -1,8 +1,10 @@
 @php
     $user = auth()->user();
-    $link = function (string $name, string $pattern = null) {
+    $link = function (string $name, string|array $pattern = null, string|array $except = []) {
         $pattern = $pattern ?: $name.'*';
-        return request()->routeIs($pattern) ? 'admin-nav-link is-active' : 'admin-nav-link';
+        $active = request()->routeIs($pattern) && ($except === [] || ! request()->routeIs($except));
+
+        return $active ? 'admin-nav-link is-active' : 'admin-nav-link';
     };
 @endphp
 <div class="admin-sidebar-inner">
@@ -36,7 +38,7 @@
         <div>
             <p class="admin-nav-section">CRM</p>
             @if($user?->hasPermission('leads'))
-                <a class="{{ $link('admin.leads.index', 'admin.leads.*') }}" href="{{ route('admin.leads.index') }}">Leads @if(($adminBadges['leads'] ?? 0) > 0)<span class="text-xs">{{ $adminBadges['leads'] }}</span>@endif</a>
+                <a class="{{ $link('admin.leads', 'admin.leads.*', 'admin.leads.pipeline') }}" href="{{ route('admin.leads.index') }}">Leads @if(($adminBadges['leads'] ?? 0) > 0)<span class="text-xs">{{ $adminBadges['leads'] }}</span>@endif</a>
                 <a class="{{ $link('admin.leads.pipeline') }}" href="{{ route('admin.leads.pipeline') }}">Pipeline</a>
             @endif
             @if($user?->hasPermission('inquiries'))

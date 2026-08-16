@@ -84,11 +84,39 @@
     }
 
     .btn-primary {
-        @apply inline-flex items-center justify-center rounded-full bg-[#d42127] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#b51a22];
+        @apply inline-flex items-center justify-center gap-2 rounded-full bg-[#d42127] px-6 py-3 text-sm font-semibold text-white shadow-sm transition duration-150 hover:bg-[#b51a22] hover:shadow active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d42127] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
     }
 
     .btn-secondary {
-        @apply inline-flex items-center justify-center rounded-full border border-zinc-300 px-6 py-3 text-sm font-semibold text-zinc-900 transition-colors hover:border-zinc-400;
+        @apply inline-flex items-center justify-center gap-2 rounded-full border border-[#0f2744]/25 bg-white px-6 py-3 text-sm font-semibold text-[#0f2744] shadow-sm transition duration-150 hover:border-[#0f2744]/40 hover:bg-[#0f2744]/5 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0f2744] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+    }
+
+    .btn-ghost {
+        @apply inline-flex items-center justify-center gap-2 rounded-full border border-transparent px-4 py-2 text-sm font-semibold text-zinc-600 transition duration-150 hover:bg-zinc-100 hover:text-zinc-900 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2;
+    }
+
+    .btn-danger {
+        @apply inline-flex items-center justify-center gap-2 rounded-full border border-red-200 bg-red-50 px-4 py-2 text-sm font-semibold text-[#d42127] transition duration-150 hover:border-red-300 hover:bg-red-100 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d42127] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-40;
+    }
+
+    .btn-navy {
+        @apply inline-flex items-center justify-center gap-2 rounded-full bg-[#0f2744] px-4 py-2 text-sm font-semibold text-white shadow-sm transition duration-150 hover:bg-[#16355c] hover:shadow active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0f2744] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+    }
+
+    .btn-teal {
+        @apply inline-flex items-center justify-center gap-2 rounded-full border border-teal-200 bg-teal-50 px-4 py-2 text-sm font-semibold text-teal-800 shadow-sm transition duration-150 hover:bg-teal-100 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2;
+    }
+
+    .btn-violet {
+        @apply inline-flex items-center justify-center gap-2 rounded-full border border-violet-200 bg-violet-50 px-4 py-2 text-sm font-semibold text-violet-800 shadow-sm transition duration-150 hover:bg-violet-100 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2;
+    }
+
+    .btn-sm {
+        @apply px-3.5 py-2 text-xs;
+    }
+
+    .btn-sm svg {
+        @apply h-3.5 w-3.5;
     }
 
     .product-option-btn {
@@ -408,6 +436,24 @@
     background: #fafafa;
 }
 
+.admin-app .btn-primary,
+.admin-app .btn-secondary,
+.admin-app .btn-navy,
+.admin-app .btn-teal,
+.admin-app .btn-violet {
+    @apply px-4 py-2 text-sm;
+}
+
+.admin-app .btn-sm {
+    @apply px-3.5 py-1.5 text-xs;
+}
+
+.admin-app button,
+.admin-app [type="submit"],
+.admin-app [type="button"] {
+    cursor: pointer;
+}
+
 .admin-app h1 {
     font-size: 1.75rem;
     line-height: 1.25;
@@ -437,6 +483,10 @@
     @apply mb-2 text-[11px] font-semibold uppercase tracking-wider text-white/55;
 }
 
+.admin-sidebar-nav > div {
+    @apply flex flex-col gap-1;
+}
+
 .admin-nav-link {
     @apply flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-white/90 hover:bg-white/10 hover:text-white;
 }
@@ -449,28 +499,151 @@
     @apply mt-4 flex w-full items-center justify-center rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-[#0f2744] hover:bg-zinc-100;
 }
 
-.admin-card {
-    @apply rounded-2xl border border-zinc-200 bg-white p-5;
+.admin-dropzone {
+    @apply rounded-xl border-2 border-dashed border-zinc-300 bg-zinc-50 p-4;
+}
+
+.admin-dropzone.is-hover {
+    @apply border-[#d42127] bg-red-50;
+}
+
+.admin-dropzone__hit {
+    @apply flex w-full flex-col items-center justify-center gap-1 rounded-lg py-8 text-center;
+}
+
+.admin-dropzone__title {
+    @apply text-sm font-semibold text-zinc-800;
+}
+
+.admin-dropzone__hint {
+    @apply text-xs text-zinc-500;
+}
+
+.admin-dropzone__previews {
+    @apply mt-3 flex flex-wrap gap-2;
+}
+
+.admin-dropzone__thumb {
+    @apply relative overflow-hidden rounded-lg border border-zinc-200 bg-white;
+}
+
+.admin-dropzone__thumb img {
+    @apply h-20 w-20 object-cover;
+}
+
+.admin-dropzone__thumb button {
+    @apply absolute inset-x-0 bottom-0 bg-zinc-950/70 py-1 text-[11px] font-semibold text-white;
+}
+
+.admin-dropzone__error {
+    @apply mt-2 text-xs text-[#d42127];
+}
+
+.admin-editor .ql-toolbar.ql-snow {
+    @apply rounded-t-lg border-zinc-300;
+}
+
+.admin-editor .ql-container.ql-snow {
+    @apply min-h-40 rounded-b-lg border-zinc-300 bg-white text-sm;
+}
+
+.admin-editor .ql-editor {
+    min-height: 10rem;
+    font-family: Nunito, ui-sans-serif, system-ui, sans-serif;
+}
+
+.product-story__html p + p {
+    margin-top: 0.85rem;
+}
+
+.product-story__html ul,
+.product-story__html ol {
+    margin: 0.75rem 0 0 1.2rem;
+}
+
+.product-story__html a {
+    color: #d42127;
+    text-decoration: underline;
 }
 
 .admin-input {
     @apply w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm outline-none focus:border-zinc-900;
 }
 
+.admin-card {
+    @apply rounded-2xl border border-zinc-200 bg-white p-5;
+}
+
+.admin-table-wrap {
+    @apply mt-6 overflow-x-auto overflow-hidden rounded-2xl border border-zinc-200 bg-white;
+}
+
 .admin-table {
     @apply w-full text-left text-sm;
 }
 
+.admin-table thead {
+    @apply bg-zinc-50;
+}
+
 .admin-table th {
-    @apply border-b border-zinc-200 px-3 py-3 text-xs font-semibold uppercase tracking-wide text-zinc-500;
+    @apply whitespace-nowrap border-b border-zinc-200 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-zinc-500;
 }
 
 .admin-table td {
-    @apply border-b border-zinc-100 px-3 py-3 align-middle;
+    @apply border-b border-zinc-100 px-4 py-3.5 align-middle text-zinc-700;
+}
+
+.admin-table tbody tr:hover td {
+    @apply bg-zinc-50;
+}
+
+.admin-table tbody tr:last-child td {
+    border-bottom-width: 0;
+}
+
+.admin-table__name {
+    @apply font-semibold text-zinc-900 hover:text-[#d42127];
+}
+
+.admin-table__meta {
+    @apply mt-0.5 text-xs text-zinc-500;
+}
+
+.admin-table__empty {
+    @apply px-6 py-16 text-center;
+}
+
+.admin-table__empty p:first-child {
+    @apply text-base font-semibold text-zinc-800;
+}
+
+.admin-table__empty p + p {
+    @apply mt-1 text-sm text-zinc-500;
 }
 
 .admin-badge {
-    @apply inline-flex rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-semibold text-zinc-700;
+    @apply inline-flex rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs font-semibold capitalize text-zinc-600;
+}
+
+.admin-badge--ok {
+    @apply bg-emerald-50 text-emerald-800;
+}
+
+.admin-badge--warn {
+    @apply bg-amber-50 text-amber-800;
+}
+
+.admin-badge--info {
+    @apply bg-sky-50 text-sky-800;
+}
+
+.admin-badge--navy {
+    @apply bg-[#0f2744]/10 text-[#0f2744];
+}
+
+.admin-badge--danger {
+    @apply bg-red-50 text-[#d42127];
 }
 
 .admin-login {
@@ -645,4 +818,65 @@
     font-size: 0.78rem;
     line-height: 1.55;
     color: #94a3b8;
+}
+
+.admin-pipeline {
+    display: flex;
+    gap: 0.85rem;
+    overflow-x: auto;
+    padding-bottom: 1rem;
+    scrollbar-width: thin;
+}
+
+.admin-pipeline__col {
+    display: flex;
+    width: 17.5rem;
+    flex-shrink: 0;
+    flex-direction: column;
+    border-radius: 1rem;
+    border: 1px solid #e4e4e7;
+    background: #f4f4f5;
+    min-height: 22rem;
+}
+
+.admin-pipeline__col.is-over {
+    border-color: #0f2744;
+    background: #eef3f8;
+}
+
+.admin-pipeline__col--new { border-top: 4px solid #38bdf8; }
+.admin-pipeline__col--contacted { border-top: 4px solid #8b5cf6; }
+.admin-pipeline__col--qualified { border-top: 4px solid #14b8a6; }
+.admin-pipeline__col--proposal_sent { border-top: 4px solid #f59e0b; }
+.admin-pipeline__col--negotiation { border-top: 4px solid #f97316; }
+.admin-pipeline__col--won { border-top: 4px solid #10b981; }
+.admin-pipeline__col--lost { border-top: 4px solid #a1a1aa; opacity: 0.92; }
+
+.admin-pipeline__head {
+    padding: 0.85rem 0.9rem 0.5rem;
+}
+
+.admin-pipeline__list {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 0.65rem;
+    padding: 0.5rem 0.7rem 0.85rem;
+}
+
+.admin-pipeline__card {
+    cursor: grab;
+    border-radius: 0.85rem;
+    border: 1px solid #e4e4e7;
+    background: #fff;
+    padding: 0.8rem;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.admin-pipeline__card:active {
+    cursor: grabbing;
+}
+
+.admin-pipeline__card.is-dragging {
+    opacity: 0.45;
 }

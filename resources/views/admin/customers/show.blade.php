@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 @section('title', $customer->name)
 @section('content')
-    <div class="flex items-start justify-between"><div><h1>{{ $customer->name }}</h1><p class="text-sm">{{ $customer->email }} · {{ $customer->phone }}</p></div><a class="btn-secondary" href="{{ route('admin.customers.edit', $customer) }}">Edit</a></div>
+    <div class="flex items-start justify-between"><div><h1>{{ $customer->name }}</h1><p class="text-sm">{{ $customer->email }} · {{ $customer->phone }}</p></div><x-admin.btn :href="route('admin.customers.edit', $customer)" variant="navy" icon="edit">Edit</x-admin.btn></div>
     <div class="mt-6 grid gap-4 md:grid-cols-4">
         <article class="admin-card">Inquiries<br><strong>{{ $customer->inquiries->count() }}</strong></article>
         <article class="admin-card">Leads<br><strong>{{ $customer->leads->count() }}</strong></article>

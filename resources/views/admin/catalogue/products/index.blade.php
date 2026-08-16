@@ -7,57 +7,83 @@
             <h1>Products</h1>
             <p class="mt-1 text-sm text-zinc-600">Manage the same catalogue shown on the public website.</p>
         </div>
-        <a class="btn-primary" href="{{ route('admin.catalogue.products.create') }}">Add Product</a>
+        <x-admin.btn :href="route('admin.catalogue.products.create')" icon="plus">Add Product</x-admin.btn>
     </div>
-    <form class="mt-6 grid gap-3 md:grid-cols-6" method="GET">
-        <input class="admin-input md:col-span-2" name="q" value="{{ request('q') }}" placeholder="Search products...">
-        <select class="admin-input" name="category_id">
+    <form class="mt-6 flex flex-nowrap items-center gap-3" method="GET">
+        <input class="admin-input min-w-0 flex-1 !w-auto" name="q" value="{{ request('q') }}" placeholder="Search products...">
+        <select class="admin-input w-40 shrink-0 !w-40" name="category_id">
             <option value="">Category</option>
             @foreach ($categories as $category)
                 <option value="{{ $category->id }}" @selected(request('category_id') == $category->id)>{{ $category->name }}</option>
             @endforeach
         </select>
-        <select class="admin-input" name="status">
+        <select class="admin-input w-36 shrink-0 !w-36" name="status">
             <option value="">Status</option>
             @foreach (['draft','published','archived'] as $status)
                 <option value="{{ $status }}" @selected(request('status')===$status)>{{ $status }}</option>
             @endforeach
         </select>
-        <select class="admin-input" name="visibility">
+        <select class="admin-input w-36 shrink-0 !w-36" name="visibility">
             <option value="">Visibility</option>
             <option value="public" @selected(request('visibility')==='public')>public</option>
             <option value="hidden" @selected(request('visibility')==='hidden')>hidden</option>
         </select>
-        <button class="btn-secondary">Filter</button>
+        <x-admin.btn class="shrink-0" variant="violet" icon="filter">Filter</x-admin.btn>
     </form>
-    <div class="mt-6 overflow-x-auto rounded-2xl border border-zinc-200 bg-white">
-        <table class="admin-table min-w-[900px]">
+    <div class="admin-table-wrap">
+        <table class="admin-table min-w-[960px]">
             <thead>
                 <tr>
-                    <th>Image</th><th>Product</th><th>SKU</th><th>Category</th><th>Price</th><th>Status</th><th>Inquiries</th><th></th>
+                    <th>Image</th>
+                    <th>Product</th>
+                    <th>SKU</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                    <th>Inquiries</th>
+                    <th class="text-right">Actions</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse ($products as $product)
                     <tr>
-                        <td>@if($product->image)<img src="{{ $product->image }}" class="h-12 w-12 rounded object-cover" alt="">@endif</td>
                         <td>
-                            <a class="font-semibold" href="{{ route('admin.catalogue.products.show', $product) }}">{{ $product->name }}</a>
-                            @if($product->featured)<span class="admin-badge">Featured</span>@endif
+                            @if($product->image)
+                                <img src="{{ $product->image }}" class="h-12 w-12 rounded-lg object-cover" alt="">
+                            @else
+                                <span class="flex h-12 w-12 items-center justify-center rounded-lg bg-zinc-100 text-xs text-zinc-400">—</span>
+                            @endif
                         </td>
-                        <td>{{ $product->sku }}</td>
-                        <td>{{ $product->category?->name }}</td>
-                        <td>{{ $product->displayPrice() }}</td>
-                        <td><span class="admin-badge">{{ $product->status }}</span></td>
-                        <td>{{ $product->inquiries_count }}</td>
-                        <td class="space-x-2 whitespace-nowrap text-sm">
-                            <a href="{{ route('admin.catalogue.products.edit', $product) }}">Edit</a>
-                            <form class="inline" method="POST" action="{{ route('admin.catalogue.products.duplicate', $product) }}">@csrf<button>Duplicate</button></form>
-                            <form class="inline" method="POST" action="{{ route('admin.catalogue.products.destroy', $product) }}" onsubmit="return confirm('Archive this product?')">@csrf @method('DELETE')<button class="text-[#d42127]">Delete</button></form>
+                        <td>
+                            <a class="admin-table__name" href="{{ route('admin.catalogue.products.show', $product) }}">{{ $product->name }}</a>
+                            @if($product->featured)<div class="mt-1"><x-admin.badge status="featured" /></div>@endif
+                        </td>
+                        <td class="font-mono text-xs text-zinc-500">{{ $product->sku ?: '—' }}</td>
+                        <td>{{ $product->category?->name ?? '—' }}</td>
+                        <td class="font-semibold text-zinc-900">{{ $product->displayPrice() }}</td>
+                        <td><x-admin.badge :status="$product->status" /></td>
+                        <td>{{ $product->inquiries_count ?: '—' }}</td>
+                        <td>
+                            <div class="flex items-center justify-end gap-2 whitespace-nowrap">
+                                <a class="btn-navy btn-sm" href="{{ route('admin.catalogue.products.edit', $product) }}"><x-admin.icon name="edit" /> Edit</a>
+                                <form method="POST" action="{{ route('admin.catalogue.products.duplicate', $product) }}">
+                                    @csrf
+                                    <button type="submit" class="btn-teal btn-sm"><x-admin.icon name="copy" /> Duplicate</button>
+                                </form>
+                                <form method="POST" action="{{ route('admin.catalogue.products.destroy', $product) }}" onsubmit="return confirm('Archive this product?')">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="btn-danger btn-sm"><x-admin.icon name="trash" /> Delete</button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="8" class="py-10 text-center text-zinc-500">No products have been added yet. <a class="text-[#d42127]" href="{{ route('admin.catalogue.products.create') }}">Add Product</a></td></tr>
+                    <tr>
+                        <td colspan="8" class="admin-table__empty">
+                            <p>No products yet</p>
+                            <p><a class="font-semibold text-[#d42127]" href="{{ route('admin.catalogue.products.create') }}">Add a product</a> to the public catalogue.</p>
+                        </td>
+                    </tr>
                 @endforelse
             </tbody>
         </table>
