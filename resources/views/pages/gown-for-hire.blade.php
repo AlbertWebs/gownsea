@@ -23,9 +23,9 @@
             @endforeach
         </div>
 
-        <article class="surface-muted mt-12 p-6 md:p-8">
+        <article class="surface-muted mt-12 border-l-4 border-l-[#0f2744] p-6 md:p-8">
             <p class="kicker">Institutions</p>
-            <h3 class="mt-3 font-semibold">Are you an institution?</h3>
+            <h3 class="mt-3 font-semibold text-[#0f2744]">Are you an institution?</h3>
             <p class="mt-3 max-w-3xl text-sm text-zinc-600">
                 Gownsea LTD invites institutions to bulk hire or purchase high-quality graduation gowns at discounted rates.
                 Ensure your graduates look their best with premium, comfortable, and customizable gowns.

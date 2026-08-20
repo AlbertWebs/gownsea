@@ -10,13 +10,6 @@ $extra = [
     'https://gownsea.com/uploads/products/academic gradduation hoods  hoods  (17)-Photoroom.jpg',
     'https://gownsea.com/uploads/products/academic gradduation hoods  hoods  (16)-Photoroom.jpg',
     'https://gownsea.com/uploads/products/academic gradduation hoods  hoods  (15)-Photoroom.jpg',
-    'https://gownsea.com/theme/images/clients-logos/client-1.png',
-    'https://gownsea.com/theme/images/clients-logos/client-2.png',
-    'https://gownsea.com/theme/images/clients-logos/client-3.png',
-    'https://gownsea.com/theme/images/clients-logos/client-4.png',
-    'https://gownsea.com/theme/images/clients-logos/client-5.png',
-    'https://gownsea.com/theme/images/clients-logos/client-6.png',
-    'https://gownsea.com/theme/images/clients-logos/client-12.png',
     'https://gownsea.com/theme/images/clients-logos/client-16.png',
 ];
 

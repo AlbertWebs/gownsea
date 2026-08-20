@@ -21,8 +21,8 @@
         @endif
 
         <div class="flex flex-wrap gap-2 border-b border-zinc-200 pb-2 text-sm">
-            <button type="button" class="rounded-full px-4 py-2" :class="tab === 'details' ? 'bg-[#0f2744] text-white' : 'bg-zinc-100 text-zinc-700'" @click="tab = 'details'">Contact</button>
-            <button type="button" class="rounded-full px-4 py-2" :class="tab === 'opportunity' ? 'bg-[#0f2744] text-white' : 'bg-zinc-100 text-zinc-700'" @click="tab = 'opportunity'">Opportunity</button>
+            <button type="button" class="rounded-2xl px-4 py-2" :class="tab === 'details' ? 'bg-[#0f2744] text-white' : 'bg-zinc-100 text-zinc-700'" @click="tab = 'details'">Contact</button>
+            <button type="button" class="rounded-2xl px-4 py-2" :class="tab === 'opportunity' ? 'bg-[#0f2744] text-white' : 'bg-zinc-100 text-zinc-700'" @click="tab = 'opportunity'">Opportunity</button>
         </div>
 
         <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">

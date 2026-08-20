@@ -129,7 +129,12 @@
 
             <div>
                 <h1 class="font-semibold">{{ $property['title'] }}</h1>
-                <p class="mt-4 text-3xl font-semibold text-zinc-950">{{ $property['price'] }}</p>
+                @php $isQuotePrice = str_contains(mb_strtolower((string) ($property['price'] ?? '')), 'quote'); @endphp
+                @if ($isQuotePrice)
+                    <a href="#request-quote" class="mt-4 inline-block text-3xl font-semibold text-[#d42127] underline underline-offset-4" @click.prevent="open('purchase')">{{ $property['price'] }}</a>
+                @else
+                    <p class="mt-4 text-3xl font-semibold text-zinc-950">{{ $property['price'] }}</p>
+                @endif
                 <p class="mt-2 text-sm text-zinc-500">Tax included. Delivery calculated with your quote.</p>
 
                 <div class="mt-8 space-y-6">
@@ -165,7 +170,7 @@
                     </label>
                 </div>
 
-                <div class="mt-8 grid grid-cols-2 gap-3">
+                <div id="request-quote" class="mt-8 grid scroll-mt-28 grid-cols-2 gap-3">
                     <button type="button" class="btn-primary w-full gap-2 px-3" @click="open('purchase')">
                         <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 7h12l-1 12H7L6 7Z" stroke="currentColor" stroke-width="1.7"/><path d="M9 7V6a3 3 0 0 1 6 0v1" stroke="currentColor" stroke-width="1.7"/></svg>
                         Request this item
@@ -275,14 +280,14 @@
         <div class="product-story mt-16 border-t border-zinc-200 pt-12">
             <div class="grid items-start gap-12 lg:grid-cols-2 lg:gap-16">
                 <div>
-                    <h2>Product Details</h2>
+                    <h2 class="text-[#0f2744]">Product Details</h2>
                     <ul class="product-story__details mt-6">
                         @foreach ($details as $detail)
                             <li>{{ $detail }}</li>
                         @endforeach
                     </ul>
 
-                    <h3 class="mt-10 text-xl font-semibold">About {{ $property['title'] }}</h3>
+                    <h3 class="mt-10 text-xl font-semibold text-[#0f2744]">About {{ $property['title'] }}</h3>
                     <p class="product-story__html mt-4 max-w-2xl text-[17px] leading-8 text-zinc-600">{!! $property['about'] !!}</p>
                 </div>
 
@@ -338,16 +343,16 @@
                 </div>
             </div>
 
-            <div class="product-story__trust mt-14 grid gap-8 border-t border-zinc-200 pt-10 sm:grid-cols-3">
-                <article class="min-w-0">
+            <div class="product-story__trust mt-14 grid gap-8 border-t-4 border-t-[#0f2744] pt-10 sm:grid-cols-3">
+                <article class="surface min-w-0 p-6">
                     <h3 class="text-lg font-semibold leading-snug">Gownsea represents these moments</h3>
                     <p class="mt-3 text-sm leading-6 text-zinc-600">Ceremonial garments go beyond fabric. We supply attire that carries the meaning of the day.</p>
                 </article>
-                <article class="min-w-0">
+                <article class="surface min-w-0 p-6">
                     <h3 class="text-lg font-semibold leading-snug">We use sustainable thinking</h3>
                     <p class="mt-3 text-sm leading-6 text-zinc-600">Durable hire stock and quality materials reduce waste while keeping every look ceremony-ready.</p>
                 </article>
-                <article class="min-w-0">
+                <article class="surface min-w-0 p-6">
                     <h3 class="text-lg font-semibold leading-snug">Delivery across Kenya</h3>
                     <p class="mt-3 text-sm leading-6 text-zinc-600">Nairobi delivery is complimentary on confirmed orders, with courier options for other counties.</p>
                 </article>

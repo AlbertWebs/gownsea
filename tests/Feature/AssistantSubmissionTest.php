@@ -88,6 +88,45 @@ class AssistantSubmissionTest extends TestCase
         $this->assertDatabaseCount('assistant_requests', 0);
     }
 
+    public function test_bulk_inquiry_requires_math_challenge(): void
+    {
+        $this->from('/bulk-inquiry')
+            ->post('/assistant/submit', $this->validPayload([
+                'form_intent' => 'bulk',
+            ]))
+            ->assertSessionHasErrors('math_answer');
+
+        $this->assertDatabaseCount('assistant_requests', 0);
+    }
+
+    public function test_bulk_inquiry_rejects_wrong_math_answer(): void
+    {
+        $this->from('/bulk-inquiry')
+            ->post('/assistant/submit', $this->validPayload([
+                'form_intent' => 'bulk',
+                'math_token' => encrypt(['exp' => 9, 't' => now()->timestamp]),
+                'math_answer' => '4',
+            ]))
+            ->assertSessionHasErrors('math_answer');
+
+        $this->assertDatabaseCount('assistant_requests', 0);
+    }
+
+    public function test_bulk_inquiry_accepts_correct_math_answer(): void
+    {
+        Mail::fake();
+
+        $this->post('/assistant/submit', $this->validPayload([
+            'form_intent' => 'bulk',
+            'math_token' => encrypt(['exp' => 9, 't' => now()->timestamp]),
+            'math_answer' => '9',
+        ]))->assertRedirect();
+
+        $this->assertDatabaseHas('assistant_requests', [
+            'email' => 'jane@example.com',
+        ]);
+    }
+
     /**
      * @param  array<string, mixed>  $overrides
      * @return array<string, mixed>

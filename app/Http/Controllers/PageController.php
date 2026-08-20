@@ -25,22 +25,42 @@ class PageController extends Controller
 
     public function about(): View
     {
+        $title = 'About Gownsea LTD | Graduation, Legal & Church Wear in Nairobi, Kenya';
+        $description = 'Gownsea LTD supplies premium graduation gowns, legal attire, and church wear for hire and sale in Nairobi, Kenya. Visit Valji Building, Moktar Daddah Street for custom stitching, bulk hire, and ceremony support.';
+
         return view('pages.about', [
-            'meta' => $this->meta(
-                'About Gownsea LTD | Graduation, Legal & Church Wear',
-                'Learn about Gownsea and our mission to deliver premium ceremonial attire.'
-            ),
+            'meta' => array_merge($this->meta($title, $description), [
+                'og_image' => url('/images/site/hero.webp'),
+                'twitter_image' => url('/images/site/hero.webp'),
+            ]),
+            'posts' => array_slice(config('gownsea.journal_posts', []), 0, 2),
+            'faqs' => [
+                'Where is Gownsea located?' => 'Our showroom is at Valji Building, Moktar Daddah Street, Nairobi. Visit Monday to Saturday, 8am–6pm, or contact us to plan a fitting or bulk collection.',
+                'Do you hire and sell graduation gowns?' => 'Yes. Gownsea offers both hire and purchase for preschool through PhD sets, including gowns, caps, hoods, tassels, and stoles.',
+                'Can institutions hire gowns in bulk?' => 'Yes. Universities, colleges, TVETs, and churches can request bulk hire with sizing support, delivery planning, and consistent academic colours.',
+                'Do you make custom gowns?' => 'If a standard set does not match your institution, we provide custom stitching for graduation, legal, and church attire.',
+                'What other ceremonial wear do you supply?' => 'Alongside graduation attire we supply courtroom-ready legal wear and church garments for clergy and choirs.',
+            ],
         ]);
     }
 
     public function contact(): View
     {
+        $title = 'Contact Gownsea LTD | Nairobi Showroom, Phone & WhatsApp';
+        $description = 'Visit Gownsea at Valji Building, Moktar Daddah Street, Nairobi, or call +254 728 311537. Hire or buy graduation gowns, legal attire, and church wear. Open Monday to Saturday, 8am–6pm.';
+
         return view('pages.contact', [
-            'meta' => $this->meta(
-                'Contact Gownsea LTD | Graduation & Legal Attire in Kenya',
-                'Contact Gownsea for gown hire, purchases, support, and bulk ceremony requests.'
-            ),
-            'faqs' => config('gownsea.assistant.faqs', []),
+            'meta' => array_merge($this->meta($title, $description), [
+                'og_image' => url('/images/site/hero.webp'),
+                'twitter_image' => url('/images/site/hero.webp'),
+            ]),
+            'faqs' => [
+                'Where is the Gownsea showroom?' => 'We are at Valji Building, Moktar Daddah Street, Nairobi CBD. Use the map on this page or Google Maps for directions.',
+                'What are your opening hours?' => 'Monday to Saturday, 8am–6pm. Call or WhatsApp if you need to plan a fitting or bulk collection outside peak hours.',
+                'How do I hire or buy a gown?' => 'Send a message with the award level, quantity, and ceremony date. We will confirm hire or purchase options, sizing, and timelines.',
+                'Can I get a quote for bulk hire?' => 'Yes. Use the form on this page or the bulk inquiry form with institution name, quantities, and event date.',
+                'How can I reach you quickly?' => 'Call +254 728 311537, email hello@gownsea.com, or chat on WhatsApp for the fastest reply.',
+            ],
         ]);
     }
 
@@ -217,9 +237,15 @@ class PageController extends Controller
 
     public function bulkInquiry(): View
     {
+        $title = 'Bulk Gown Hire in Kenya | University & Institution Quotes | Gownsea';
+        $description = 'Request a bulk graduation gown hire quote from Gownsea in Nairobi. Volume pricing, delivery planning, and custom colours for universities, colleges, TVETs, and churches.';
+
         return view('pages.bulk-inquiry', [
-            'meta' => $this->meta('Bulk Hire | Gownsea LTD', 'Bulk graduation gown hire for universities and institutions in Kenya.'),
-            'faqs' => config('gownsea.assistant.faqs', []),
+            'meta' => array_merge($this->meta($title, $description), [
+                'og_image' => url('/images/site/hero.webp'),
+                'twitter_image' => url('/images/site/hero.webp'),
+            ]),
+            'math' => \App\Support\InquiryFormGuard::mathChallenge(),
         ]);
     }
 

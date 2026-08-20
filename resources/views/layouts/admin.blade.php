@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Admin') | Gownsea</title>
+    <link rel="icon" href="{{ asset('favicon-rpimary.png') }}" type="image/png">
+    <link rel="shortcut icon" href="{{ asset('favicon-rpimary.png') }}" type="image/png">
+    <link rel="apple-touch-icon" href="{{ asset('favicon-rpimary.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:wght@600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css">
@@ -37,7 +40,7 @@
                     <input name="q" value="{{ request('q') }}" class="admin-input max-w-xl" placeholder="Search products, customers, leads, inquiries, sales...">
                 </form>
                 <div class="relative" x-data="{ open: false }">
-                    <button type="button" class="rounded-full border border-zinc-200 px-3 py-2 text-sm" @click="open = !open">
+                    <button type="button" class="rounded-2xl border border-zinc-200 px-3 py-2 text-sm" @click="open = !open">
                         Alerts @if(($unreadNotifications ?? 0) > 0)<span class="ml-1 text-[#d42127]">{{ $unreadNotifications }}</span>@endif
                     </button>
                     <div x-show="open" x-cloak class="absolute right-0 mt-2 w-80 rounded-xl border border-zinc-200 bg-white p-3 shadow-lg">

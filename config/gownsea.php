@@ -72,18 +72,11 @@ return [
     ],
 
     'clients' => [
-        '/images/clients/client-1.png',
-        '/images/clients/client-2.png',
-        '/images/clients/client-3.png',
-        '/images/clients/client-4.png',
-        '/images/clients/client-5.png',
-        '/images/clients/client-6.png',
         '/images/clients/client-7.png',
         '/images/clients/client-8.png',
         '/images/clients/client-9.png',
         '/images/clients/client-10.png',
         '/images/clients/client-11.png',
-        '/images/clients/client-12.png',
         '/images/clients/client-13.png',
         '/images/clients/client-14.jpg',
         '/images/clients/client-15.png',

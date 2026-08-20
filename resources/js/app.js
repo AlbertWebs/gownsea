@@ -1,5 +1,6 @@
 import './bootstrap';
 import Alpine from 'alpinejs';
+import { initScrollReveal } from './scroll-reveal';
 
 Alpine.data('dropzone', (config = {}) => ({
     multiple: Boolean(config.multiple),
@@ -173,3 +174,4 @@ Alpine.data('pipelineBoard', (config) => ({
 
 window.Alpine = Alpine;
 Alpine.start();
+initScrollReveal();

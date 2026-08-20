@@ -29,7 +29,7 @@
             description="Use filters to quickly find options by type, location, and budget range."
         />
 
-        <div class="surface mt-8 p-4 md:p-5">
+        <div class="surface mt-8 border-t-4 border-t-[#0f2744] p-4 md:p-5">
             <div class="luxury-grid md:grid-cols-4">
                 <label class="text-xs font-semibold text-zinc-700">
                     Search

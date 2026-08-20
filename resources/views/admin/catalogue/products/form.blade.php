@@ -64,7 +64,7 @@
 
         <div class="flex flex-wrap gap-2 border-b border-zinc-200 pb-2 text-sm">
             @foreach (['details' => 'Details', 'pricing' => 'Pricing & stock', 'media' => 'Images', 'options' => 'Options & fit', 'seo' => 'SEO'] as $key => $label)
-                <button type="button" class="rounded-full px-4 py-2" :class="tab === '{{ $key }}' ? 'bg-[#0f2744] text-white' : 'bg-zinc-100 text-zinc-700'" @click="tab = '{{ $key }}'">{{ $label }}</button>
+                <button type="button" class="rounded-2xl px-4 py-2" :class="tab === '{{ $key }}' ? 'bg-[#0f2744] text-white' : 'bg-zinc-100 text-zinc-700'" @click="tab = '{{ $key }}'">{{ $label }}</button>
             @endforeach
         </div>
 

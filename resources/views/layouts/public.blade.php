@@ -8,6 +8,9 @@
     <title>{{ $meta['title'] ?? config('app.name') }}</title>
     <meta name="description" content="{{ $meta['description'] ?? 'Gownsea premium ceremonial attire.' }}">
     <meta name="theme-color" content="#d42127">
+    <link rel="icon" href="{{ asset('favicon-rpimary.png') }}" type="image/png">
+    <link rel="shortcut icon" href="{{ asset('favicon-rpimary.png') }}" type="image/png">
+    <link rel="apple-touch-icon" href="{{ asset('favicon-rpimary.png') }}">
     <link rel="canonical" href="{{ $meta['canonical'] ?? url()->current() }}">
 
     <meta property="og:site_name" content="Gownsea LTD">
@@ -39,14 +42,14 @@
     @include('partials.header')
 
     @if (session('assistant_status'))
-        <div class="container-shell mt-20">
+        <div class="container-shell mt-28">
             <p class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
                 {{ session('assistant_status') }}
             </p>
         </div>
     @endif
 
-    <main class="pt-20">
+    <main class="pt-28">
         @yield('content')
     </main>
 

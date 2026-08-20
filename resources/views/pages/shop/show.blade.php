@@ -12,8 +12,9 @@
             @forelse ($items as $property)
                 <x-ui.property-card :property="$property" />
             @empty
-                <div class="surface p-6 md:col-span-3">
-                    <p class="text-sm text-zinc-600">Collection details are being curated. Contact us for immediate guidance and pricing.</p>
+                <div class="surface border-t-4 border-t-[#0f2744] p-6 md:col-span-3">
+                    <p class="kicker">Collection</p>
+                    <p class="mt-2 text-sm text-zinc-600">Collection details are being curated. Contact us for immediate guidance and pricing.</p>
                 </div>
             @endforelse
         </div>
