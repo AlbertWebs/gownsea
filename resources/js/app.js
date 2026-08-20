@@ -175,3 +175,42 @@ Alpine.data('pipelineBoard', (config) => ({
 window.Alpine = Alpine;
 Alpine.start();
 initScrollReveal();
+initStoryBandHeights();
+
+function initStoryBandHeights() {
+    const root = document.querySelector('.story-bands');
+    if (!root) {
+        return;
+    }
+
+    const medias = () => [...root.querySelectorAll('.story-band__media')];
+
+    const sync = () => {
+        const items = medias();
+        if (items.length < 2) {
+            return;
+        }
+
+        items.slice(1).forEach((el) => {
+            el.style.height = '';
+        });
+
+        const height = items[0].getBoundingClientRect().height;
+        if (height < 8) {
+            return;
+        }
+
+        items.slice(1).forEach((el) => {
+            el.style.height = `${Math.round(height)}px`;
+        });
+    };
+
+    const firstImg = root.querySelector('.story-band:first-child .story-band__media img');
+    if (firstImg) {
+        firstImg.addEventListener('load', sync);
+    }
+
+    window.addEventListener('resize', sync);
+    sync();
+    window.requestAnimationFrame(sync);
+}

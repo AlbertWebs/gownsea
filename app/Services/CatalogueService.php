@@ -70,7 +70,7 @@ class CatalogueService
                 ->published()
                 ->with(['category', 'images'])
                 ->where('featured', true)
-                ->orderBy('sort_order')
+                ->orderBy('id')
                 ->get()
                 ->map(fn (Product $product) => $product->toStorefrontArray())
                 ->all();

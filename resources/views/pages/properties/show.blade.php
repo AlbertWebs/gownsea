@@ -102,7 +102,7 @@
             <span class="text-zinc-800">{{ $property['title'] }}</span>
         </p>
 
-        <div class="grid items-start gap-10 lg:grid-cols-2">
+        <div class="grid items-center gap-10 lg:grid-cols-2">
             <div>
                 <div class="overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-50">
                     <img
