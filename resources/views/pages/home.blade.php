@@ -48,6 +48,27 @@
         ]"
     />
 
+    <section class="container-shell section-md">
+        <div class="luxury-grid md:grid-cols-3">
+            <article class="surface p-6">
+                <span class="mb-3 inline-block h-2 w-8 bg-[#d42127]" aria-hidden="true"></span>
+                <p class="kicker">Graduation Attire</p>
+                <h3 class="mt-3 font-semibold">University-standard graduation attire for hire and sale</h3>
+                <a href="{{ route('graduation-attire') }}" class="mt-5 inline-block text-sm font-semibold underline">Shop Graduation Attire</a>
+            </article>
+            <article class="surface p-6">
+                <p class="kicker">Legal Wear</p>
+                <h3 class="mt-3 font-semibold">Courtroom-standard attire for advocates and legal professionals</h3>
+                <a href="{{ route('legal-attire') }}" class="mt-5 inline-block text-sm font-semibold underline">Shop Legal Wear</a>
+            </article>
+            <article class="surface bg-[#0f2744] p-6 text-white">
+                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-white/70">Church Wear</p>
+                <h3 class="mt-3 font-semibold text-white">Elegant church and choral wear for your community</h3>
+                <a href="{{ route('church-wear') }}" class="mt-5 inline-block text-sm font-semibold text-white underline">Shop Church Wear</a>
+            </article>
+        </div>
+    </section>
+
     <section class="bg-zinc-50 section-lg">
         <div class="container-shell">
             <x-ui.section-header

@@ -24,23 +24,24 @@
     $whatsapp = preg_replace('/\D+/', '', (string) config('gownsea.brand.whatsapp'));
     $phoneHref = 'tel:'.preg_replace('/\s+/', '', (string) $phone);
     $mapsHref = 'https://www.google.com/maps/search/?api=1&query='.rawurlencode((string) $address);
+    $siteLogo = \App\Models\Setting::logoUrl();
+    $siteName = \App\Models\Setting::getValue('company_name', config('gownsea.brand.name'));
 @endphp
 
 <header
-    class="fixed inset-x-0 top-0 z-50 border-b border-zinc-200/80 bg-white/95 backdrop-blur"
     x-data="{ shopOpen: false, mobileOpen: false }"
 >
-    <div class="site-topbar">
+    <div class="site-topbar hidden md:block">
         <div class="site-topbar__inner container-shell">
             <div class="site-topbar__group">
-                <a href="{{ $mapsHref }}" target="_blank" rel="noopener noreferrer" class="min-w-0">
+                <a href="{{ $mapsHref }}" target="_blank" rel="noopener noreferrer" class="site-topbar__item min-w-0">
                     <span class="site-topbar__icon">
                         <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.6A5.2 5.2 0 0 0 2.8 6.8c0 3.7 4.1 7.1 5.2 7.9.3.2.7.2 1 0 1.1-.8 5.2-4.2 5.2-7.9A5.2 5.2 0 0 0 8 1.6Zm0 7.1A1.9 1.9 0 1 1 8 5a1.9 1.9 0 0 1 0 3.7Z"/></svg>
                     </span>
                     <span class="truncate">{{ $address }}</span>
                 </a>
                 <span class="hidden text-white/40 sm:inline" aria-hidden="true">|</span>
-                <span class="hidden items-center gap-1.5 sm:inline-flex">
+                <span class="site-topbar__item hidden sm:inline-flex">
                     <span class="site-topbar__icon">
                         <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.4A6.6 6.6 0 1 0 14.6 8 6.61 6.61 0 0 0 8 1.4Zm.7 6.5-.2.1-2.3 1.5a.7.7 0 1 1-.8-1.1l1.9-1.3V4.6a.7.7 0 0 1 1.4 0v3.3Z"/></svg>
                     </span>
@@ -49,21 +50,21 @@
             </div>
 
             <div class="site-topbar__group shrink-0">
-                <a href="{{ $phoneHref }}">
+                <a href="{{ $phoneHref }}" class="site-topbar__item">
                     <span class="site-topbar__icon">
                         <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.7 11.2 12 10.4a1.3 1.3 0 0 0-1.5.3l-.8.9A9.2 9.2 0 0 1 4.4 6.3l.9-.8a1.3 1.3 0 0 0 .3-1.5L4.8 2.3A1.3 1.3 0 0 0 3.4 1.6L1.8 2A1.3 1.3 0 0 0 1 3.3C1.6 10 6 14.4 12.7 15a1.3 1.3 0 0 0 1.3-.8l.4-1.6a1.3 1.3 0 0 0-.7-1.4Z"/></svg>
                     </span>
                     <span class="hidden sm:inline">{{ $phone }}</span>
                     <span class="sm:hidden">Call</span>
                 </a>
-                <a href="mailto:{{ $email }}" class="hidden md:inline-flex">
+                <a href="mailto:{{ $email }}" class="site-topbar__item hidden md:inline-flex">
                     <span class="site-topbar__icon">
                         <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1.5 4.2A1.7 1.7 0 0 1 3.2 2.6h9.6A1.7 1.7 0 0 1 14.5 4.2v.3L8 8.6 1.5 4.5v-.3Zm0 2.1 6.1 4a.8.8 0 0 0 .8 0l6.1-4V11.8a1.7 1.7 0 0 1-1.7 1.6H3.2A1.7 1.7 0 0 1 1.5 11.8V6.3Z"/></svg>
                     </span>
                     {{ $email }}
                 </a>
                 @if ($whatsapp)
-                    <a href="https://wa.me/{{ $whatsapp }}" target="_blank" rel="noopener noreferrer">
+                    <a href="https://wa.me/{{ $whatsapp }}" target="_blank" rel="noopener noreferrer" class="site-topbar__item">
                         <span class="site-topbar__icon">
                             <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.4A6.6 6.6 0 0 0 2.3 11.4L1.5 14.5l3.2-.8A6.6 6.6 0 1 0 8 1.4Zm3.4 9.3c-.14.4-.82.77-1.35.87-.36.07-.83.13-2.42-.52-2.03-.83-3.34-2.86-3.44-3-.1-.13-.84-1.12-.84-2.13 0-1.02.53-1.52.73-1.73.18-.2.4-.25.54-.25h.4c.13 0 .3 0 .46.35l.66 1.6c.05.12.09.23 0 .35l-.32.52c-.1.12-.22.27-.1.5.13.23.56.93 1.2 1.5.83.75 1.53 1 1.76 1.1.23.12.36.1.5-.06l.4-.47c.12-.14.27-.18.44-.12l1.58.74c.17.08.28.12.32.2.05.1.05.55-.18.95Z"/></svg>
                         </span>
@@ -74,12 +75,17 @@
         </div>
     </div>
 
-    <div class="container-shell relative flex h-16 items-center justify-between">
-        <a href="{{ route('home') }}" class="text-lg font-semibold tracking-tight text-zinc-950">
-            <span class="text-[#d42127]">Gown</span>sea
+    <div class="sticky top-0 z-50 border-b border-zinc-200/80 bg-white/95 backdrop-blur">
+        <div class="container-shell relative flex h-16 items-center justify-between">
+        <a href="{{ route('home') }}" class="inline-flex items-center text-lg font-semibold tracking-tight text-zinc-950">
+            @if ($siteLogo)
+                <img src="{{ $siteLogo }}" alt="{{ $siteName }}" class="site-header__logo">
+            @else
+                <span class="text-[#d42127]">Gown</span>sea
+            @endif
         </a>
 
-        <nav class="hidden items-center gap-6 text-sm font-medium md:flex">
+        <nav class="hidden items-center gap-6 text-sm font-semibold md:flex">
             <a href="{{ route('graduation-attire') }}" class="nav-link {{ $isGraduationNav ? 'is-active' : '' }}" @if ($isGraduationNav) aria-current="page" @endif>Graduation Attire</a>
             <a href="{{ route('legal-attire') }}" class="nav-link {{ $isLegalNav ? 'is-active' : '' }}" @if ($isLegalNav) aria-current="page" @endif>Legal Attire</a>
             <a href="{{ route('church-wear') }}" class="nav-link {{ $isChurchNav ? 'is-active' : '' }}" @if ($isChurchNav) aria-current="page" @endif>Church Wear</a>
@@ -205,7 +211,7 @@
         x-cloak
         class="border-t border-zinc-200 bg-white/95 backdrop-blur md:hidden"
     >
-        <nav class="container-shell flex flex-col gap-2 py-4 text-sm font-medium">
+        <nav class="container-shell flex flex-col gap-2 py-4 text-sm font-semibold">
             <a href="{{ route('graduation-attire') }}" class="nav-link-mobile {{ $isGraduationNav ? 'is-active' : '' }}" @if ($isGraduationNav) aria-current="page" @endif>Graduation Attire</a>
             <a href="{{ route('legal-attire') }}" class="nav-link-mobile {{ $isLegalNav ? 'is-active' : '' }}" @if ($isLegalNav) aria-current="page" @endif>Legal Attire</a>
             <a href="{{ route('church-wear') }}" class="nav-link-mobile {{ $isChurchNav ? 'is-active' : '' }}" @if ($isChurchNav) aria-current="page" @endif>Church Wear</a>
@@ -214,5 +220,6 @@
             <a href="{{ route('bulk-inquiry') }}" class="nav-link-mobile {{ $isBulkNav ? 'is-active' : '' }}" @if ($isBulkNav) aria-current="page" @endif>Bulk Hire</a>
             <a href="{{ route('contact-us') }}" class="btn-primary mt-2">Let's talk</a>
         </nav>
+    </div>
     </div>
 </header>

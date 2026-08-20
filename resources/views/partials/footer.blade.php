@@ -13,7 +13,17 @@
 
         <div class="site-footer__columns">
             <div class="site-footer__brand">
-                <p class="site-footer__title text-xl"><span class="text-[#d42127]">Gown</span><span class="text-[#0f2744]">sea LTD</span></p>
+                @php
+                    $siteLogo = \App\Models\Setting::logoUrl();
+                    $siteName = \App\Models\Setting::getValue('company_name', config('gownsea.brand.name'));
+                @endphp
+                @if ($siteLogo)
+                    <a href="{{ route('home') }}" class="inline-flex">
+                        <img src="{{ $siteLogo }}" alt="{{ $siteName }}" class="site-footer__logo">
+                    </a>
+                @else
+                    <p class="site-footer__title text-xl"><span class="text-[#d42127]">Gown</span><span class="text-[#0f2744]">sea LTD</span></p>
+                @endif
                 <p class="mt-4 max-w-sm text-sm leading-relaxed text-zinc-600">
                     Premium graduation, legal, and church attire for hire and sale across Kenya with responsive support
                     for institutions and individual customers.
@@ -78,15 +88,47 @@
                     <a href="{{ route('return-policy') }}" class="block transition-colors hover:text-[#0f2744]">Return Policy</a>
                     <a href="{{ route('copyright') }}" class="block transition-colors hover:text-[#0f2744]">Copyright</a>
                 </div>
-            </div>
 
-            <div class="site-footer__promise surface">
-                <p class="text-xs font-semibold uppercase tracking-wide text-[#0f2744]">Service Promise</p>
-                <ul class="mt-3 space-y-2 text-xs text-zinc-600">
-                    <li>Responsive support for every order.</li>
-                    <li>Bulk planning for institutions.</li>
-                    <li>Quality ceremonial finishing.</li>
-                </ul>
+                <div class="site-footer__promise">
+                    <p class="site-footer__promise-kicker">
+                        <span class="site-footer__promise-seal" aria-hidden="true">
+                            <svg viewBox="0 0 16 16" fill="none">
+                                <path d="M8 1.4 3.2 3.2v4.1c0 3.1 2.1 5.9 4.8 6.8 2.7-.9 4.8-3.7 4.8-6.8V3.2L8 1.4Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+                                <path d="m5.6 7.6 1.6 1.6 3.2-3.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </span>
+                        Service Promise
+                    </p>
+                    <ul class="site-footer__promise-list">
+                        <li>
+                            <span class="site-footer__promise-icon" aria-hidden="true">
+                                <svg viewBox="0 0 16 16" fill="none">
+                                    <path d="M3.2 8.2V7.4A4.8 4.8 0 0 1 8 2.6a4.8 4.8 0 0 1 4.8 4.8v.8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                                    <rect x="2.1" y="7.4" width="2.6" height="3.8" rx="1.1" stroke="currentColor" stroke-width="1.4"/>
+                                    <rect x="11.3" y="7.4" width="2.6" height="3.8" rx="1.1" stroke="currentColor" stroke-width="1.4"/>
+                                </svg>
+                            </span>
+                            <span>Responsive support for every order.</span>
+                        </li>
+                        <li>
+                            <span class="site-footer__promise-icon" aria-hidden="true">
+                                <svg viewBox="0 0 16 16" fill="none">
+                                    <path d="M2.4 13.2V6.8L8 3.4l5.6 3.4v6.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M6.2 13.2V9.4h3.6v3.8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </span>
+                            <span>Bulk planning for institutions.</span>
+                        </li>
+                        <li>
+                            <span class="site-footer__promise-icon" aria-hidden="true">
+                                <svg viewBox="0 0 16 16" fill="none">
+                                    <path d="m8 2.4 1.1 3.3h3.5L10.3 7.8l1.1 3.3L8 9.1l-3.4 2 1.1-3.3-2.3-2.1h3.5L8 2.4Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+                                </svg>
+                            </span>
+                            <span>Quality ceremonial finishing.</span>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
 

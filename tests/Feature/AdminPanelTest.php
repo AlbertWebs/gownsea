@@ -32,6 +32,34 @@ class AdminPanelTest extends TestCase
         $this->actingAs($user)->get('/admin')->assertOk()->assertSee('Dashboard');
     }
 
+    public function test_admin_can_upload_website_logo(): void
+    {
+        $user = User::factory()->create([
+            'role' => 'super_admin',
+            'status' => 'active',
+        ]);
+
+        $file = \Illuminate\Http\UploadedFile::fake()->image('gownsea-logo.png', 240, 80);
+
+        $this->actingAs($user)
+            ->from('/admin/settings')
+            ->post('/admin/settings', [
+                '_method' => 'PUT',
+                'company_name' => 'Gownsea LTD',
+                'currency' => 'KES',
+                'logo' => $file,
+            ])
+            ->assertRedirect();
+
+        $path = \App\Models\Setting::logoPath();
+        $this->assertNotEmpty($path);
+        $this->assertFileExists(public_path(ltrim($path, '/')));
+
+        $this->get('/')->assertOk()->assertSee(ltrim($path, '/'), false);
+
+        @unlink(public_path(ltrim($path, '/')));
+    }
+
     public function test_catalogue_manager_cannot_access_users(): void
     {
         $user = User::factory()->create([

@@ -42,14 +42,14 @@
     @include('partials.header')
 
     @if (session('assistant_status'))
-        <div class="container-shell mt-28">
+        <div class="container-shell mt-4">
             <p class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
                 {{ session('assistant_status') }}
             </p>
         </div>
     @endif
 
-    <main class="pt-28">
+    <main>
         @yield('content')
     </main>
 

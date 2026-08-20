@@ -8,6 +8,7 @@ return [
         'email' => 'hello@gownsea.com',
         'address' => 'Valji Building, Moktar Daddah Street, Nairobi',
         'whatsapp' => '254728311537',
+        'logo' => null,
     ],
 
     'assistant' => [

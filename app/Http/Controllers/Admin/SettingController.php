@@ -6,13 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Models\Setting;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class SettingController extends Controller
 {
     public function edit(): View
     {
-        $keys = ['company_name', 'phone', 'email', 'whatsapp', 'address', 'seo_title', 'seo_description', 'currency'];
+        $keys = ['company_name', 'phone', 'email', 'whatsapp', 'address', 'seo_title', 'seo_description', 'currency', 'logo'];
 
         return view('admin.settings.edit', [
             'settings' => collect($keys)->mapWithKeys(fn ($key) => [
@@ -40,7 +41,30 @@ class SettingController extends Controller
             'seo_title' => ['nullable', 'string', 'max:190'],
             'seo_description' => ['nullable', 'string', 'max:500'],
             'currency' => ['required', 'string', 'max:8'],
+            'logo' => ['nullable', 'image', 'mimes:png,jpg,jpeg,webp', 'max:2048'],
+            'remove_logo' => ['nullable', 'boolean'],
         ]);
+
+        $currentLogo = Setting::logoPath();
+
+        if ($request->boolean('remove_logo') && ! $request->hasFile('logo')) {
+            $this->deleteLogoFile($currentLogo);
+            $data['logo'] = '';
+        } elseif ($request->hasFile('logo')) {
+            $file = $request->file('logo');
+            $directory = public_path('images/brand');
+            if (! is_dir($directory)) {
+                mkdir($directory, 0755, true);
+            }
+            $name = 'logo-'.Str::random(8).'.'.$file->getClientOriginalExtension();
+            $file->move($directory, $name);
+            $this->deleteLogoFile($currentLogo);
+            $data['logo'] = '/images/brand/'.$name;
+        } else {
+            unset($data['logo']);
+        }
+
+        unset($data['remove_logo']);
 
         foreach ($data as $key => $value) {
             Setting::setValue($key, $value);
@@ -48,5 +72,22 @@ class SettingController extends Controller
         }
 
         return back()->with('status', 'Website settings saved.');
+    }
+
+    private function deleteLogoFile(?string $path): void
+    {
+        if (! is_string($path) || $path === '') {
+            return;
+        }
+
+        $relative = ltrim($path, '/');
+        if (! str_starts_with($relative, 'images/brand/')) {
+            return;
+        }
+
+        $full = public_path($relative);
+        if (is_file($full)) {
+            unlink($full);
+        }
     }
 }

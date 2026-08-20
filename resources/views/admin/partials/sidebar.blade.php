@@ -8,7 +8,12 @@
     };
 @endphp
 <div class="admin-sidebar-inner">
-    <a href="{{ route('admin.dashboard') }}" class="mb-6 font-serif text-xl font-semibold text-white">Gownsea Admin</a>
+    <a href="{{ route('admin.dashboard') }}" class="mb-6 inline-flex items-center gap-2 font-serif text-xl font-semibold text-white">
+        @if ($logo = \App\Models\Setting::logoUrl())
+            <img src="{{ $logo }}" alt="" class="h-8 w-auto max-w-[9rem] rounded-sm bg-white object-contain p-1">
+        @endif
+        Gownsea Admin
+    </a>
     <nav class="admin-sidebar-nav min-h-0 flex-1 space-y-5 overflow-y-auto text-sm">
         @if($user?->hasPermission('dashboard'))
         <div>
