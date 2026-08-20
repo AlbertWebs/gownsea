@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 
 class CatalogueService
 {
@@ -145,5 +146,48 @@ class CatalogueService
         }
 
         return config('gownsea.brand.'.$key, $default);
+    }
+
+    public function category(string $slug): ?Category
+    {
+        return Category::query()->where('slug', $slug)->first();
+    }
+
+    public function categoryImage(string $slug, string $fallback = '/images/site/hero.webp'): string
+    {
+        return $this->category($slug)?->previewImage() ?: $fallback;
+    }
+
+    /**
+     * @return array<int, array{src: string, label: string, headline: string}>
+     */
+    public function heroSlides(): array
+    {
+        $slides = [
+            'graduation' => [
+                'headline' => 'University-standard graduation gowns tailored for every ceremony.',
+                'fallback' => '/images/site/hero.webp',
+            ],
+            'legal' => [
+                'headline' => 'Courtroom-ready legal attire with a premium professional finish.',
+                'fallback' => '/images/site/Amazon-seller-lawyer-renaldo-matamoro-86JiKaHF4I8-unsplash-min.jpg',
+            ],
+            'church' => [
+                'headline' => 'Elegant church and choral wear designed for reverence and unity.',
+                'fallback' => '/images/site/clergy-wear.webp',
+            ],
+        ];
+
+        $categories = Category::query()->whereIn('slug', array_keys($slides))->get()->keyBy('slug');
+
+        return collect($slides)->map(function (array $slide, string $slug) use ($categories) {
+            $category = $categories->get($slug);
+
+            return [
+                'src' => $category?->previewImage() ?: $slide['fallback'],
+                'label' => $category?->name ?: Str::headline($slug),
+                'headline' => $slide['headline'],
+            ];
+        })->values()->all();
     }
 }

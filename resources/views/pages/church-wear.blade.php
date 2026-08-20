@@ -6,7 +6,7 @@
         subtitle="Quality church and choral attire"
         ctaLabel="Shop Now"
         ctaHref="#shop"
-        image="/images/site/clergy-wear.webp"
+        image="{{ $bannerImage }}"
         alt="Church and choral wear for congregations in Kenya"
     />
 

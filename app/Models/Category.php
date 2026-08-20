@@ -34,4 +34,23 @@ class Category extends Model
     {
         return $this->hasMany(Product::class);
     }
+
+    public function previewImage(): ?string
+    {
+        if (is_string($this->image) && $this->image !== '') {
+            return $this->image;
+        }
+
+        $fromProduct = $this->products()->whereNotNull('image')->where('image', '!=', '')->value('image');
+        if (is_string($fromProduct) && $fromProduct !== '') {
+            return $fromProduct;
+        }
+
+        return match ($this->slug) {
+            'church' => '/images/site/clergy-wear.webp',
+            'legal' => '/images/site/Amazon-seller-lawyer-renaldo-matamoro-86JiKaHF4I8-unsplash-min.jpg',
+            'graduation' => '/images/site/graduation-attire.jpg',
+            default => null,
+        };
+    }
 }

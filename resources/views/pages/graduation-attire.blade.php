@@ -6,7 +6,7 @@
         subtitle="University-standard graduation attire"
         ctaLabel="Shop Now"
         ctaHref="#shop"
-        image="/images/site/graduation-attire.jpg"
+        image="{{ $bannerImage }}"
         alt="University-standard graduation gowns, caps, and hoods"
     />
 

@@ -113,12 +113,52 @@ class CategoryController extends Controller
             'is_active' => ['sometimes', 'boolean'],
             'seo_title' => ['nullable', 'string', 'max:190'],
             'seo_description' => ['nullable', 'string', 'max:500'],
+            'image' => ['nullable', 'image', 'mimes:png,jpg,jpeg,webp', 'max:4096'],
+            'remove_image' => ['nullable', 'boolean'],
         ]);
         $data['slug'] = $data['slug'] ?: Str::slug($data['name']);
         $data['is_active'] = $request->boolean('is_active');
         $data['sort_order'] = $data['sort_order'] ?? 0;
         $data['description'] = strip_tags((string) ($data['description'] ?? ''), '<p><br><strong><b><em><i><u><ul><ol><li><a>');
 
+        $currentImage = $category?->image;
+
+        if ($request->boolean('remove_image') && ! $request->hasFile('image')) {
+            $this->deleteImageFile($currentImage);
+            $data['image'] = null;
+        } elseif ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $directory = public_path('images/categories');
+            if (! is_dir($directory)) {
+                mkdir($directory, 0755, true);
+            }
+            $name = 'category-'.Str::random(8).'.'.$file->getClientOriginalExtension();
+            $file->move($directory, $name);
+            $this->deleteImageFile($currentImage);
+            $data['image'] = '/images/categories/'.$name;
+        } else {
+            unset($data['image']);
+        }
+
+        unset($data['remove_image']);
+
         return $data;
+    }
+
+    private function deleteImageFile(?string $path): void
+    {
+        if (! is_string($path) || $path === '') {
+            return;
+        }
+
+        $relative = ltrim($path, '/');
+        if (! str_starts_with($relative, 'images/categories/')) {
+            return;
+        }
+
+        $full = public_path($relative);
+        if (is_file($full)) {
+            unlink($full);
+        }
     }
 }

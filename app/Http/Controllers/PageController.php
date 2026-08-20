@@ -20,6 +20,12 @@ class PageController extends Controller
             ),
             'properties' => $this->catalogue->featuredItems(),
             'posts' => array_slice(config('gownsea.journal_posts', []), 0, 2),
+            'heroSlides' => $this->catalogue->heroSlides(),
+            'categoryImages' => [
+                'graduation' => $this->catalogue->categoryImage('graduation', '/images/site/hero.webp'),
+                'legal' => $this->catalogue->categoryImage('legal', '/images/site/Amazon-seller-lawyer-renaldo-matamoro-86JiKaHF4I8-unsplash-min.jpg'),
+                'church' => $this->catalogue->categoryImage('church', '/images/site/clergy-wear.webp'),
+            ],
         ]);
     }
 
@@ -72,6 +78,7 @@ class PageController extends Controller
                 'Premium legal attire for advocates, barristers, and institutions in Kenya.'
             ),
             'properties' => $this->catalogue->itemsByCategory('legal'),
+            'bannerImage' => $this->catalogue->categoryImage('legal', '/images/site/Amazon-seller-lawyer-renaldo-matamoro-86JiKaHF4I8-unsplash-min.jpg'),
         ]);
     }
 
@@ -83,6 +90,7 @@ class PageController extends Controller
                 'University-standard graduation attire for hire and sale in Kenya.'
             ),
             'properties' => $this->catalogue->itemsByCategory('graduation'),
+            'bannerImage' => $this->catalogue->categoryImage('graduation', '/images/site/graduation-attire.jpg'),
         ]);
     }
 
@@ -95,6 +103,7 @@ class PageController extends Controller
             ),
             'properties' => $this->catalogue->itemsByCategory('church'),
             'faqs' => config('gownsea.hire_faqs', []),
+            'bannerImage' => $this->catalogue->categoryImage('church', '/images/site/clergy-wear.webp'),
         ]);
     }
 

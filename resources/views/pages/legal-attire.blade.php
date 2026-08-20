@@ -6,7 +6,7 @@
         subtitle="Courtroom-standard legal attire"
         ctaLabel="Shop Now"
         ctaHref="#shop"
-        image="/images/site/Amazon-seller-lawyer-renaldo-matamoro-86JiKaHF4I8-unsplash-min.jpg"
+        image="{{ $bannerImage }}"
         alt="Premium legal attire for advocates and barristers"
     />
 

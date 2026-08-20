@@ -29,23 +29,7 @@
         :primaryHref="route('graduation-attire')"
         secondaryLabel="Hire Now"
         :secondaryHref="route('gown-for-hire')"
-        :images="[
-            [
-                'src' => '/images/site/hero.webp',
-                'label' => 'Graduation Attire',
-                'headline' => 'University-standard graduation gowns tailored for every ceremony.',
-            ],
-            [
-                'src' => '/images/site/Amazon-seller-lawyer-renaldo-matamoro-86JiKaHF4I8-unsplash-min.jpg',
-                'label' => 'Legal Wear',
-                'headline' => 'Courtroom-ready legal attire with a premium professional finish.',
-            ],
-            [
-                'src' => '/images/site/clergy-wear.webp',
-                'label' => 'Church Wear',
-                'headline' => 'Elegant church and choral wear designed for reverence and unity.',
-            ],
-        ]"
+        :images="$heroSlides"
     />
 
     <section class="container-shell section-md">
@@ -92,7 +76,7 @@
                 description="Gownsea LTD is your trusted graduation gown specialist. We provide high-quality academic regalia for hire and sale, tailored to your institution, delivered on time, and ready for the ceremony. From bulk orders to custom designs, we help graduates look the part on their day."
                 ctaLabel="Shop Graduation Attire"
                 :ctaHref="route('graduation-attire')"
-                image="/images/site/hero.webp"
+                image="{{ $categoryImages['graduation'] }}"
                 alt="University-standard graduation gowns from Gownsea in Nairobi"
             />
 
@@ -102,7 +86,7 @@
                 description="Premium barrister wigs, gowns, bibs, and advocates shirts for hire and sale. Expertly crafted legal attire built for comfort, presence, and a professional courtroom finish, with delivery support across Nairobi."
                 ctaLabel="Shop Legal Wear"
                 :ctaHref="route('legal-attire')"
-                image="/images/site/Amazon-seller-lawyer-renaldo-matamoro-86JiKaHF4I8-unsplash-min.jpg"
+                image="{{ $categoryImages['legal'] }}"
                 alt="Courtroom-ready legal attire for advocates and barristers"
                 :reverse="true"
                 tone="navy"
@@ -114,7 +98,7 @@
                 description="Clergy robes, cassocks, choir gowns, and liturgical accessories for hire and sale. Personalise church and choir garments to suit your colours, sizes, and ceremony so every service looks unified and dignified."
                 ctaLabel="Shop Church Wear"
                 :ctaHref="route('church-wear')"
-                image="/images/site/clergy-wear.webp"
+                image="{{ $categoryImages['church'] }}"
                 alt="Church and choral wear from Gownsea"
             />
         </div>
