@@ -89,26 +89,42 @@
             />
 
             <div class="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                <a href="{{ $mapsHref }}" target="_blank" rel="noopener noreferrer" class="surface group block p-6">
+                <a href="{{ $mapsHref }}" target="_blank" rel="noopener noreferrer" class="contact-method surface group block p-6">
+                    <span class="contact-method__icon" aria-hidden="true">
+                        <svg viewBox="0 0 16 16" fill="none"><path d="M8 1.6A5.2 5.2 0 0 0 2.8 6.8c0 3.7 4.1 7.1 5.2 7.9.3.2.7.2 1 0 1.1-.8 5.2-4.2 5.2-7.9A5.2 5.2 0 0 0 8 1.6Zm0 7.1A1.9 1.9 0 1 1 8 5a1.9 1.9 0 0 1 0 3.7Z" fill="currentColor"/></svg>
+                    </span>
                     <p class="kicker">Showroom</p>
                     <h3 class="mt-3 text-lg font-semibold transition-colors group-hover:text-[#d42127]">{{ $address }}</h3>
                     <p class="mt-2 text-sm text-zinc-600">Valji Building, Nairobi CBD. Open in Google Maps for directions.</p>
+                    <span class="contact-method__link">Get directions</span>
                 </a>
-                <a href="{{ $phoneHref }}" class="surface group block p-6">
+                <a href="{{ $phoneHref }}" class="contact-method surface group block p-6">
+                    <span class="contact-method__icon" aria-hidden="true">
+                        <svg viewBox="0 0 16 16" fill="none"><path d="M13.7 11.2 12 10.4a1.3 1.3 0 0 0-1.5.3l-.8.9A9.2 9.2 0 0 1 4.4 6.3l.9-.8a1.3 1.3 0 0 0 .3-1.5L4.8 2.3A1.3 1.3 0 0 0 3.4 1.6L1.8 2A1.3 1.3 0 0 0 1 3.3C1.6 10 6 14.4 12.7 15a1.3 1.3 0 0 0 1.3-.8l.4-1.6a1.3 1.3 0 0 0-.7-1.4Z" fill="currentColor"/></svg>
+                    </span>
                     <p class="kicker">Call</p>
                     <h3 class="mt-3 text-lg font-semibold transition-colors group-hover:text-[#d42127]">{{ $phone }}</h3>
                     <p class="mt-2 text-sm text-zinc-600">Monday to Saturday, 8am–6pm for fittings, quotes, and collection planning.</p>
+                    <span class="contact-method__link">Call now</span>
                 </a>
-                <a href="mailto:{{ $email }}" class="surface group block p-6">
+                <a href="mailto:{{ $email }}" class="contact-method surface group block p-6">
+                    <span class="contact-method__icon" aria-hidden="true">
+                        <svg viewBox="0 0 16 16" fill="none"><path d="M1.5 4.2A1.7 1.7 0 0 1 3.2 2.6h9.6A1.7 1.7 0 0 1 14.5 4.2v.3L8 8.6 1.5 4.5v-.3Zm0 2.1 6.1 4a.8.8 0 0 0 .8 0l6.1-4V11.8a1.7 1.7 0 0 1-1.7 1.6H3.2A1.7 1.7 0 0 1 1.5 11.8V6.3Z" fill="currentColor"/></svg>
+                    </span>
                     <p class="kicker">Email</p>
                     <h3 class="mt-3 text-lg font-semibold transition-colors group-hover:text-[#d42127]">{{ $email }}</h3>
                     <p class="mt-2 text-sm text-zinc-600">Send quantities, award levels, and your ceremony date for a written quote.</p>
+                    <span class="contact-method__link">Write to us</span>
                 </a>
                 @if ($whatsapp)
-                    <a href="https://wa.me/{{ $whatsapp }}" target="_blank" rel="noopener noreferrer" class="surface group block p-6">
+                    <a href="https://wa.me/{{ $whatsapp }}" target="_blank" rel="noopener noreferrer" class="contact-method surface group block p-6">
+                        <span class="contact-method__icon" aria-hidden="true">
+                            <svg viewBox="0 0 16 16" fill="none"><path d="M8 1.4A6.6 6.6 0 0 0 2.3 11.4L1.5 14.5l3.2-.8A6.6 6.6 0 1 0 8 1.4Zm3.4 9.3c-.14.4-.82.77-1.35.87-.36.07-.83.13-2.42-.52-2.03-.83-3.34-2.86-3.44-3-.1-.13-.84-1.12-.84-2.13 0-1.02.53-1.52.73-1.73.18-.2.4-.25.54-.25h.4c.13 0 .3 0 .46.35l.66 1.6c.05.12.09.23 0 .35l-.32.52c-.1.12-.22.27-.1.5.13.23.56.93 1.2 1.5.83.75 1.53 1 1.76 1.1.23.12.36.1.5-.06l.4-.47c.12-.14.27-.18.44-.12l1.58.74c.17.08.28.12.32.2.05.1.05.55-.18.95Z" fill="currentColor"/></svg>
+                        </span>
                         <p class="kicker">WhatsApp</p>
                         <h3 class="mt-3 text-lg font-semibold transition-colors group-hover:text-[#d42127]">Chat with us</h3>
                         <p class="mt-2 text-sm text-zinc-600">Fastest way to confirm sizing, hire availability, and bulk support.</p>
+                        <span class="contact-method__link">Open WhatsApp</span>
                     </a>
                 @endif
             </div>
@@ -116,7 +132,7 @@
 
         <section class="bg-zinc-50 section-lg">
             <div class="container-shell">
-                <div class="grid items-start gap-8 lg:grid-cols-[0.95fr_1.05fr]">
+                <div class="grid items-center gap-8 lg:grid-cols-[0.95fr_1.05fr]">
                     <div>
                         <x-ui.section-header
                             kicker="Nairobi CBD"
@@ -157,11 +173,11 @@
                     />
                     <div class="mt-8 space-y-3">
                         @foreach ($faqs as $question => $answer)
-                            <details class="surface group p-5">
+                            <details class="contact-faq surface group p-5">
                                 <summary class="cursor-pointer list-none font-semibold text-zinc-900">
                                     <span class="flex items-center justify-between gap-4">
                                         {{ $question }}
-                                        <span class="text-zinc-400 transition group-open:rotate-45" aria-hidden="true">+</span>
+                                        <span class="contact-faq__mark" aria-hidden="true">+</span>
                                     </span>
                                 </summary>
                                 <p class="mt-3 text-sm leading-relaxed text-zinc-600">{{ $answer }}</p>
@@ -170,9 +186,10 @@
                     </div>
                 </div>
 
-                <div class="surface border-t-4 border-t-[#0f2744] p-6 md:p-8">
+                <div class="contact-form-card surface border-t-4 border-t-[#0f2744] p-6 md:p-8">
                     <h3 class="text-xl font-semibold text-[#0f2744]">Contact form</h3>
                     <p class="mt-2 text-sm text-zinc-600">Tell us your name, how to reach you, and the details of your ceremony.</p>
+                    <p class="contact-form-card__hours">Replies typically within opening hours · Mon–Sat, 8am–6pm</p>
 
                     <form method="POST" action="{{ route('assistant.submit') }}" class="mt-6 grid gap-4 sm:grid-cols-2">
                         @csrf

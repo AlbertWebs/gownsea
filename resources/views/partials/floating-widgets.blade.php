@@ -13,7 +13,7 @@
             this.message = faq;
         }
     }"
-    class="assistant-widget fixed bottom-5 left-4 z-50 flex flex-col-reverse items-start gap-3 md:left-6"
+    class="assistant-widget z-50 hidden flex-col-reverse items-start gap-3 md:flex"
     @keydown.escape.window="open = false"
     @click.outside="open = false"
 >

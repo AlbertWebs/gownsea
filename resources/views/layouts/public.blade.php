@@ -55,5 +55,6 @@
 
     @include('partials.footer')
     @include('partials.floating-widgets')
+    @include('partials.mobile-dock')
 </body>
 </html>

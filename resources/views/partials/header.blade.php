@@ -28,11 +28,8 @@
     $siteName = \App\Models\Setting::getValue('company_name', config('gownsea.brand.name'));
 @endphp
 
-<header
-    x-data="{ shopOpen: false, mobileOpen: false }"
->
-    <div class="site-topbar hidden md:block">
-        <div class="site-topbar__inner container-shell">
+<div class="site-topbar hidden md:block">
+    <div class="site-topbar__inner container-shell">
             <div class="site-topbar__group">
                 <a href="{{ $mapsHref }}" target="_blank" rel="noopener noreferrer" class="site-topbar__item min-w-0">
                     <span class="site-topbar__icon">
@@ -73,9 +70,12 @@
                 @endif
             </div>
         </div>
-    </div>
+</div>
 
-    <div class="sticky top-0 z-50 border-b border-zinc-200/80 bg-white/95 backdrop-blur">
+<header
+    class="sticky top-0 z-50 border-b border-zinc-200/80 bg-white/95 backdrop-blur"
+    x-data="{ shopOpen: false, mobileOpen: false }"
+>
         <div class="container-shell relative flex h-16 items-center justify-between">
         <a href="{{ route('home') }}" class="inline-flex items-center text-lg font-semibold tracking-tight text-zinc-950">
             @if ($siteLogo)
@@ -220,6 +220,5 @@
             <a href="{{ route('bulk-inquiry') }}" class="nav-link-mobile {{ $isBulkNav ? 'is-active' : '' }}" @if ($isBulkNav) aria-current="page" @endif>Bulk Hire</a>
             <a href="{{ route('contact-us') }}" class="btn-primary mt-2">Let's talk</a>
         </nav>
-    </div>
     </div>
 </header>

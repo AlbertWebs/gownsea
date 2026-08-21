@@ -1,5 +1,5 @@
 <footer class="site-footer">
-    <div class="container-shell py-14">
+    <div class="container-shell pt-10 pb-5 md:py-14">
         <div class="site-footer__cta surface-muted flex flex-col gap-4 px-6 py-5 md:flex-row md:items-center md:justify-between">
             <div>
                 <p class="text-sm font-semibold text-[#0f2744]">Need graduation attire quickly?</p>
@@ -138,7 +138,7 @@
                 <span class="site-footer__powered">Powered by <a href="http://designekta.com/" target="_blank" rel="noopener noreferrer">Designekta Studios</a></span>
             </p>
             <p class="site-footer__credit">Designed for a premium ceremonial shopping experience.</p>
-            <a href="#top" class="site-footer__top" aria-label="Back to top" title="Back to top">
+            <a href="#top" class="site-footer__top hidden md:inline-flex" aria-label="Back to top" title="Back to top">
                 <svg class="h-4 w-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                     <path d="M8 12.5V3.5M8 3.5 4 7.5M8 3.5l4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
