@@ -70,6 +70,7 @@
             @endif
             @if($user?->hasPermission('settings'))
                 <a class="{{ $link('admin.settings') }}" href="{{ route('admin.settings.edit') }}">Website Settings</a>
+                <a class="{{ $link('admin.hero-carousel') }}" href="{{ route('admin.hero-carousel.edit') }}">Hero Carousel</a>
             @endif
         </div>
         @endif

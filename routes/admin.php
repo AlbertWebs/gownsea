@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SaleController;
 use App\Http\Controllers\Admin\SearchController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\HeroCarouselController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Middleware\EnsureAdminAuthenticated;
 use Illuminate\Support\Facades\Route;
@@ -87,5 +88,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::middleware(['auth', EnsureAdminAuthenticated::class.':settings'])->group(function () {
         Route::get('settings', [SettingController::class, 'edit'])->name('settings.edit');
         Route::put('settings', [SettingController::class, 'update'])->name('settings.update');
+        Route::get('hero-carousel', [HeroCarouselController::class, 'edit'])->name('hero-carousel.edit');
+        Route::put('hero-carousel', [HeroCarouselController::class, 'update'])->name('hero-carousel.update');
     });
 });

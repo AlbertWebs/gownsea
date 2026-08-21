@@ -163,31 +163,30 @@ class CatalogueService
      */
     public function heroSlides(): array
     {
-        $slides = [
-            'graduation' => [
-                'headline' => 'University-standard graduation gowns tailored for every ceremony.',
-                'fallback' => '/images/site/hero.webp',
-            ],
-            'legal' => [
-                'headline' => 'Courtroom-ready legal attire with a premium professional finish.',
-                'fallback' => '/images/site/Amazon-seller-lawyer-renaldo-matamoro-86JiKaHF4I8-unsplash-min.jpg',
-            ],
-            'church' => [
-                'headline' => 'Elegant church and choral wear designed for reverence and unity.',
-                'fallback' => '/images/site/clergy-wear.webp',
-            ],
+        $fallbacks = [
+            'graduation' => '/images/site/hero.webp',
+            'legal' => '/images/site/Amazon-seller-lawyer-renaldo-matamoro-86JiKaHF4I8-unsplash-min.jpg',
+            'church' => '/images/site/clergy-wear.webp',
         ];
 
-        $categories = Category::query()->whereIn('slug', array_keys($slides))->get()->keyBy('slug');
+        return collect(\App\Models\Setting::heroSlideRecords())
+            ->map(function (array $slide) use ($fallbacks) {
+                $categorySlug = $slide['category'] ?? null;
+                $fallback = $categorySlug && isset($fallbacks[$categorySlug])
+                    ? $fallbacks[$categorySlug]
+                    : '/images/site/hero.webp';
 
-        return collect($slides)->map(function (array $slide, string $slug) use ($categories) {
-            $category = $categories->get($slug);
+                $src = filled($slide['src'] ?? null)
+                    ? $slide['src']
+                    : ($categorySlug ? $this->categoryImage($categorySlug, $fallback) : $fallback);
 
-            return [
-                'src' => $category?->previewImage() ?: $slide['fallback'],
-                'label' => $category?->name ?: Str::headline($slug),
-                'headline' => $slide['headline'],
-            ];
-        })->values()->all();
+                return [
+                    'src' => $src,
+                    'label' => $slide['label'] ?: ($categorySlug ? Str::headline($categorySlug) : 'Featured'),
+                    'headline' => $slide['headline'] ?: 'Premium ceremonial attire from Gownsea.',
+                ];
+            })
+            ->values()
+            ->all();
     }
 }
