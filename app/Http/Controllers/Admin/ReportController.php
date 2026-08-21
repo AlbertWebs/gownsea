@@ -38,7 +38,12 @@ class ReportController extends Controller
             'inquiryVolume' => Inquiry::query()->where('created_at', '>=', now()->subDays(30))->count(),
             'mostEnquired' => Product::query()->withCount('inquiries')->orderByDesc('inquiries_count')->limit(8)->get(),
             'noInquiries' => Product::query()->doesntHave('inquiries')->limit(8)->get(),
-            'highInquiryLowSales' => Product::query()->withCount(['inquiries', 'saleItems'])->having('inquiries_count', '>', 0)->orderBy('sale_items_count')->limit(8)->get(),
+            'highInquiryLowSales' => Product::query()
+                ->whereHas('inquiries')
+                ->withCount(['inquiries', 'saleItems'])
+                ->orderBy('sale_items_count')
+                ->limit(8)
+                ->get(),
             'pipelineValue' => (int) Lead::query()->whereNotIn('stage', ['won', 'lost'])->sum('estimated_value'),
             'weightedPipeline' => (int) Lead::query()->whereNotIn('stage', ['won', 'lost'])->get()->sum(fn ($lead) => $lead->weightedForecast()),
         ]);

@@ -44,6 +44,17 @@ return [
             'transaction_mode' => 'DEFERRED',
         ],
 
+        /*
+        | Source SQLite file used by SqliteToMysqlSeeder. Keep this pointed at
+        | database/database.sqlite even after DB_CONNECTION is switched to mysql.
+        */
+        'sqlite_source' => [
+            'driver' => 'sqlite',
+            'database' => env('SQLITE_SOURCE_DATABASE', database_path('database.sqlite')),
+            'prefix' => '',
+            'foreign_key_constraints' => true,
+        ],
+
         'mysql' => [
             'driver' => 'mysql',
             'url' => env('DB_URL'),
