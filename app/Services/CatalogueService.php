@@ -159,9 +159,9 @@ class CatalogueService
     }
 
     /**
-     * @return array<int, array{src: string, label: string, headline: string}>
+     * @param  array{src?: string, category?: string|null}  $slide
      */
-    public function heroSlides(): array
+    public function resolveHeroSlideImage(array $slide): string
     {
         $fallbacks = [
             'graduation' => '/images/site/hero.webp',
@@ -169,19 +169,29 @@ class CatalogueService
             'church' => '/images/site/clergy-wear.webp',
         ];
 
-        return collect(\App\Models\Setting::heroSlideRecords())
-            ->map(function (array $slide) use ($fallbacks) {
-                $categorySlug = $slide['category'] ?? null;
-                $fallback = $categorySlug && isset($fallbacks[$categorySlug])
-                    ? $fallbacks[$categorySlug]
-                    : '/images/site/hero.webp';
+        $categorySlug = $slide['category'] ?? null;
+        $fallback = $categorySlug && isset($fallbacks[$categorySlug])
+            ? $fallbacks[$categorySlug]
+            : '/images/site/hero.webp';
 
-                $src = filled($slide['src'] ?? null)
-                    ? $slide['src']
-                    : ($categorySlug ? $this->categoryImage($categorySlug, $fallback) : $fallback);
+        if (filled($slide['src'] ?? null)) {
+            return (string) $slide['src'];
+        }
+
+        return $categorySlug ? $this->categoryImage($categorySlug, $fallback) : $fallback;
+    }
+
+    /**
+     * @return array<int, array{src: string, label: string, headline: string}>
+     */
+    public function heroSlides(): array
+    {
+        return collect(\App\Models\Setting::heroSlideRecords())
+            ->map(function (array $slide) {
+                $categorySlug = $slide['category'] ?? null;
 
                 return [
-                    'src' => $src,
+                    'src' => $this->resolveHeroSlideImage($slide),
                     'label' => $slide['label'] ?: ($categorySlug ? Str::headline($categorySlug) : 'Featured'),
                     'headline' => $slide['headline'] ?: 'Premium ceremonial attire from Gownsea.',
                 ];

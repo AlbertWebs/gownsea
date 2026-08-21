@@ -2,18 +2,28 @@
 @section('title', 'Hero carousel')
 @section('content')
     @php
-        $initialSlides = collect(old('slides', $slides))->map(function ($slide) {
+        $toUrl = function (?string $path): string {
+            if (! filled($path)) {
+                return '';
+            }
+
+            return str_starts_with($path, 'http://') || str_starts_with($path, 'https://')
+                ? $path
+                : asset(ltrim($path, '/'));
+        };
+
+        $initialSlides = collect(old('slides', $slides))->map(function ($slide) use ($toUrl) {
             $src = $slide['src'] ?? '';
-            $preview = $src
-                ? (str_starts_with($src, 'http') ? $src : asset(ltrim($src, '/')))
-                : '';
+            $previewPath = $slide['preview_path'] ?? $src;
+            $fallbackPath = $slide['fallback_path'] ?? '';
 
             return [
                 'label' => $slide['label'] ?? '',
                 'headline' => $slide['headline'] ?? '',
                 'src' => $src,
                 'category' => $slide['category'] ?? '',
-                'preview' => $preview,
+                'preview' => $toUrl($previewPath) ?: $toUrl($fallbackPath),
+                'fallback' => $toUrl($fallbackPath),
                 'remove_image' => false,
             ];
         })->values()->all();
@@ -28,7 +38,7 @@
             slides: {{ \Illuminate\Support\Js::from($initialSlides) }},
             addSlide() {
                 if (this.slides.length >= 6) return;
-                this.slides.push({ label: '', headline: '', src: '', category: '', preview: '', remove_image: false });
+                this.slides.push({ label: '', headline: '', src: '', category: '', preview: '', fallback: '', remove_image: false });
             },
             removeSlide(index) {
                 if (this.slides.length <= 1) return;
@@ -39,6 +49,12 @@
                 if (! file) return;
                 this.slides[index].preview = URL.createObjectURL(file);
                 this.slides[index].remove_image = false;
+            },
+            clearCustom(index, checked) {
+                this.slides[index].remove_image = checked;
+                if (checked) {
+                    this.slides[index].preview = this.slides[index].fallback || '';
+                }
             }
         }"
     >
@@ -85,9 +101,15 @@
                         </div>
 
                         <div class="flex flex-wrap items-start gap-4">
-                            <div class="flex h-36 w-56 items-center justify-center overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50">
-                                <img x-show="slide.preview" x-cloak :src="slide.preview" alt="" class="h-full w-full object-cover">
-                                <span x-show="!slide.preview" class="px-3 text-center text-xs text-zinc-400">No custom image<br>Uses category / default</span>
+                            <div class="relative flex h-40 w-64 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-zinc-200 bg-zinc-100 shadow-sm">
+                                <img
+                                    x-show="slide.preview"
+                                    x-cloak
+                                    :src="slide.preview"
+                                    :alt="slide.label || ('Slide ' + (index + 1))"
+                                    class="h-full w-full object-cover"
+                                >
+                                <span x-show="!slide.preview" class="px-3 text-center text-xs text-zinc-400">No image available</span>
                             </div>
                             <div class="min-w-[12rem] flex-1 space-y-3">
                                 <label class="block text-sm font-medium text-zinc-700">
@@ -100,16 +122,16 @@
                                         @change="setPreview(index, $event.target.files)"
                                     >
                                 </label>
-                                <label class="inline-flex items-center gap-2 text-sm font-medium text-zinc-700" x-show="slide.src || slide.preview">
+                                <label class="inline-flex items-center gap-2 text-sm font-medium text-zinc-700" x-show="slide.src">
                                     <input
                                         type="checkbox"
                                         :name="`slides[${index}][remove_image]`"
                                         value="1"
-                                        @change="slide.remove_image = $event.target.checked; if ($event.target.checked) { slide.preview = ''; }"
+                                        @change="clearCustom(index, $event.target.checked)"
                                     >
                                     Remove custom image
                                 </label>
-                                <p class="text-xs text-zinc-500">PNG, JPG or WEBP, up to 4MB. Recommended landscape crop.</p>
+                                <p class="text-xs text-zinc-500">Preview shows the image currently used on the homepage. Upload a new file to replace it.</p>
                             </div>
                         </div>
                     </section>

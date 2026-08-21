@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
+use App\Services\CatalogueService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -11,10 +12,31 @@ use Illuminate\View\View;
 
 class HeroCarouselController extends Controller
 {
+    public function __construct(private CatalogueService $catalogue)
+    {
+    }
+
     public function edit(): View
     {
+        $slides = collect(Setting::heroSlideRecords())
+            ->map(function (array $slide) {
+                $resolved = $this->catalogue->resolveHeroSlideImage($slide);
+                $fallback = $this->catalogue->resolveHeroSlideImage([
+                    'src' => '',
+                    'category' => $slide['category'] ?? null,
+                ]);
+
+                return [
+                    ...$slide,
+                    'preview_path' => $resolved,
+                    'fallback_path' => $fallback,
+                ];
+            })
+            ->values()
+            ->all();
+
         return view('admin.hero-carousel.edit', [
-            'slides' => Setting::heroSlideRecords(),
+            'slides' => $slides,
         ]);
     }
 
