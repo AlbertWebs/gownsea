@@ -255,7 +255,7 @@ class LeadController extends Controller
      */
     private function validated(Request $request, ?Lead $lead = null): array
     {
-        return $request->validate([
+        $data = $request->validate([
             'name' => ['required', 'string', 'max:190'],
             'company' => ['nullable', 'string', 'max:190'],
             'email' => ['nullable', 'email'],
@@ -270,6 +270,13 @@ class LeadController extends Controller
             'next_follow_up_at' => ['nullable', 'date'],
             'notes' => ['nullable', 'string'],
         ]);
+
+        $data['estimated_value'] = (int) ($data['estimated_value'] ?? 0);
+        $data['probability'] = (int) ($data['probability'] ?? ($lead?->probability ?? 10));
+        $data['priority'] = $data['priority'] ?? ($lead?->priority ?? 'normal');
+        $data['stage'] = $data['stage'] ?? ($lead?->stage ?? 'new');
+
+        return $data;
     }
 
     /**
