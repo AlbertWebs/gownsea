@@ -96,7 +96,7 @@ class SqliteToMysqlSeeder extends Seeder
 
     private function copyTable(string $source, string $target, string $table): void
     {
-        if (! Schema::connection($source)->hasTable($table)) {
+        if (! $this->sqliteHasTable($source, $table)) {
             $this->command?->warn("Skip {$table}: missing on SQLite source.");
 
             return;
@@ -108,7 +108,7 @@ class SqliteToMysqlSeeder extends Seeder
             return;
         }
 
-        $sourceColumns = Schema::connection($source)->getColumnListing($table);
+        $sourceColumns = $this->sqliteColumns($source, $table);
         $targetColumns = Schema::connection($target)->getColumnListing($table);
         $columns = array_values(array_intersect($sourceColumns, $targetColumns));
 
@@ -118,48 +118,54 @@ class SqliteToMysqlSeeder extends Seeder
             return;
         }
 
+        $orderColumn = in_array('id', $columns, true) ? 'id' : $columns[0];
         $count = 0;
         $chunkSize = 200;
+        $lastKey = null;
 
-        DB::connection($source)
-            ->table($table)
-            ->orderBy(Schema::connection($source)->hasColumn($table, 'id') ? 'id' : $columns[0])
-            ->chunk($chunkSize, function ($rows) use ($target, $table, $columns, &$count) {
-                $payload = [];
+        // Manual paging avoids Laravel Schema helpers that need newer SQLite.
+        while (true) {
+            $query = DB::connection($source)->table($table)->orderBy($orderColumn)->limit($chunkSize);
 
-                foreach ($rows as $row) {
-                    $item = [];
-                    foreach ($columns as $column) {
-                        $value = $row->{$column} ?? null;
-                        $item[$column] = $this->normalizeValue($value);
-                    }
-                    $payload[] = $item;
+            if ($lastKey !== null) {
+                $query->where($orderColumn, '>', $lastKey);
+            }
+
+            $rows = $query->get();
+            if ($rows->isEmpty()) {
+                break;
+            }
+
+            $payload = [];
+            foreach ($rows as $row) {
+                $item = [];
+                foreach ($columns as $column) {
+                    $item[$column] = $this->normalizeValue($row->{$column} ?? null);
                 }
+                $payload[] = $item;
+                $lastKey = $row->{$orderColumn};
+            }
 
-                if ($payload === []) {
-                    return;
-                }
-
-                try {
-                    DB::connection($target)->table($table)->insert($payload);
-                } catch (Throwable $e) {
-                    // Fall back to row-by-row so one bad row doesn't block the rest.
-                    foreach ($payload as $item) {
-                        try {
-                            DB::connection($target)->table($table)->insert($item);
-                            $count++;
-                        } catch (Throwable $rowError) {
-                            $this->command?->error("Failed {$table} row: ".$rowError->getMessage());
-                        }
-                    }
-
-                    return;
-                }
-
+            try {
+                DB::connection($target)->table($table)->insert($payload);
                 $count += count($payload);
-            });
+            } catch (Throwable) {
+                foreach ($payload as $item) {
+                    try {
+                        DB::connection($target)->table($table)->insert($item);
+                        $count++;
+                    } catch (Throwable $rowError) {
+                        $this->command?->error("Failed {$table} row: ".$rowError->getMessage());
+                    }
+                }
+            }
 
-        if (Schema::connection($target)->hasColumn($table, 'id')) {
+            if ($rows->count() < $chunkSize) {
+                break;
+            }
+        }
+
+        if (in_array('id', $columns, true)) {
             $maxId = (int) DB::connection($target)->table($table)->max('id');
             if ($maxId > 0) {
                 DB::connection($target)->statement(
@@ -169,6 +175,34 @@ class SqliteToMysqlSeeder extends Seeder
         }
 
         $this->command?->line("Copied {$table}: {$count} row(s)");
+    }
+
+    private function sqliteHasTable(string $connection, string $table): bool
+    {
+        $row = DB::connection($connection)->selectOne(
+            "SELECT name FROM sqlite_master WHERE type = 'table' AND name = ?",
+            [$table]
+        );
+
+        return $row !== null;
+    }
+
+    /**
+     * Use PRAGMA table_info for older SQLite hosts that lack pragma_table_xinfo().
+     *
+     * @return list<string>
+     */
+    private function sqliteColumns(string $connection, string $table): array
+    {
+        // Quote table name safely for PRAGMA (identifier only).
+        $safe = str_replace("'", "''", $table);
+        $rows = DB::connection($connection)->select("PRAGMA table_info('{$safe}')");
+
+        return collect($rows)
+            ->map(fn ($row) => (string) ($row->name ?? ''))
+            ->filter()
+            ->values()
+            ->all();
     }
 
     private function normalizeValue(mixed $value): mixed
