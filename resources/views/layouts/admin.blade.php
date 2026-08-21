@@ -28,7 +28,7 @@
             class="fixed inset-0 z-40 lg:hidden"
         >
             <div class="absolute inset-0 bg-zinc-950/40" @click="sidebar = false"></div>
-            <aside class="admin-sidebar relative z-10 h-full overflow-hidden">
+            <aside class="admin-sidebar relative z-10 h-full w-[16.5rem] max-w-[85vw] overflow-hidden">
                 @include('admin.partials.sidebar')
             </aside>
         </div>
