@@ -60,6 +60,21 @@
                             </label>
                         @endif
                     </div>
+
+                    <div class="rounded-xl border border-zinc-200 bg-zinc-50 p-4">
+                        <p class="text-sm font-semibold text-zinc-900">Mobile bottom navigation</p>
+                        <p class="mt-1 text-sm text-zinc-500">Shows the floating Graduation, Legal, Clergy, and Book now bar on phones.</p>
+                        <label class="mt-3 inline-flex items-center gap-2 text-sm font-medium text-zinc-700">
+                            <input
+                                type="checkbox"
+                                name="mobile_nav_enabled"
+                                value="1"
+                                class="rounded border-zinc-300 text-[#d42127] focus:ring-[#d42127]"
+                                @checked(filter_var($settings['mobile_nav_enabled'] ?? '1', FILTER_VALIDATE_BOOLEAN))
+                            >
+                            Enable mobile bottom nav
+                        </label>
+                    </div>
                 </section>
                 <section class="admin-card space-y-4" x-show="tab === 'seo'">
                     <div>

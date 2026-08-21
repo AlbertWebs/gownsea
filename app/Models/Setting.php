@@ -45,4 +45,15 @@ class Setting extends Model
             ? $path
             : asset(ltrim($path, '/'));
     }
+
+    public static function mobileNavEnabled(): bool
+    {
+        $value = static::getValue('mobile_nav_enabled');
+
+        if ($value === null || $value === '') {
+            return true;
+        }
+
+        return filter_var($value, FILTER_VALIDATE_BOOLEAN);
+    }
 }

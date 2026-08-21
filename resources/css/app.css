@@ -189,7 +189,7 @@
     }
 
     @media (max-width: 767.98px) {
-        .site-footer {
+        .has-mobile-dock .site-footer {
             padding-bottom: 4.25rem;
         }
     }

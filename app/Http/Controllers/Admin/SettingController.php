@@ -13,7 +13,7 @@ class SettingController extends Controller
 {
     public function edit(): View
     {
-        $keys = ['company_name', 'phone', 'email', 'whatsapp', 'address', 'seo_title', 'seo_description', 'currency', 'logo'];
+        $keys = ['company_name', 'phone', 'email', 'whatsapp', 'address', 'seo_title', 'seo_description', 'currency', 'logo', 'mobile_nav_enabled'];
 
         return view('admin.settings.edit', [
             'settings' => collect($keys)->mapWithKeys(fn ($key) => [
@@ -24,6 +24,7 @@ class SettingController extends Controller
                     'whatsapp' => config('gownsea.brand.whatsapp'),
                     'address' => config('gownsea.brand.address'),
                     'currency' => 'KES',
+                    'mobile_nav_enabled' => '1',
                     default => '',
                 }),
             ]),
@@ -43,6 +44,7 @@ class SettingController extends Controller
             'currency' => ['required', 'string', 'max:8'],
             'logo' => ['nullable', 'image', 'mimes:png,jpg,jpeg,webp', 'max:2048'],
             'remove_logo' => ['nullable', 'boolean'],
+            'mobile_nav_enabled' => ['nullable', 'boolean'],
         ]);
 
         $currentLogo = Setting::logoPath();
@@ -66,10 +68,15 @@ class SettingController extends Controller
 
         unset($data['remove_logo']);
 
+        $mobileNavEnabled = $request->boolean('mobile_nav_enabled');
+        unset($data['mobile_nav_enabled']);
+
         foreach ($data as $key => $value) {
             Setting::setValue($key, $value);
             Setting::setValue('brand.'.$key, $value);
         }
+
+        Setting::setValue('mobile_nav_enabled', $mobileNavEnabled ? '1' : '0');
 
         return back()->with('status', 'Website settings saved.');
     }

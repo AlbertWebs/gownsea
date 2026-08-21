@@ -38,7 +38,7 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     @endif
 </head>
-<body id="top" class="font-sans bg-white text-zinc-900 antialiased">
+<body id="top" class="font-sans bg-white text-zinc-900 antialiased{{ \App\Models\Setting::mobileNavEnabled() ? ' has-mobile-dock' : '' }}">
     @include('partials.header')
 
     @if (session('assistant_status'))
@@ -55,6 +55,8 @@
 
     @include('partials.footer')
     @include('partials.floating-widgets')
-    @include('partials.mobile-dock')
+    @if (\App\Models\Setting::mobileNavEnabled())
+        @include('partials.mobile-dock')
+    @endif
 </body>
 </html>
