@@ -47,6 +47,7 @@
             <p class="admin-nav-section">Catalogue</p>
             <a class="{{ $link('admin.catalogue.products') }}" href="{{ route('admin.catalogue.products.index') }}">Products</a>
             <a class="{{ $link('admin.catalogue.categories') }}" href="{{ route('admin.catalogue.categories.index') }}">Categories</a>
+            <a class="{{ $link('admin.catalogue.feeds') }}" href="{{ route('admin.catalogue.feeds.index') }}">Catalogue Feeds</a>
         </div>
         @endif
         @if($user?->hasPermission('sales') || $user?->hasPermission('customers'))

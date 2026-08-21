@@ -8,11 +8,11 @@
             description="Discover premium regalia for hire and sale. Explore options, request quotes, and get support from our team."
         />
 
-        <div class="luxury-grid mt-10 md:grid-cols-3">
+        <div class="luxury-grid mt-10 md:grid-cols-2 lg:grid-cols-4">
             @forelse ($items as $property)
-                <x-ui.property-card :property="$property" />
+                <x-ui.product-tile :property="$property" />
             @empty
-                <div class="surface border-t-4 border-t-[#0f2744] p-6 md:col-span-3">
+                <div class="surface border-t-4 border-t-[#0f2744] p-6 md:col-span-2 lg:col-span-4">
                     <p class="kicker">Collection</p>
                     <p class="mt-2 text-sm text-zinc-600">Collection details are being curated. Contact us for immediate guidance and pricing.</p>
                 </div>

@@ -55,14 +55,15 @@
 
     <section class="bg-zinc-50 section-lg">
         <div class="container-shell">
-            <x-ui.section-header
-                kicker="Featured"
-                title="Browse our top ceremonial collections"
-                description="Explore Gownsea's most requested graduation gowns, legal attire, and church wear, curated for quality, comfort, and ceremony-ready confidence."
-            />
-            <div class="featured-collections luxury-grid mt-8 md:grid-cols-3">
+            <div class="featured-rail__intro">
+                <p class="kicker">Featured</p>
+                <h2 class="featured-rail__heading mt-3 font-semibold">Browse our top ceremonial collections</h2>
+                <p class="featured-rail__lede mt-4 text-zinc-600">Explore Gownsea's most requested graduation gowns, legal attire, and church wear, curated for quality, comfort, and ceremony-ready confidence.</p>
+            </div>
+
+            <div class="luxury-grid mt-8 md:grid-cols-2 lg:grid-cols-4">
                 @foreach ($properties as $property)
-                    <x-ui.property-card :property="$property" ratio="4:5" />
+                    <x-ui.product-tile :property="$property" />
                 @endforeach
             </div>
         </div>

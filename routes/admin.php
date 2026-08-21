@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\ActivityController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\CatalogueFeedController;
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\InquiryController;
@@ -43,6 +44,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('products/{product}/duplicate', [ProductController::class, 'duplicate'])->name('products.duplicate');
         Route::post('products/{product}/toggle/{field}', [ProductController::class, 'toggle'])->name('products.toggle');
         Route::resource('categories', CategoryController::class)->except(['show']);
+        Route::get('feeds', [CatalogueFeedController::class, 'index'])->name('feeds.index');
+        Route::get('feeds/export', [CatalogueFeedController::class, 'export'])->name('feeds.export');
     });
 
     Route::middleware(['auth', EnsureAdminAuthenticated::class.':inquiries'])->group(function () {
