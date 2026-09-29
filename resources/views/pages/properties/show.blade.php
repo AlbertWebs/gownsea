@@ -318,6 +318,7 @@
                         <textarea required x-model="form.message" rows="4"></textarea>
                         <span class="product-inquiry-field__error" x-show="errors.message" x-text="errors.message?.[0]"></span>
                     </label>
+                    <p class="text-sm text-red-700" x-show="status && !sent" x-text="status" role="alert" aria-live="assertive"></p>
                     <p class="text-xs text-zinc-500" x-show="errors.form_token" x-text="errors.form_token?.[0]"></p>
                     <div class="product-inquiry-actions">
                         <button type="submit" class="btn-primary w-full gap-2" :disabled="submitting">
