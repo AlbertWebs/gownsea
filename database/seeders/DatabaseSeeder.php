@@ -59,6 +59,7 @@ class DatabaseSeeder extends Seeder
                     'description' => $profile['about'] ?? ($item['description'] ?? null),
                     'price_amount' => Money::parseLabel($item['price'] ?? null),
                     'price_label' => $item['price'] ?? null,
+                    'sale_price_amount' => Money::parseLabel($item['sale_price'] ?? null),
                     'availability' => 'in_stock',
                     'featured' => (bool) ($item['featured'] ?? false),
                     'status' => 'published',

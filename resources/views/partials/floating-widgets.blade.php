@@ -1,5 +1,6 @@
 @php
     $whatsapp = preg_replace('/\D+/', '', (string) config('gownsea.brand.whatsapp'));
+    $assistantMath = \App\Support\InquiryFormGuard::mathChallenge();
 @endphp
 
 <div
@@ -7,7 +8,25 @@
         open: false,
         message: '',
         topic: '',
+        mathOpen: false,
+        mathAnswer: '',
+        mathError: '',
         faqs: @js(config('gownsea.assistant.faqs')),
+        requestAssistantSend() {
+            if (! this.$refs.assistantForm.reportValidity()) return;
+            this.mathAnswer = '';
+            this.mathError = '';
+            this.mathOpen = true;
+            this.$nextTick(() => this.$refs.assistantMathInput?.focus());
+        },
+        confirmAssistantSend() {
+            if (! String(this.mathAnswer).trim()) {
+                this.mathError = 'Enter the answer to send your message.';
+                return;
+            }
+            this.$refs.assistantForm.querySelector('[name=math_answer]').value = String(this.mathAnswer).trim();
+            this.$refs.assistantForm.submit();
+        },
         pick(label, faq) {
             this.topic = label;
             this.message = faq;
@@ -101,11 +120,13 @@
                 </template>
             </div>
 
-            <form method="POST" action="{{ route('assistant.submit') }}" class="assistant-panel__form">
+            <form x-ref="assistantForm" method="POST" action="{{ route('assistant.submit') }}" class="assistant-panel__form" @submit.prevent="requestAssistantSend()">
                 @csrf
                 <input type="text" name="website" class="hidden" tabindex="-1" autocomplete="off">
                 <input type="text" name="company" class="hidden" tabindex="-1" autocomplete="off">
                 <input type="hidden" name="form_token" value="{{ \App\Support\InquiryFormGuard::token() }}">
+                <input type="hidden" name="math_token" value="{{ $assistantMath['token'] }}">
+                <input type="hidden" name="math_answer" value="">
                 <div class="assistant-panel__fields">
                     <input required name="name" type="text" class="assistant-panel__input" placeholder="Name" autocomplete="name">
                     <input required name="email" type="email" class="assistant-panel__input" placeholder="Email" autocomplete="email">
@@ -114,6 +135,22 @@
                 <textarea required name="message" x-model="message" rows="3" class="assistant-panel__input assistant-panel__input--area" placeholder="How can we help with hire, purchase, or bulk orders?"></textarea>
                 <button type="submit" class="assistant-panel__submit">Send message</button>
             </form>
+        </div>
+    </div>
+
+    <div x-show="mathOpen" x-cloak x-transition.opacity class="fixed inset-0 z-[100] flex items-center justify-center bg-zinc-950/55 p-4" @keydown.escape.window="mathOpen = false">
+        <div class="w-full max-w-sm rounded-2xl border border-zinc-200 bg-white p-6 shadow-2xl" @click.outside="mathOpen = false" role="dialog" aria-modal="true" aria-labelledby="assistant-math-title">
+            <p class="kicker">Quick spam check</p>
+            <h4 id="assistant-math-title" class="mt-2 text-xl font-semibold">One quick step</h4>
+            <p class="mt-2 text-sm text-zinc-600">What is <strong class="text-zinc-900">{{ $assistantMath['prompt'] }}</strong>?</p>
+            <label class="mt-5 block text-xs font-semibold text-zinc-700">Your answer
+                <input x-ref="assistantMathInput" x-model="mathAnswer" @keydown.enter.prevent="confirmAssistantSend()" type="text" inputmode="numeric" autocomplete="off" class="mt-2 w-full rounded-xl border border-zinc-300 px-3 py-3 text-sm outline-none focus:border-[#d42127] focus:ring-2 focus:ring-[#d42127]/15" placeholder="Enter the number">
+            </label>
+            <p class="mt-2 text-sm text-[#d42127]" x-show="mathError" x-text="mathError" aria-live="polite"></p>
+            <div class="mt-5 flex gap-3">
+                <button type="button" class="btn-primary flex-1" @click="confirmAssistantSend()">Verify and send</button>
+                <button type="button" class="btn-secondary" @click="mathOpen = false">Cancel</button>
+            </div>
         </div>
     </div>
 </div>

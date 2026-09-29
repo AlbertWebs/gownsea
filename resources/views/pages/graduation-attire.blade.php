@@ -10,18 +10,23 @@
         alt="University-standard graduation gowns, caps, and hoods"
     />
 
-    <section id="shop" class="container-shell section-lg scroll-mt-24">
-        <x-ui.section-header
-            kicker="Graduation Attire"
-            title="Graduation Wear in Kenya"
-            description="Premium gowns, caps, hoods, stoles, and complete sets for hire and sale."
-        />
+    <section id="shop" class="bg-zinc-50 section-lg scroll-mt-24">
+        <div class="container-shell">
+            <div class="featured-rail__intro">
+                <p class="kicker">Graduation Attire</p>
+                <h2 class="featured-rail__heading mt-3 font-semibold">Graduation Wear in Kenya</h2>
+                <p class="featured-rail__lede mt-4 text-zinc-600">Premium gowns, caps, hoods, stoles, and complete sets for hire and sale.</p>
+            </div>
 
-        <div class="luxury-grid mt-8 md:grid-cols-3">
-            @foreach ($properties as $property)
-                <x-ui.property-card :property="$property" />
-            @endforeach
+            <div class="luxury-grid mt-8 md:grid-cols-2 lg:grid-cols-4">
+                @foreach ($properties as $property)
+                    <x-ui.product-tile :property="$property" />
+                @endforeach
+            </div>
         </div>
+    </section>
+
+    <section class="container-shell section-md">
 
         <div class="luxury-grid mt-10 md:grid-cols-3">
             <article class="surface p-6">

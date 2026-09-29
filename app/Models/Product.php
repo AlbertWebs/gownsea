@@ -60,6 +60,10 @@ class Product extends Model
 
     public function displayPrice(): string
     {
+        if ($this->sale_price_amount !== null) {
+            return Money::format($this->sale_price_amount);
+        }
+
         return $this->price_label ?: Money::format($this->price_amount);
     }
 

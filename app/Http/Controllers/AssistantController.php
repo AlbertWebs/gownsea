@@ -30,6 +30,12 @@ class AssistantController extends Controller
             return response()->json(['message' => $status]);
         }
 
-        return back()->with('assistant_status', $status);
+        $response = back()->with('assistant_status', $status);
+
+        if ($request->input('form_intent') === 'bulk') {
+            $response->with('bulk_whatsapp_submission', $validated);
+        }
+
+        return $response;
     }
 }

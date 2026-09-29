@@ -9,6 +9,7 @@
     $phoneHref = 'tel:'.preg_replace('/\s+/', '', (string) $phone);
     $mapsHref = 'https://www.google.com/maps/search/?api=1&query='.rawurlencode((string) $address);
     $mapEmbed = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.8201267846703!2d36.820048899999996!3d-1.2816737999999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f116d69ae0cf1%3A0xd5afcb025a37d2dd!2sGOWNSEA%20%E2%80%93%20Graduation%20Gowns%20East%20Africa!5e0!3m2!1sen!2ske!4v1787133009013!5m2!1sen!2ske';
+    $contactMath = \App\Support\InquiryFormGuard::mathChallenge();
     $contactSchema = [
         '@context' => 'https://schema.org',
         '@graph' => [
@@ -186,16 +187,40 @@
                     </div>
                 </div>
 
-                <div class="contact-form-card surface border-t-4 border-t-[#0f2744] p-6 md:p-8">
+                <div
+                    class="contact-form-card surface border-t-4 border-t-[#0f2744] p-6 md:p-8"
+                    x-data="{
+                        mathOpen: false,
+                        mathAnswer: '',
+                        mathError: '',
+                        requestSend() {
+                            if (! this.$refs.form.reportValidity()) return;
+                            this.mathAnswer = '';
+                            this.mathError = '';
+                            this.mathOpen = true;
+                            this.$nextTick(() => this.$refs.mathInput?.focus());
+                        },
+                        confirmSend() {
+                            if (! String(this.mathAnswer).trim()) {
+                                this.mathError = 'Enter the answer to send your message.';
+                                return;
+                            }
+                            this.$refs.form.querySelector('[name=math_answer]').value = String(this.mathAnswer).trim();
+                            this.$refs.form.submit();
+                        }
+                    }"
+                >
                     <h3 class="text-xl font-semibold text-[#0f2744]">Contact form</h3>
                     <p class="mt-2 text-sm text-zinc-600">Tell us your name, how to reach you, and the details of your ceremony.</p>
                     <p class="contact-form-card__hours">Replies typically within opening hours · Mon–Sat, 8am–6pm</p>
 
-                    <form method="POST" action="{{ route('assistant.submit') }}" class="mt-6 grid gap-4 sm:grid-cols-2">
+                    <form x-ref="form" method="POST" action="{{ route('assistant.submit') }}" class="mt-6 grid gap-4 sm:grid-cols-2" @submit.prevent="requestSend()">
                         @csrf
                         <input type="text" name="website" class="hidden" tabindex="-1" autocomplete="off">
                         <input type="text" name="company" class="hidden" tabindex="-1" autocomplete="off">
                         <input type="hidden" name="form_token" value="{{ \App\Support\InquiryFormGuard::token() }}">
+                        <input type="hidden" name="math_token" value="{{ $contactMath['token'] }}">
+                        <input type="hidden" name="math_answer" value="">
 
                         <label class="text-xs font-semibold text-zinc-700">
                             Full name
@@ -215,6 +240,21 @@
                         </label>
                         <button type="submit" class="btn-primary sm:col-span-2">Send message</button>
                     </form>
+                    <div x-show="mathOpen" x-cloak x-transition.opacity class="fixed inset-0 z-[100] flex items-center justify-center bg-zinc-950/55 p-4" @keydown.escape.window="mathOpen = false">
+                        <div class="w-full max-w-sm rounded-2xl border border-zinc-200 bg-white p-6 shadow-2xl" @click.outside="mathOpen = false" role="dialog" aria-modal="true" aria-labelledby="contact-math-title">
+                            <p class="kicker">Quick spam check</p>
+                            <h4 id="contact-math-title" class="mt-2 text-xl font-semibold">One quick step</h4>
+                            <p class="mt-2 text-sm text-zinc-600">What is <strong class="text-zinc-900">{{ $contactMath['prompt'] }}</strong>?</p>
+                            <label class="mt-5 block text-xs font-semibold text-zinc-700">Your answer
+                                <input x-ref="mathInput" x-model="mathAnswer" @keydown.enter.prevent="confirmSend()" type="text" inputmode="numeric" autocomplete="off" class="mt-2 w-full rounded-xl border border-zinc-300 px-3 py-3 text-sm outline-none focus:border-[#d42127] focus:ring-2 focus:ring-[#d42127]/15" placeholder="Enter the number">
+                            </label>
+                            <p class="mt-2 text-sm text-[#d42127]" x-show="mathError" x-text="mathError" aria-live="polite"></p>
+                            <div class="mt-5 flex gap-3">
+                                <button type="button" class="btn-primary flex-1" @click="confirmSend()">Verify and send</button>
+                                <button type="button" class="btn-secondary" @click="mathOpen = false">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>

@@ -16,6 +16,7 @@
     $sizeGuide = $property['size_guide'] ?? [];
     $optionDefaults = collect($options)->map(fn ($values) => $values[0] ?? '')->all();
     $productUrl = url()->current();
+    $math = \App\Support\InquiryFormGuard::mathChallenge();
 @endphp
 
 @extends('layouts.public')
@@ -32,6 +33,10 @@
             sent: false,
             status: '',
             errors: {},
+            mathOpen: false,
+            mathAnswer: '',
+            mathError: '',
+            mathToken: {{ \Illuminate\Support\Js::from($math['token']) }},
             form: {
                 name: '',
                 email: '',
@@ -40,6 +45,8 @@
                 website: '',
                 company: '',
                 form_token: {{ \Illuminate\Support\Js::from(\App\Support\InquiryFormGuard::token()) }},
+                math_token: '',
+                math_answer: '',
             },
             options: {{ \Illuminate\Support\Js::from($optionDefaults) }},
             productTitle: {{ \Illuminate\Support\Js::from($property['title']) }},
@@ -57,6 +64,28 @@
                 const text = 'Hello Gownsea, I want to ' + action + ' ' + this.productTitle + ' (' + this.productPrice + '). ' + selected + '. Qty: ' + this.qty + '. ' + this.productUrl;
                 return 'https://wa.me/{{ config('gownsea.brand.whatsapp') }}?text=' + encodeURIComponent(text);
             },
+            submittedWhatsAppHref() {
+                const action = this.intent === 'hire' ? 'hire' : 'purchase';
+                const selected = Object.entries(this.options).map(([key, value]) => key + ': ' + value).join('\n');
+                const text = [
+                    'Hello Gownsea, I just submitted an enquiry on the website and would like to continue here.',
+                    '',
+                    'Enquiry: ' + action,
+                    'Item: ' + this.productTitle,
+                    'Price: ' + this.productPrice,
+                    selected,
+                    'Quantity: ' + this.qty,
+                    'Name: ' + this.form.name,
+                    'Email: ' + this.form.email,
+                    'Phone: ' + this.form.phone,
+                    '',
+                    'Message:',
+                    this.form.message,
+                    '',
+                    'Product link: ' + this.productUrl,
+                ].filter(Boolean).join('\n');
+                return 'https://wa.me/{{ config('gownsea.brand.whatsapp') }}?text=' + encodeURIComponent(text);
+            },
             open(intent) {
                 this.intent = intent;
                 this.status = '';
@@ -66,9 +95,29 @@
                 document.body.classList.add('overflow-hidden');
             },
             close() {
+                if (this.submitting) return;
                 this.intent = '';
                 this.submitting = false;
+                this.mathOpen = false;
                 document.body.classList.remove('overflow-hidden');
+            },
+            requestInquiry() {
+                this.mathAnswer = '';
+                this.mathError = '';
+                this.mathOpen = true;
+                this.$nextTick(() => this.$refs.mathInput?.focus());
+            },
+            confirmInquiry() {
+                const answer = String(this.mathAnswer).trim();
+                if (!answer) {
+                    this.mathError = 'Enter the answer to send your request.';
+                    return;
+                }
+                this.mathError = '';
+                this.form.math_token = this.mathToken;
+                this.form.math_answer = answer;
+                this.mathOpen = false;
+                this.submitInquiry();
             },
             async submitInquiry() {
                 this.submitting = true;
@@ -78,12 +127,13 @@
                     const { data } = await window.axios.post(this.submitUrl, this.form);
                     this.status = data.message;
                     this.sent = true;
-                    this.form.name = '';
-                    this.form.email = '';
-                    this.form.phone = '';
-                    this.form.message = this.composedMessage();
                 } catch (error) {
                     this.errors = error.response?.data?.errors || {};
+                    if (this.errors.math_answer) {
+                        this.mathError = this.errors.math_answer[0];
+                        this.mathOpen = true;
+                        this.$nextTick(() => this.$refs.mathInput?.focus());
+                    }
                     if (!Object.keys(this.errors).length) {
                         this.status = error.response?.data?.message || 'Something went wrong. Please try again.';
                     }
@@ -215,18 +265,24 @@
                     </button>
                 </div>
 
-                <div x-show="sent" class="product-inquiry-success">
+                <div x-show="sent" x-transition.opacity.duration.200ms class="product-inquiry-success" role="status" aria-live="polite">
                     <span class="product-inquiry-success__icon" aria-hidden="true">
                         <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none"><path d="M5 12.5 9.5 17 19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                     </span>
                     <h3 class="mt-3 text-lg font-semibold">Enquiry sent</h3>
                     <p class="mt-2 text-sm text-zinc-600" x-text="status"></p>
-                    <button type="button" class="btn-primary mt-6 w-full gap-2" @click="close()">
+                    <a :href="submittedWhatsAppHref()" target="_blank" rel="noopener noreferrer" class="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-[#128C7E] px-5 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0f766e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#128C7E]">
+                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19.05 4.91A9.82 9.82 0 0 0 12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.87 9.87 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.91-7.02Zm-7.01 15.24h-.01a8.2 8.2 0 0 1-4.18-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.18 8.18 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.42 5.83c0 4.55-3.7 8.23-8.25 8.23Z"/></svg>
+                        Continue on WhatsApp
+                        <span aria-hidden="true">↗</span>
+                    </a>
+                    <p class="mt-2 text-center text-xs text-zinc-500">Your enquiry details are ready to share with our team.</p>
+                    <button type="button" class="btn-secondary mt-3 w-full" @click="close()">
                         Close
                     </button>
                 </div>
 
-                <form x-show="!sent" class="grid gap-3 sm:gap-4" @submit.prevent="submitInquiry()">
+                <form x-show="!sent" x-transition.opacity.duration.150ms class="grid gap-3 sm:gap-4" :aria-busy="submitting" @submit.prevent="requestInquiry()">
                     <div class="hp-field" aria-hidden="true">
                         <label>Website <input type="text" name="website" x-model="form.website" tabindex="-1" autocomplete="off"></label>
                         <label>Company <input type="text" name="company" x-model="form.company" tabindex="-1" autocomplete="off"></label>
@@ -265,8 +321,9 @@
                     <p class="text-xs text-zinc-500" x-show="errors.form_token" x-text="errors.form_token?.[0]"></p>
                     <div class="product-inquiry-actions">
                         <button type="submit" class="btn-primary w-full gap-2" :disabled="submitting">
-                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12 20 5l-6.5 14-2.2-5.3L4 12Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
-                            <span x-text="submitting ? 'Sending…' : (intent === 'hire' ? 'Send hire request' : 'Send purchase request')"></span>
+                            <svg x-show="!submitting" class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12 20 5l-6.5 14-2.2-5.3L4 12Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+                            <svg x-show="submitting" class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-opacity=".25" stroke-width="3"/><path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
+                            <span x-text="submitting ? 'Sending your request…' : (intent === 'hire' ? 'Send hire request' : 'Send purchase request')"></span>
                         </button>
                         <a :href="whatsappHref()" target="_blank" rel="noopener noreferrer" class="btn-secondary w-full gap-2">
                             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19.05 4.91A9.82 9.82 0 0 0 12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.87 9.87 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.91-7.02Zm-7.01 15.24h-.01a8.2 8.2 0 0 1-4.18-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.18 8.18 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.42 5.83c0 4.55-3.7 8.23-8.25 8.23Z"/></svg>
@@ -274,6 +331,31 @@
                         </a>
                     </div>
                 </form>
+            </div>
+        </div>
+
+        <div
+            x-show="mathOpen"
+            x-cloak
+            x-transition.opacity
+            class="fixed inset-0 z-[100] flex items-center justify-center bg-zinc-950/55 p-4"
+            @keydown.escape.window="if (mathOpen && !submitting) mathOpen = false"
+        >
+            <div class="w-full max-w-sm rounded-2xl border border-zinc-200 bg-white p-6 shadow-2xl" @click.outside="if (!submitting) mathOpen = false" role="dialog" aria-modal="true" aria-labelledby="product-math-title">
+                <p class="kicker">Quick spam check</p>
+                <h3 id="product-math-title" class="mt-2 text-xl font-semibold">One quick step</h3>
+                <p class="mt-2 text-sm text-zinc-600">What is <strong class="text-zinc-900">{{ $math['prompt'] }}</strong>?</p>
+                <label class="mt-5 block text-xs font-semibold text-zinc-700">
+                    Your answer
+                    <input x-ref="mathInput" x-model="mathAnswer" @keydown.enter.prevent="confirmInquiry()" type="text" inputmode="numeric" autocomplete="off" class="mt-2 w-full rounded-xl border border-zinc-300 px-3 py-3 text-sm outline-none focus:border-[#d42127] focus:ring-2 focus:ring-[#d42127]/15" placeholder="Enter the number" :disabled="submitting">
+                </label>
+                <p class="mt-2 text-sm text-[#d42127]" x-show="mathError" x-text="mathError" aria-live="polite"></p>
+                <div class="mt-5 flex gap-3">
+                    <button type="button" class="btn-primary flex-1" @click="confirmInquiry()" :disabled="submitting">
+                        <span x-text="submitting ? 'Sending…' : 'Verify and send'"></span>
+                    </button>
+                    <button type="button" class="btn-secondary" @click="mathOpen = false" :disabled="submitting">Cancel</button>
+                </div>
             </div>
         </div>
 
@@ -363,9 +445,9 @@
     @if (! empty($related))
         <section class="container-shell section-md">
             <x-ui.section-header kicker="You may also like" title="Related attire" />
-            <div class="luxury-grid mt-8 md:grid-cols-4">
+            <div class="luxury-grid mt-8 md:grid-cols-2 lg:grid-cols-4">
                 @foreach ($related as $item)
-                    <x-ui.property-card :property="$item" />
+                    <x-ui.product-tile :property="$item" />
                 @endforeach
             </div>
         </section>

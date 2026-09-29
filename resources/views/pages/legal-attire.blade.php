@@ -10,20 +10,25 @@
         alt="Premium legal attire for advocates and barristers"
     />
 
-    <section id="shop" class="container-shell section-lg scroll-mt-24">
-        <x-ui.section-header
-            kicker="Legal Attire"
-            title="Legal Wear in Kenya"
-            description="Premium barrister wigs, gowns, bibs, and advocates shirts for hire and sale."
-        />
+    <section id="shop" class="bg-zinc-50 section-lg scroll-mt-24">
+        <div class="container-shell">
+            <div class="featured-rail__intro">
+                <p class="kicker">Legal Attire</p>
+                <h2 class="featured-rail__heading mt-3 font-semibold">Legal Wear in Kenya</h2>
+                <p class="featured-rail__lede mt-4 text-zinc-600">Premium barrister wigs, gowns, bibs, and advocates shirts for hire and sale.</p>
+            </div>
 
-        <div class="luxury-grid mt-8 md:grid-cols-3">
-            @foreach ($properties as $property)
-                <x-ui.property-card :property="$property" />
-            @endforeach
+            <div class="luxury-grid mt-8 md:grid-cols-2 lg:grid-cols-4">
+                @foreach ($properties as $property)
+                    <x-ui.product-tile :property="$property" />
+                @endforeach
+            </div>
         </div>
 
-        <div class="luxury-grid mt-10 md:grid-cols-3">
+    </section>
+
+    <section class="container-shell section-md">
+        <div class="luxury-grid md:grid-cols-3">
             <article class="surface p-6">
                 <h3 class="font-semibold">Tailored to perfection</h3>
                 <p class="mt-3 text-sm text-zinc-600">Expertly crafted legal attire built for comfort and courtroom presence.</p>

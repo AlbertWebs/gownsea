@@ -46,7 +46,7 @@ class InquiryFormGuard
      */
     public static function validate(Request $request): array
     {
-        $requiresMath = $request->input('form_intent') === 'bulk' || $request->filled('math_token');
+        $requiresMath = true;
 
         $rules = [
             'name' => ['required', 'string', 'max:120'],

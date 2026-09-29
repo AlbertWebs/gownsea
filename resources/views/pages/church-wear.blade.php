@@ -10,19 +10,23 @@
         alt="Church and choral wear for congregations in Kenya"
     />
 
-    <section id="shop" class="container-shell section-lg scroll-mt-24">
-        <x-ui.section-header
-            kicker="Church Wear"
-            title="Church and Choral Wear in Kenya"
-            description="Clergy robes, cassocks, choir gowns, and liturgical accessories for hire and sale."
-        />
+    <section id="shop" class="bg-zinc-50 section-lg scroll-mt-24">
+        <div class="container-shell">
+            <div class="featured-rail__intro">
+                <p class="kicker">Church Wear</p>
+                <h2 class="featured-rail__heading mt-3 font-semibold">Church and Choral Wear in Kenya</h2>
+                <p class="featured-rail__lede mt-4 text-zinc-600">Clergy robes, cassocks, choir gowns, and liturgical accessories for hire and sale.</p>
+            </div>
 
-        <div class="luxury-grid mt-8 md:grid-cols-3">
-            @foreach ($properties as $property)
-                <x-ui.property-card :property="$property" />
-            @endforeach
+            <div class="luxury-grid mt-8 md:grid-cols-2 lg:grid-cols-4">
+                @foreach ($properties as $property)
+                    <x-ui.product-tile :property="$property" />
+                @endforeach
+            </div>
         </div>
+    </section>
 
+    <section class="container-shell section-md">
         <div class="luxury-grid mt-10 md:grid-cols-3">
             <article class="surface p-6">
                 <h3 class="font-semibold">Bespoke choir wear</h3>
@@ -37,11 +41,13 @@
                 <p class="mt-3 text-sm text-zinc-600">Durable ceremonial garments made for repeated sacred occasions.</p>
             </article>
         </div>
+    </section>
 
-        @include('partials.clients')
+    @include('partials.clients')
 
-        @if (! empty($faqs))
-            <div class="mt-12">
+    @if (! empty($faqs))
+        <section class="container-shell section-md">
+            <div>
                 <x-ui.section-header kicker="FAQs" title="Common questions" />
                 <div class="mt-8 grid gap-4 md:grid-cols-2">
                     @foreach ($faqs as $question => $answer)
@@ -52,8 +58,8 @@
                     @endforeach
                 </div>
             </div>
-        @endif
-    </section>
+        </section>
+    @endif
 
     <x-ui.cta-band
         title="Looking for church or choir attire?"

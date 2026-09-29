@@ -38,7 +38,7 @@ class CatalogueService
         $featured = collect(config('gownsea.properties', []))->where('category', $category);
         $hire = collect(config('gownsea.hire_products', []))->where('category', $category);
 
-        return $featured->merge($hire)->unique('slug')->values()->all();
+        return $featured->merge($hire)->unique('slug')->map(fn (array $item) => $this->applySalePrice($item))->values()->all();
     }
 
     /**
@@ -57,7 +57,9 @@ class CatalogueService
                 ->all();
         }
 
-        return config('gownsea.hire_products', []);
+        return collect(config('gownsea.hire_products', []))
+            ->map(fn (array $item) => $this->applySalePrice($item))
+            ->all();
     }
 
     /**
@@ -76,7 +78,9 @@ class CatalogueService
                 ->all();
         }
 
-        return config('gownsea.properties', []);
+        return collect(config('gownsea.properties', []))
+            ->map(fn (array $item) => $this->applySalePrice($item))
+            ->all();
     }
 
     /**
@@ -101,9 +105,11 @@ class CatalogueService
             }
         }
 
-        return collect(config('gownsea.hire_products', []))
+        $property = collect(config('gownsea.hire_products', []))
             ->merge(config('gownsea.properties', []))
             ->firstWhere('slug', $slug);
+
+        return $property ? $this->applySalePrice($property) : null;
     }
 
     /**
@@ -112,6 +118,7 @@ class CatalogueService
      */
     public function enrich(array $property): array
     {
+        $property = $this->applySalePrice($property);
         $profile = config('gownsea.product_profiles.'.$property['slug'], []);
         $image = $property['image'] ?? '/images/site/hero.webp';
 
@@ -136,6 +143,16 @@ class CatalogueService
                 ['size' => 'X-Large', 'guide' => 'Generous fit over a full gown'],
             ],
         ], $property, $profile);
+    }
+
+    /** @param array<string, mixed> $item */
+    private function applySalePrice(array $item): array
+    {
+        if (filled($item['sale_price'] ?? null)) {
+            $item['price'] = $item['sale_price'];
+        }
+
+        return $item;
     }
 
     public function brand(string $key, mixed $default = null): mixed

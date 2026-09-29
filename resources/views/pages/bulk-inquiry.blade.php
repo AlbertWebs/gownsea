@@ -7,6 +7,13 @@
             mathOpen: false,
             mathAnswer: '',
             mathError: @js($errors->first('math_answer') ?: ''),
+            sending: false,
+            sent: false,
+            status: '',
+            submitErrors: {},
+            submitted: {},
+            submitUrl: @js(route('assistant.submit')),
+            whatsappNumber: @js(preg_replace('/\D+/', '', (string) config('gownsea.brand.whatsapp'))),
             details: {{ \Illuminate\Support\Js::from(old('details', '')) }},
             institution: {{ \Illuminate\Support\Js::from(old('institution', '')) }},
             quantity: {{ \Illuminate\Support\Js::from(old('quantity', '')) }},
@@ -26,14 +33,52 @@
                 this.mathOpen = true;
                 this.$nextTick(() => this.$refs.mathInput?.focus());
             },
-            confirmSend() {
+            async confirmSend() {
                 const value = String(this.mathAnswer).trim();
                 if (value === '') {
                     this.mathError = 'Enter the answer to send your inquiry.';
                     return;
                 }
-                this.mathOpen = false;
-                this.$refs.form.submit();
+                this.sending = true;
+                this.mathError = '';
+                this.submitErrors = {};
+                const payload = Object.fromEntries(new FormData(this.$refs.form).entries());
+                payload.math_answer = value;
+                try {
+                    const { data } = await window.axios.post(this.submitUrl, payload);
+                    this.status = data.message || 'Your bulk enquiry has been sent. We will contact you shortly.';
+                    this.submitted = {
+                        name: payload.name,
+                        email: payload.email,
+                        phone: payload.phone,
+                        message: payload.message,
+                    };
+                    this.sent = true;
+                    this.mathOpen = false;
+                } catch (error) {
+                    this.submitErrors = error.response?.data?.errors || {};
+                    if (this.submitErrors.math_answer || this.submitErrors.math_token) {
+                        this.mathError = this.submitErrors.math_answer?.[0] || this.submitErrors.math_token?.[0] || 'Please try the spam check again.';
+                    } else {
+                        this.mathOpen = false;
+                        this.status = error.response?.data?.message || 'We could not send your enquiry. Please check the form and try again.';
+                    }
+                } finally {
+                    this.sending = false;
+                }
+            },
+            whatsappHref() {
+                const text = [
+                    'Hello Gownsea, I have just submitted a bulk hire enquiry on your website.',
+                    '',
+                    'Name: ' + this.submitted.name,
+                    'Email: ' + this.submitted.email,
+                    'Phone: ' + this.submitted.phone,
+                    '',
+                    'Bulk requirements:',
+                    this.submitted.message,
+                ].join('\n');
+                return 'https://wa.me/' + this.whatsappNumber + '?text=' + encodeURIComponent(text);
             }
         }"
     >
@@ -94,10 +139,53 @@
                         </div>
                     @endif
 
+                    @if ($bulkSubmission = session('bulk_whatsapp_submission'))
+                        @php
+                            $bulkWhatsapp = preg_replace('/\D+/', '', (string) config('gownsea.brand.whatsapp'));
+                            $bulkWhatsappMessage = implode("\n", [
+                                'Hello Gownsea, I have just submitted a bulk hire enquiry on your website.',
+                                '',
+                                'Name: '.$bulkSubmission['name'],
+                                'Email: '.$bulkSubmission['email'],
+                                'Phone: '.$bulkSubmission['phone'],
+                                '',
+                                'Bulk requirements:',
+                                $bulkSubmission['message'],
+                            ]);
+                        @endphp
+                        <div role="status" class="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50 p-6">
+                            <span class="inline-flex h-11 w-11 items-center justify-center rounded-full bg-emerald-100 text-emerald-700" aria-hidden="true">
+                                <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none"><path d="m5 12.5 4.5 4.5L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </span>
+                            <h4 class="mt-4 text-lg font-semibold text-[#0f2744]">Your bulk enquiry is on its way</h4>
+                            <p class="mt-2 text-sm leading-6 text-zinc-600">We’ve received your details. Want to keep the conversation moving? Open WhatsApp and send the same enquiry directly to our team.</p>
+                            <a href="https://wa.me/{{ $bulkWhatsapp }}?text={{ rawurlencode($bulkWhatsappMessage) }}" target="_blank" rel="noopener noreferrer" class="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-[#128C7E] px-5 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0f766e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#128C7E]">
+                                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19.05 4.91A9.82 9.82 0 0 0 12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.87 9.87 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.91-7.02Zm-7.01 15.24h-.01a8.2 8.2 0 0 1-4.18-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.18 8.18 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.42 5.83c0 4.55-3.7 8.23-8.25 8.23Z"/></svg>
+                                Continue on WhatsApp
+                                <span aria-hidden="true">↗</span>
+                            </a>
+                            <p class="mt-2 text-center text-xs text-zinc-500">Your message is prefilled; tap send in WhatsApp to share it.</p>
+                        </div>
+                    @else
+                    <div x-show="sent" x-cloak x-transition.opacity.duration.200ms class="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50 p-6" role="status" aria-live="polite">
+                        <span class="inline-flex h-11 w-11 items-center justify-center rounded-full bg-emerald-100 text-emerald-700" aria-hidden="true">
+                            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none"><path d="m5 12.5 4.5 4.5L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </span>
+                        <h4 class="mt-4 text-lg font-semibold text-[#0f2744]">Your bulk enquiry is on its way</h4>
+                        <p class="mt-2 text-sm leading-6 text-zinc-600" x-text="status"></p>
+                        <a :href="whatsappHref()" target="_blank" rel="noopener noreferrer" class="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-[#128C7E] px-5 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0f766e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#128C7E]">
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19.05 4.91A9.82 9.82 0 0 0 12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.87 9.87 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.91-7.02Zm-7.01 15.24h-.01a8.2 8.2 0 0 1-4.18-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.18 8.18 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.42 5.83c0 4.55-3.7 8.23-8.25 8.23Z"/></svg>
+                            Continue on WhatsApp <span aria-hidden="true">↗</span>
+                        </a>
+                        <p class="mt-2 text-center text-xs text-zinc-500">Your submitted details are prefilled; tap send in WhatsApp to share them.</p>
+                    </div>
                     <form
                         x-ref="form"
                         method="POST"
                         action="{{ route('assistant.submit') }}"
+                        x-show="!sent"
+                        x-transition.opacity.duration.150ms
+                        :aria-busy="sending"
                         class="mt-5 grid gap-4 sm:grid-cols-2"
                         @submit.prevent="requestSend()"
                     >
@@ -146,8 +234,17 @@
                             ></textarea>
                         </label>
 
-                        <button type="submit" class="btn-primary sm:col-span-2">Send bulk inquiry</button>
+                        <p class="text-sm text-red-700 sm:col-span-2" x-show="status && !sent" x-text="status" aria-live="polite"></p>
+                        <p class="text-sm text-red-700 sm:col-span-2" x-show="submitErrors.name" x-text="submitErrors.name?.[0]"></p>
+                        <p class="text-sm text-red-700 sm:col-span-2" x-show="submitErrors.email" x-text="submitErrors.email?.[0]"></p>
+                        <p class="text-sm text-red-700 sm:col-span-2" x-show="submitErrors.phone" x-text="submitErrors.phone?.[0]"></p>
+                        <p class="text-sm text-red-700 sm:col-span-2" x-show="submitErrors.message" x-text="submitErrors.message?.[0]"></p>
+                        <button type="submit" class="btn-primary sm:col-span-2" :disabled="sending">
+                            <span x-show="!sending">Send bulk inquiry</span>
+                            <span x-show="sending" class="inline-flex items-center gap-2"><svg class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-opacity=".25" stroke-width="3"/><path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>Sending your enquiry…</span>
+                        </button>
                     </form>
+                    @endif
                 </div>
             </div>
         </section>
@@ -216,13 +313,16 @@
                         inputmode="numeric"
                         autocomplete="off"
                         placeholder="Enter the number"
+                        :disabled="sending"
                     >
                 </label>
                 <p class="mt-2 text-sm text-[#d42127]" x-show="mathError" x-text="mathError"></p>
 
                 <div class="mt-6 flex flex-wrap gap-3">
-                    <button type="button" class="btn-primary" @click="confirmSend()">Verify and send</button>
-                    <button type="button" class="btn-secondary" @click="mathOpen = false">Cancel</button>
+                    <button type="button" class="btn-primary" @click="confirmSend()" :disabled="sending">
+                        <span x-text="sending ? 'Sending…' : 'Verify and send'"></span>
+                    </button>
+                    <button type="button" class="btn-secondary" @click="mathOpen = false" :disabled="sending">Cancel</button>
                 </div>
             </div>
         </div>
