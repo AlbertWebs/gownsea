@@ -2249,7 +2249,7 @@
         }
 
         .whatsapp-support-widget {
-            bottom: max(5.5rem, calc(env(safe-area-inset-bottom, 0px) + 4.8rem));
+            bottom: max(3.75rem, calc(env(safe-area-inset-bottom, 0px) + 3rem));
         }
 
         .site-footer__top {
