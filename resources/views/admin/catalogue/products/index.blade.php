@@ -7,8 +7,21 @@
             <h1>Products</h1>
             <p class="mt-1 text-sm text-zinc-600">Manage the same catalogue shown on the public website.</p>
         </div>
-        <x-admin.btn :href="route('admin.catalogue.products.create')" icon="plus">Add Product</x-admin.btn>
+        <div class="flex flex-wrap gap-2">
+            <x-admin.btn :href="route('admin.catalogue.feeds.index')" variant="navy" icon="download">Manage feeds</x-admin.btn>
+            <x-admin.btn :href="route('admin.catalogue.products.create')" icon="plus">Add Product</x-admin.btn>
+        </div>
     </div>
+    <section class="admin-card mt-5 flex flex-wrap items-center justify-between gap-4 border-[#d8e0e9]">
+        <div class="min-w-0">
+            <h2 class="text-base font-bold text-[#0f2744]">Export product feeds</h2>
+            <p class="mt-1 text-sm text-zinc-600">Download CSV files for Google Merchant Center or Meta Commerce Manager. Exports include all published, public products.</p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+            <a href="{{ route('admin.catalogue.feeds.export', ['channel' => 'google', 'format' => 'csv']) }}" class="btn-primary">Google Merchant CSV</a>
+            <a href="{{ route('admin.catalogue.feeds.export', ['channel' => 'facebook', 'format' => 'csv']) }}" class="btn-secondary">Meta catalogue CSV</a>
+        </div>
+    </section>
     <form class="mt-6 flex flex-nowrap items-center gap-3" method="GET">
         <input class="admin-input min-w-0 flex-1 !w-auto" name="q" value="{{ request('q') }}" placeholder="Search products...">
         <select class="admin-input w-40 shrink-0 !w-40" name="category_id">
