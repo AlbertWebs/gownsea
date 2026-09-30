@@ -19,7 +19,7 @@ class PageController extends Controller
                 'Graduation Gowns for Hire & Sale in Kenya | Gownsea LTD',
                 'High-quality graduation, legal, and church attire for hire and sale in Kenya.'
             ),
-            'properties' => $this->catalogue->featuredItems(),
+            'properties' => array_slice($this->catalogue->featuredItems(), 0, 4),
             'posts' => array_slice($this->journalPosts(), 0, 2),
             'heroSlides' => $this->catalogue->heroSlides(),
             'categoryImages' => [
