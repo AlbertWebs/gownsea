@@ -5,7 +5,7 @@ return [
         'super_admin' => ['*'],
         'admin' => [
             'dashboard', 'catalogue', 'inquiries', 'leads', 'customers', 'sales',
-            'activities', 'reports', 'users', 'settings',
+            'activities', 'reports', 'users', 'settings', 'journal',
         ],
         'sales_manager' => [
             'dashboard', 'inquiries', 'leads', 'customers', 'sales', 'activities', 'reports',

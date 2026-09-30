@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\JournalPost;
 use App\Services\CatalogueService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Arr;
@@ -19,7 +20,7 @@ class PageController extends Controller
                 'High-quality graduation, legal, and church attire for hire and sale in Kenya.'
             ),
             'properties' => $this->catalogue->featuredItems(),
-            'posts' => array_slice(config('gownsea.journal_posts', []), 0, 2),
+            'posts' => array_slice($this->journalPosts(), 0, 2),
             'heroSlides' => $this->catalogue->heroSlides(),
             'categoryImages' => [
                 'graduation' => $this->catalogue->categoryImage('graduation', '/images/site/hero.webp'),
@@ -39,7 +40,7 @@ class PageController extends Controller
                 'og_image' => url('/images/site/hero.webp'),
                 'twitter_image' => url('/images/site/hero.webp'),
             ]),
-            'posts' => array_slice(config('gownsea.journal_posts', []), 0, 2),
+            'posts' => array_slice($this->journalPosts(), 0, 2),
             'faqs' => [
                 'Where is Gownsea located?' => 'Our showroom is at Valji Building, Moktar Daddah Street, Nairobi. Visit Monday to Saturday, 8am–6pm, or contact us to plan a fitting or bulk collection.',
                 'Do you hire and sell graduation gowns?' => 'Yes. Gownsea offers both hire and purchase for preschool through PhD sets, including gowns, caps, hoods, tassels, and stoles.',
@@ -159,21 +160,28 @@ class PageController extends Controller
                 'The Gown Journal | Gownsea Blog & Insights',
                 'Read the latest Gownsea stories, tips, and ceremony planning insights.'
             ),
-            'posts' => config('gownsea.journal_posts', []),
+            'posts' => $this->journalPosts(),
         ]);
     }
 
     public function journalShow(string $slug): View
     {
-        $post = collect(config('gownsea.journal_posts', []))
-            ->firstWhere('slug', $slug);
+        $record = JournalPost::published()->where('slug', $slug)->first();
+        $post = $record?->toPublicPost();
 
         abort_if(! $post, 404);
 
         return view('pages.journal.show', [
-            'meta' => $this->meta($post['title'].' | The Gown Journal', $post['excerpt']),
+            'meta' => $this->meta($record->seo_title ?: $post['title'].' | The Gown Journal', $record->seo_description ?: $post['excerpt']),
             'post' => $post,
         ]);
+    }
+
+    /** @return array<int, array<string, mixed>> */
+    private function journalPosts(): array
+    {
+        return JournalPost::published()->orderByDesc('published_at')->orderByDesc('id')
+            ->get()->map(fn (JournalPost $post) => $post->toPublicPost())->all();
     }
 
     public function privacyPolicy(): View

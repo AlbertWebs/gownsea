@@ -50,6 +50,12 @@
             <a class="{{ $link('admin.catalogue.feeds') }}" href="{{ route('admin.catalogue.feeds.index') }}">Catalogue Feeds</a>
         </div>
         @endif
+        @if($user?->hasPermission('journal'))
+        <div class="admin-nav-group">
+            <p class="admin-nav-section">Content</p>
+            <a class="{{ $link('admin.journal') }}" href="{{ route('admin.journal.index') }}">Blogs &amp; Articles</a>
+        </div>
+        @endif
         @if($user?->hasPermission('sales') || $user?->hasPermission('customers'))
         <div class="admin-nav-group">
             <p class="admin-nav-section">Sales</p>

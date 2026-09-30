@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AssistantController;
 use App\Http\Controllers\PageController;
+use App\Models\JournalPost;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
 
@@ -40,7 +41,12 @@ Route::get('/sitemap.xml', function (): Response {
             'lastmod' => now()->toDateString(),
         ])->all();
 
+    $journalUrls = JournalPost::published()->get()->map(fn (JournalPost $post) => [
+        'loc' => route('journal.show', $post->slug),
+        'lastmod' => ($post->updated_at ?? now())->toDateString(),
+    ])->all();
+
     return response()
-        ->view('sitemap', ['urls' => $urls])
+        ->view('sitemap', ['urls' => array_merge($urls, $journalUrls)])
         ->header('Content-Type', 'application/xml');
 })->name('sitemap');

@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\CatalogueFeedController;
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\InquiryController;
+use App\Http\Controllers\Admin\JournalPostController;
 use App\Http\Controllers\Admin\LeadController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\ProductController;
@@ -46,6 +47,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('categories', CategoryController::class)->except(['show']);
         Route::get('feeds', [CatalogueFeedController::class, 'index'])->name('feeds.index');
         Route::get('feeds/export', [CatalogueFeedController::class, 'export'])->name('feeds.export');
+    });
+
+    Route::middleware(['auth', EnsureAdminAuthenticated::class.':journal'])->group(function () {
+        Route::resource('journal', JournalPostController::class)->except(['show'])->parameters(['journal' => 'journalPost']);
     });
 
     Route::middleware(['auth', EnsureAdminAuthenticated::class.':inquiries'])->group(function () {

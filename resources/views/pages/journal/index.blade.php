@@ -11,6 +11,7 @@
         <div class="luxury-grid mt-10 md:grid-cols-2">
             @foreach ($posts as $post)
                 <article class="surface p-6">
+                    @if(!empty($post['image']))<img src="{{ $post['image'] }}" alt="" class="mb-5 aspect-[16/9] w-full rounded-xl object-cover">@endif
                     <p class="kicker">{{ $post['category'] }}</p>
                     <h3 class="mt-2 font-semibold">{{ $post['title'] }}</h3>
                     <p class="mt-3 text-sm text-zinc-600">{{ $post['excerpt'] }}</p>
