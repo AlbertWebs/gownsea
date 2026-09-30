@@ -56,6 +56,12 @@
             <a class="{{ $link('admin.journal') }}" href="{{ route('admin.journal.index') }}">Blogs &amp; Articles</a>
         </div>
         @endif
+        @if($user?->hasPermission('catalogue'))
+        <div class="admin-nav-group">
+            <p class="admin-nav-section">Marketing</p>
+            <a class="{{ $link('admin.marketing.index') }}" href="{{ route('admin.marketing.index') }}">Social funnels</a>
+        </div>
+        @endif
         @if($user?->hasPermission('sales') || $user?->hasPermission('customers'))
         <div class="admin-nav-group">
             <p class="admin-nav-section">Sales</p>

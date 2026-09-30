@@ -28,14 +28,23 @@ class TrackSiteVisit
         }
 
         [$source, $referrerHost, $referrerPath, $hasAcquisitionSource] = $this->referrer($request);
+        $attribution = [
+            'utm_source' => $source,
+            'utm_medium' => $this->utmValue($request, 'utm_medium'),
+            'utm_campaign' => $this->utmValue($request, 'utm_campaign'),
+            'utm_content' => $this->utmValue($request, 'utm_content'),
+            'utm_term' => $this->utmValue($request, 'utm_term'),
+        ];
         if ($hasAcquisitionSource) {
             $request->session()->put('site_analytics.source', $source);
             $request->session()->put('site_analytics.referrer_host', $referrerHost);
             $request->session()->put('site_analytics.referrer_path', $referrerPath);
+            $request->session()->put('site_analytics.attribution', $attribution);
         } else {
             $source = (string) $request->session()->get('site_analytics.source', 'Direct');
             $referrerHost = $request->session()->get('site_analytics.referrer_host');
             $referrerPath = $request->session()->get('site_analytics.referrer_path');
+            $attribution = (array) $request->session()->get('site_analytics.attribution', $attribution);
         }
         $userAgent = strtolower((string) $request->userAgent());
         $device = preg_match('/ipad|tablet|kindle|silk/', $userAgent) === 1
@@ -49,6 +58,10 @@ class TrackSiteVisit
             'referrer_host' => $referrerHost,
             'referrer_path' => $referrerPath,
             'device' => $device,
+            'utm_medium' => $attribution['utm_medium'] ?? null,
+            'utm_campaign' => $attribution['utm_campaign'] ?? null,
+            'utm_content' => $attribution['utm_content'] ?? null,
+            'utm_term' => $attribution['utm_term'] ?? null,
             'created_at' => now(),
         ]);
 
@@ -85,5 +98,17 @@ class TrackSiteVisit
     private function isAutomated(?string $userAgent): bool
     {
         return preg_match('/bot|crawler|spider|preview|headless|lighthouse|pagespeed/i', (string) $userAgent) === 1;
+    }
+
+    private function utmValue(Request $request, string $key): ?string
+    {
+        $value = $request->query($key);
+        if (! is_string($value) || trim($value) === '') {
+            return null;
+        }
+
+        $clean = trim(preg_replace('/[\x00-\x1F\x7F]/u', '', $value) ?? '');
+
+        return $clean !== '' ? Str::limit($clean, 190, '') : null;
     }
 }

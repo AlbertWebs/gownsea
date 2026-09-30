@@ -9,7 +9,8 @@ class SiteVisit extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'visitor_hash', 'path', 'source', 'referrer_host', 'referrer_path', 'device', 'created_at',
+        'visitor_hash', 'path', 'source', 'referrer_host', 'referrer_path', 'device',
+        'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'created_at',
     ];
 
     protected function casts(): array
