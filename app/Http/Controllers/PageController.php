@@ -249,7 +249,7 @@ class PageController extends Controller
     /** @return array<int, array<string, mixed>> */
     private function journalPosts(): array
     {
-        return JournalPost::published()->orderByDesc('published_at')->orderByDesc('id')
+        return JournalPost::published()->orderByRaw('COALESCE(published_at, created_at) DESC')->orderByDesc('id')
             ->get()->map(fn (JournalPost $post) => $post->toPublicPost())->all();
     }
 
