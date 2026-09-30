@@ -171,10 +171,79 @@ class PageController extends Controller
 
         abort_if(! $post, 404);
 
+        $seo = config('gownsea.journal_seo.'.$record->slug, []);
+        $seoTitle = $record->seo_title ?: ($seo['title'] ?? $post['title'].' | The Gown Journal');
+        $seoDescription = $record->seo_description ?: ($seo['description'] ?? $post['excerpt']);
+        $post['display_title'] = $seo['heading'] ?? $post['title'];
+        $meta = $this->meta($seoTitle, $seoDescription);
+        $image = filled($post['image'] ?? null)
+            ? (str_starts_with($post['image'], 'http') ? $post['image'] : url(ltrim($post['image'], '/')))
+            : url('/images/site/hero.webp');
+        $meta['og_type'] = 'article';
+        $meta['og_image'] = $image;
+        $meta['twitter_image'] = $image;
+        $meta['canonical'] = route('journal.show', $record->slug);
+
+        $publishedAt = $record->published_at ?? $record->created_at ?? now();
+        $modifiedAt = $record->updated_at ?? $publishedAt;
+        $keywords = $seo['keywords'] ?? array_filter([$post['category'], 'graduation regalia', 'graduation gowns in Kenya']);
+        $author = $this->journalAuthor($post['body'] ?? '');
+        $structuredData = [
+            '@context' => 'https://schema.org',
+            '@graph' => [
+                [
+                    '@type' => 'BlogPosting',
+                    '@id' => $meta['canonical'].'#article',
+                    'mainEntityOfPage' => ['@type' => 'WebPage', '@id' => $meta['canonical']],
+                    'headline' => $post['display_title'],
+                    'description' => $seoDescription,
+                    'image' => [$image],
+                    'datePublished' => $publishedAt->toAtomString(),
+                    'dateModified' => $modifiedAt->toAtomString(),
+                    'author' => $author,
+                    'publisher' => [
+                        '@type' => 'Organization',
+                        'name' => 'Gownsea LTD',
+                        'url' => url('/'),
+                        'logo' => ['@type' => 'ImageObject', 'url' => url('/favicon-rpimary.png')],
+                    ],
+                    'articleSection' => $post['category'],
+                    'keywords' => array_values($keywords),
+                    'wordCount' => str_word_count(strip_tags($post['body'] ?? '')),
+                    'inLanguage' => 'en-KE',
+                    'isPartOf' => ['@type' => 'Blog', 'name' => 'The Gown Journal', 'url' => route('journal.index')],
+                ],
+                [
+                    '@type' => 'BreadcrumbList',
+                    'itemListElement' => [
+                        ['@type' => 'ListItem', 'position' => 1, 'name' => 'Home', 'item' => url('/')],
+                        ['@type' => 'ListItem', 'position' => 2, 'name' => 'The Gown Journal', 'item' => route('journal.index')],
+                        ['@type' => 'ListItem', 'position' => 3, 'name' => $post['display_title'], 'item' => $meta['canonical']],
+                    ],
+                ],
+            ],
+        ];
+
         return view('pages.journal.show', [
-            'meta' => $this->meta($record->seo_title ?: $post['title'].' | The Gown Journal', $record->seo_description ?: $post['excerpt']),
+            'meta' => $meta,
             'post' => $post,
+            'publishedAt' => $publishedAt,
+            'modifiedAt' => $modifiedAt,
+            'articleAuthor' => $author,
+            'articleKeywords' => array_values($keywords),
+            'structuredData' => $structuredData,
         ]);
+    }
+
+    /** @return array<string, string> */
+    private function journalAuthor(string $body): array
+    {
+        $text = strip_tags($body);
+        if (preg_match('/\bBy\s+([\p{Lu}][\p{L}\p{M}.\x{2019}\x{2010}\x{2011}-]*(?:\s+[\p{Lu}][\p{L}\p{M}.\x{2019}\x{2010}\x{2011}-]*){1,3})/u', $text, $match) === 1) {
+            return ['@type' => 'Person', 'name' => trim($match[1])];
+        }
+
+        return ['@type' => 'Organization', 'name' => 'Gownsea LTD'];
     }
 
     /** @return array<int, array<string, mixed>> */

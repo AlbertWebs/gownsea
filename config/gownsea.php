@@ -319,4 +319,20 @@ return [
             'image' => '/images/blogs/img_20211111_163231_401.jpg',
         ],
     ],
+
+    'journal_seo' => [
+        'graduation-regalia-boost-tvet-status' => [
+            'heading' => 'How Graduation Regalia Can Boost TVET Status in Kenya',
+            'title' => 'How Graduation Regalia Boosts TVET Status in Kenya | Gownsea',
+            'description' => 'Explore how graduation regalia boosts TVET status in Kenya, celebrates skills, strengthens college identity and supports affordable, dignified ceremonies.',
+            'keywords' => [
+                'TVET graduation regalia',
+                'TVET graduation gowns Kenya',
+                'graduation regalia in Kenya',
+                'academic regalia for TVET institutions',
+                'graduation gown hire for colleges',
+                'local garment manufacturing in Kenya',
+            ],
+        ],
+    ],
 ];
