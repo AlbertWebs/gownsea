@@ -147,7 +147,10 @@ class PageController extends Controller
             ->all();
 
         return view('pages.properties.show', [
-            'meta' => $this->meta($property['title'].' | Gownsea', $property['description']),
+            'meta' => $this->meta(
+                filled($property['seo_title'] ?? null) ? $property['seo_title'] : $property['title'].' | Gownsea',
+                filled($property['seo_description'] ?? null) ? $property['seo_description'] : $property['description']
+            ),
             'property' => $property,
             'related' => $related,
         ]);

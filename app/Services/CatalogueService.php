@@ -119,10 +119,11 @@ class CatalogueService
     public function enrich(array $property): array
     {
         $property = $this->applySalePrice($property);
-        $profile = config('gownsea.product_profiles.'.$property['slug'], []);
+        $slug = (string) ($property['slug'] ?? '');
+        $profile = config('gownsea.product_profiles.'.$slug, []);
         $image = $property['image'] ?? '/images/site/hero.webp';
 
-        return array_merge([
+        $enriched = array_merge([
             'gallery' => [$image],
             'options' => [
                 'Size' => ['Small', 'Medium', 'Large', 'X-Large'],
@@ -142,7 +143,26 @@ class CatalogueService
                 ['size' => 'Large', 'guide' => 'Taller frame or layered clothing'],
                 ['size' => 'X-Large', 'guide' => 'Generous fit over a full gown'],
             ],
-        ], $property, $profile);
+        ], $profile, $property);
+
+        $enriched = $this->applyProfileSummary($enriched);
+        $about = trim(strip_tags((string) ($property['about'] ?? '')));
+        $legacyHoodCopy = $slug === 'undergraduate-academic-hoods'
+            && str_starts_with($about, 'Your graduation look is not complete without the academic hood.');
+
+        if (filled($profile['about'] ?? null) && ($about === '' || $this->matchesCatalogueDescription($slug, $about) || $legacyHoodCopy)) {
+            $enriched['about'] = $profile['about'];
+        }
+
+        $details = $property['details'] ?? [];
+        $legacyHoodDetails = $slug === 'undergraduate-academic-hoods'
+            && ($details[0] ?? null) === 'Traditional undergraduate academic hood';
+
+        if (empty($details) || $legacyHoodDetails) {
+            $enriched['details'] = $profile['details'] ?? $enriched['details'];
+        }
+
+        return $enriched;
     }
 
     /** @return array<string, mixed> */
@@ -155,12 +175,22 @@ class CatalogueService
     private function applyProfileSummary(array $item): array
     {
         $summary = config('gownsea.product_profiles.'.($item['slug'] ?? '').'.description');
+        $current = trim(strip_tags((string) ($item['description'] ?? '')));
 
-        if (filled($summary) && mb_strlen(strip_tags((string) ($item['description'] ?? ''))) < 150) {
+        if (filled($summary) && ($current === '' || $this->matchesCatalogueDescription((string) ($item['slug'] ?? ''), $current))) {
             $item['description'] = $summary;
         }
 
         return $item;
+    }
+
+    private function matchesCatalogueDescription(string $slug, string $description): bool
+    {
+        $baseline = collect(config('gownsea.hire_products', []))
+            ->merge(config('gownsea.properties', []))
+            ->firstWhere('slug', $slug)['description'] ?? null;
+
+        return is_string($baseline) && trim(strip_tags($baseline)) === trim($description);
     }
 
     /** @param array<string, mixed> $item */

@@ -86,6 +86,8 @@ class Product extends Model
             'title' => $this->name,
             'location' => $this->location ?: 'Nairobi',
             'price' => $this->displayPrice(),
+            'seo_title' => $this->seo_title,
+            'seo_description' => $this->seo_description,
             'cta' => $this->cta ?: 'Request Quote',
             'description' => $this->short_description ?: $this->description,
             'category' => $this->category?->slug ?? 'graduation',
