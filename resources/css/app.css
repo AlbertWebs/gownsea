@@ -114,6 +114,103 @@
         @apply text-xs font-semibold uppercase tracking-[0.2em] text-[#0f2744];
     }
 
+    .journal-article__back {
+        @apply inline-flex items-center gap-2 text-sm font-semibold text-zinc-500 transition-colors hover:text-[#d42127];
+    }
+
+    .journal-article__title {
+        @apply mx-auto max-w-4xl text-4xl leading-[1.08] md:text-6xl;
+        text-wrap: balance;
+    }
+
+    .journal-article__date {
+        @apply text-sm text-zinc-500;
+    }
+
+    .journal-article__standfirst {
+        @apply mx-auto mt-6 max-w-3xl text-lg leading-8 text-zinc-600 md:text-xl;
+        text-wrap: pretty;
+    }
+
+    .journal-article__cover {
+        width: 100%;
+        max-height: 34rem;
+        margin: 3rem auto 3.5rem;
+        border-radius: 1.5rem;
+        object-fit: cover;
+        object-position: center;
+        box-shadow: 0 24px 60px rgb(15 39 68 / 0.12);
+    }
+
+    .journal-article__body {
+        max-width: 68ch;
+        margin: 3rem auto 0;
+        color: #3f4650;
+        font-size: clamp(1.03rem, 0.35vw + 0.98rem, 1.15rem);
+        line-height: 1.9;
+        overflow-wrap: anywhere;
+    }
+
+    .journal-article__body p {
+        margin-block: 0 1.4em;
+        line-height: inherit;
+    }
+
+    .journal-article__body p + p {
+        margin-top: 0.15em;
+    }
+
+    .journal-article__body h2,
+    .journal-article__body h3 {
+        margin-block: 2.2em 0.7em;
+        color: #0f2744;
+        line-height: 1.2;
+        text-wrap: balance;
+    }
+
+    .journal-article__body h2:first-child,
+    .journal-article__body h3:first-child {
+        margin-top: 0;
+    }
+
+    .journal-article__body ul,
+    .journal-article__body ol {
+        margin: 0 0 1.5em 1.5em;
+        padding: 0;
+    }
+
+    .journal-article__body li + li {
+        margin-top: 0.45em;
+    }
+
+    .journal-article__body a {
+        color: #b51d23;
+        text-decoration: underline;
+        text-decoration-thickness: 1px;
+        text-underline-offset: 0.2em;
+    }
+
+    .journal-article__body blockquote {
+        margin: 2em 0;
+        border-left: 3px solid #d42127;
+        padding: 0.25em 0 0.25em 1.25em;
+        color: #0f2744;
+        font-family: "Crimson Text", ui-serif, Georgia, serif;
+        font-size: 1.3em;
+        line-height: 1.5;
+    }
+
+    .journal-article__footer {
+        max-width: 68ch;
+        margin: 3rem auto 0;
+        border-top: 1px solid #e4e4e7;
+        padding-top: 1.5rem;
+    }
+
+    .journal-article__footer a {
+        @apply text-sm font-semibold text-[#0f2744] transition-colors hover:text-[#d42127];
+    }
+
     .site-header__logo {
         height: 2.75rem;
         width: auto;
