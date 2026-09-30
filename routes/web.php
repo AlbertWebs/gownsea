@@ -49,7 +49,9 @@ Route::get('/sitemap.xml', function (): Response {
 
     $productUrls = Product::published()->get()->map(function (Product $product) {
         $path = (string) ($product->url_path ?: route('products.show', $product->slug, false));
-        if (! str_starts_with($path, '/') || str_starts_with($path, '//')) {
+        if (! str_starts_with($path, '/') || str_starts_with($path, '//') || in_array(rtrim($path, '/'), [
+            '/shop-attire/graduation-attire', '/shop-attire/legal-attire', '/shop-attire/church-wear',
+        ], true)) {
             $path = route('products.show', $product->slug, false);
         }
 

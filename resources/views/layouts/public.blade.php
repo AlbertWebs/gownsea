@@ -20,6 +20,14 @@
     <meta property="og:type" content="{{ $meta['og_type'] ?? 'website' }}">
     <meta property="og:url" content="{{ $meta['og_url'] ?? ($meta['canonical'] ?? url()->current()) }}">
     <meta property="og:image" content="{{ $meta['og_image'] ?? url('/favicon.ico') }}">
+    @if (filled($meta['product_price'] ?? null) && filled($meta['product_currency'] ?? null))
+        <meta property="product:price:amount" content="{{ $meta['product_price'] }}">
+        <meta property="product:price:currency" content="{{ $meta['product_currency'] }}">
+    @endif
+    @if (filled($meta['product_availability'] ?? null))<meta property="product:availability" content="{{ $meta['product_availability'] }}">@endif
+    @if (filled($meta['product_condition'] ?? null))<meta property="product:condition" content="{{ $meta['product_condition'] }}">@endif
+    @if (filled($meta['product_sku'] ?? null))<meta property="product:retailer_item_id" content="{{ $meta['product_sku'] }}">@endif
+    @if (filled($meta['product_brand'] ?? null))<meta property="product:brand" content="{{ $meta['product_brand'] }}">@endif
 
     <meta name="twitter:card" content="{{ $meta['twitter_card'] ?? 'summary_large_image' }}">
     <meta name="twitter:title" content="{{ $meta['twitter_title'] ?? ($meta['og_title'] ?? ($meta['title'] ?? config('app.name'))) }}">
