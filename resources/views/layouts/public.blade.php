@@ -7,6 +7,7 @@
 
     <title>{{ $meta['title'] ?? config('app.name') }}</title>
     <meta name="description" content="{{ $meta['description'] ?? 'Gownsea premium ceremonial attire.' }}">
+    @if (filled($meta['robots'] ?? null))<meta name="robots" content="{{ $meta['robots'] }}">@endif
     <meta name="theme-color" content="#d42127">
     <link rel="icon" href="{{ asset('favicon-rpimary.png') }}" type="image/png">
     <link rel="shortcut icon" href="{{ asset('favicon-rpimary.png') }}" type="image/png">

@@ -100,9 +100,7 @@ class CatalogueService
                 return $this->storefrontArray($product);
             }
 
-            if ($product) {
-                return $product->toStorefrontArray();
-            }
+            abort_if($product, 404);
         }
 
         $property = collect(config('gownsea.hire_products', []))

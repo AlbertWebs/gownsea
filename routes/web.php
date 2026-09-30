@@ -3,6 +3,7 @@
 use App\Http\Controllers\AssistantController;
 use App\Http\Controllers\PageController;
 use App\Models\JournalPost;
+use App\Models\Product;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
 
@@ -46,7 +47,19 @@ Route::get('/sitemap.xml', function (): Response {
         'lastmod' => ($post->updated_at ?? now())->toDateString(),
     ])->all();
 
+    $productUrls = Product::published()->get()->map(function (Product $product) {
+        $path = (string) ($product->url_path ?: route('products.show', $product->slug, false));
+        if (! str_starts_with($path, '/') || str_starts_with($path, '//')) {
+            $path = route('products.show', $product->slug, false);
+        }
+
+        return [
+            'loc' => url($path),
+            'lastmod' => ($product->updated_at ?? now())->toDateString(),
+        ];
+    })->all();
+
     return response()
-        ->view('sitemap', ['urls' => array_merge($urls, $journalUrls)])
+        ->view('sitemap', ['urls' => collect(array_merge($urls, $journalUrls, $productUrls))->unique('loc')->values()->all()])
         ->header('Content-Type', 'application/xml');
 })->name('sitemap');

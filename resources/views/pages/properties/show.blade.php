@@ -21,6 +21,10 @@
 
 @extends('layouts.public')
 
+@push('json_ld')
+    <script type="application/ld+json">{!! json_encode($productSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
+@endpush
+
 @section('content')
     <section
         class="container-shell section-lg"
@@ -183,7 +187,7 @@
                 <div class="overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-50">
                     <img
                         :src="variantImage || gallery[active]"
-                        alt="{{ $property['title'] }}"
+                        alt="{{ $property['title'] }} {{ $category }} attire by Gownsea in Kenya"
                         class="aspect-square w-full object-contain p-6 md:p-10"
                     >
                 </div>
@@ -205,6 +209,9 @@
 
             <div>
                 <h1 class="font-semibold">{{ $property['title'] }}</h1>
+                @if (filled($property['description'] ?? null))
+                    <p class="mt-3 max-w-xl text-base leading-7 text-zinc-700">{{ strip_tags($property['description']) }}</p>
+                @endif
                 @php $isQuotePrice = str_contains(mb_strtolower((string) ($property['price'] ?? '')), 'quote'); @endphp
                 @if ($isQuotePrice)
                     <a href="#request-quote" class="mt-4 inline-block text-3xl font-semibold text-[#d42127] underline underline-offset-4" @click.prevent="open('purchase')">{{ $property['price'] }}</a>

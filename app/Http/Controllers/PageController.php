@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\JournalPost;
+use App\Models\Setting;
 use App\Services\CatalogueService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 
 class PageController extends Controller
 {
@@ -138,7 +140,96 @@ class PageController extends Controller
 
     public function productShow(string $slug): View
     {
-        $property = $this->catalogue->enrich($this->catalogue->findBySlug($slug) ?? $this->syntheticProduct($slug));
+        $property = $this->catalogue->findBySlug($slug);
+        abort_if($property === null, 404);
+        $property = $this->catalogue->enrich($property);
+        $productName = trim(strip_tags((string) ($property['title'] ?? $this->titleFromSlug($slug))));
+        $categoryName = Str::headline((string) ($property['category'] ?? 'graduation'));
+        $canonicalPath = (string) ($property['url'] ?? '');
+        if ($canonicalPath === '' || ! str_starts_with($canonicalPath, '/') || str_starts_with($canonicalPath, '//')) {
+            $canonicalPath = route('products.show', $slug, false);
+        }
+        $canonical = url($canonicalPath);
+        $seoTitle = filled($property['seo_title'] ?? null)
+            ? trim((string) $property['seo_title'])
+            : Str::limit($productName.' in Kenya | Gownsea', 68, '');
+        $summary = trim(preg_replace('/\\s+/u', ' ', strip_tags((string) ($property['description'] ?? ''))) ?? '');
+        $summaryWordLimit = max(4, min(8, (int) floor((150 - mb_strlen($productName) - 68) / 6)));
+        $summarySnippet = rtrim(Str::words($summary, $summaryWordLimit, ''), " \t\n\r\0\x0B.,;:!?");
+        $seoDescription = filled($property['seo_description'] ?? null)
+            ? trim((string) $property['seo_description'])
+            : $productName.': '.$summarySnippet.'. Available in Nairobi, Kenya. Contact Gownsea for options and delivery.';
+        if (mb_strlen($seoDescription) > 160) {
+            $seoDescription = mb_substr($seoDescription, 0, 159);
+            $lastSpace = mb_strrpos($seoDescription, ' ');
+            $seoDescription = rtrim(mb_substr($seoDescription, 0, $lastSpace === false ? 159 : $lastSpace)).'…';
+        }
+        $primaryImage = (string) (($property['gallery'][0] ?? null) ?: ($property['image'] ?? '/images/site/hero.webp'));
+        $primaryImage = preg_match('/^https?:\\/\\//i', $primaryImage) ? $primaryImage : url('/'.ltrim($primaryImage, '/'));
+        $meta = $this->meta($seoTitle, $seoDescription);
+        $meta['canonical'] = $canonical;
+        $meta['og_url'] = $canonical;
+        $meta['og_type'] = 'product';
+        $meta['og_image'] = $primaryImage;
+        $meta['twitter_image'] = $primaryImage;
+        $meta['robots'] = 'index,follow,max-image-preview:large';
+
+        $productSchema = [
+            '@context' => 'https://schema.org',
+            '@graph' => [
+                array_filter([
+                    '@type' => 'Product',
+                    '@id' => $canonical.'#product',
+                    'name' => $productName,
+                    'description' => trim(preg_replace('/\\s+/u', ' ', strip_tags(preg_replace('/<\\s*\\/?\\s*(p|li|br|h[1-6])\\b[^>]*>/i', ' ', (string) ($property['about'] ?? $summary)))) ?? $summary),
+                    'image' => array_values(array_unique(array_map(
+                        fn (string $image) => preg_match('/^https?:\\/\\//i', $image) ? $image : url('/'.ltrim($image, '/')),
+                        array_filter((array) ($property['gallery'] ?? [$property['image'] ?? '/images/site/hero.webp']))
+                    ))),
+                    'sku' => $property['sku'] ?? null,
+                    'category' => $categoryName,
+                    'brand' => ['@type' => 'Brand', 'name' => (string) ($property['brand'] ?? 'Gownsea LTD')],
+                    'url' => $canonical,
+                ], fn ($value) => $value !== null && $value !== ''),
+                [
+                    '@type' => 'BreadcrumbList',
+                    '@id' => $canonical.'#breadcrumb',
+                    'itemListElement' => [
+                        ['@type' => 'ListItem', 'position' => 1, 'name' => 'Home', 'item' => route('home')],
+                        ['@type' => 'ListItem', 'position' => 2, 'name' => $categoryName.' Attire', 'item' => route(match ($property['category'] ?? 'graduation') {
+                            'legal' => 'legal-attire', 'church' => 'church-wear', default => 'graduation-attire',
+                        })],
+                        ['@type' => 'ListItem', 'position' => 3, 'name' => $productName, 'item' => $canonical],
+                    ],
+                ],
+            ],
+        ];
+
+        $amount = $property['sale_price_amount'] ?? $property['price_amount'] ?? null;
+        if ($amount === null) {
+            $listedPrice = (string) ($property['sale_price'] ?? $property['price'] ?? '');
+            $amount = preg_match('/(?:KES|KSh|KShs?)\\s*([0-9][0-9,]*(?:\\.\\d{1,2})?)/i', $listedPrice, $match)
+                ? str_replace(',', '', $match[1])
+                : null;
+        }
+        if (is_numeric($amount) && (float) $amount > 0) {
+            $offer = [
+                '@type' => 'Offer',
+                'url' => $canonical,
+                'priceCurrency' => strtoupper((string) Setting::getValue('currency', Setting::getValue('brand.currency', 'KES'))),
+                'price' => number_format((float) $amount, 2, '.', ''),
+                'itemCondition' => 'https://schema.org/NewCondition',
+                'seller' => ['@type' => 'Organization', 'name' => 'Gownsea LTD', 'url' => route('home')],
+            ];
+            if (filled($property['availability'] ?? null)) {
+                $offer['availability'] = match (strtolower((string) $property['availability'])) {
+                    'out_of_stock', 'sold_out' => 'https://schema.org/OutOfStock',
+                    'preorder', 'pre_order' => 'https://schema.org/PreOrder',
+                    default => 'https://schema.org/InStock',
+                };
+            }
+            $productSchema['@graph'][0]['offers'] = $offer;
+        }
 
         $related = collect($this->catalogue->itemsByCategory($property['category'] ?? 'graduation'))
             ->reject(fn (array $item) => ($item['slug'] ?? '') === $slug)
@@ -147,10 +238,8 @@ class PageController extends Controller
             ->all();
 
         return view('pages.properties.show', [
-            'meta' => $this->meta(
-                filled($property['seo_title'] ?? null) ? $property['seo_title'] : $property['title'].' | Gownsea',
-                filled($property['seo_description'] ?? null) ? $property['seo_description'] : $property['description']
-            ),
+            'meta' => $meta,
+            'productSchema' => $productSchema,
             'property' => $property,
             'related' => $related,
         ]);
@@ -389,19 +478,4 @@ class PageController extends Controller
         };
     }
 
-    private function syntheticProduct(string $slug): array
-    {
-        $title = $this->titleFromSlug($slug);
-
-        return [
-            'slug' => $slug,
-            'title' => $title,
-            'location' => 'Nairobi',
-            'price' => 'Request quote',
-            'cta' => 'Request Quote',
-            'description' => 'Premium '.$title.' available for hire and sale through Gownsea.',
-            'category' => 'graduation',
-            'image' => '/images/site/hero.webp',
-        ];
-    }
 }
