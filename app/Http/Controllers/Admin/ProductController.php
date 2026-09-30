@@ -168,6 +168,9 @@ class ProductController extends Controller
             'option_labels.*' => ['nullable', 'string', 'max:80'],
             'option_values' => ['nullable', 'array'],
             'option_values.*' => ['nullable', 'string', 'max:500'],
+            'option_image_files' => ['nullable', 'array'],
+            'option_image_files.*' => ['array'],
+            'option_image_files.*.*' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
             'size_labels' => ['nullable', 'array'],
             'size_labels.*' => ['nullable', 'string', 'max:40'],
             'size_guides' => ['nullable', 'array'],
@@ -193,6 +196,7 @@ class ProductController extends Controller
             ->values()
             ->all();
         $options = [];
+        $optionLabelsByIndex = [];
         foreach ($request->input('option_labels', []) as $index => $label) {
             $label = trim((string) $label);
             $values = collect(explode(',', (string) ($request->input('option_values.'.$index) ?? '')))
@@ -202,9 +206,41 @@ class ProductController extends Controller
                 ->all();
             if ($label !== '' && $values !== []) {
                 $options[$label] = $values;
+                $optionLabelsByIndex[$index] = $label;
             }
         }
         $data['options'] = $options;
+
+        $optionImages = [];
+        $existingOptionImages = $product?->option_images ?? [];
+        foreach ($options as $label => $values) {
+            foreach ($values as $value) {
+                $existingImage = $existingOptionImages[$label][$value] ?? null;
+                if (is_string($existingImage) && $existingImage !== '') {
+                    $optionImages[$label][$value] = $existingImage;
+                }
+            }
+        }
+        foreach ($request->file('option_image_files', []) as $optionIndex => $valueFiles) {
+            $label = $optionLabelsByIndex[$optionIndex] ?? null;
+            if ($label === null) {
+                continue;
+            }
+
+            $values = $options[$label] ?? [];
+            foreach ($valueFiles as $valueIndex => $file) {
+                $value = $values[$valueIndex] ?? null;
+                if ($value === null || $file === null || ! $file->isValid()) {
+                    continue;
+                }
+
+                $name = 'variant-'.Str::random(10).'.'.$file->extension();
+                $file->move(public_path('images/products'), $name);
+                $optionImages[$label][$value] = '/images/products/'.$name;
+            }
+        }
+        $data['option_images'] = $optionImages;
+
         $data['size_guide'] = collect($request->input('size_labels', []))
             ->map(function ($size, $index) use ($request) {
                 $size = trim((string) $size);
@@ -216,7 +252,7 @@ class ProductController extends Controller
             ->values()
             ->all();
 
-        unset($data['details_text'], $data['image'], $data['option_labels'], $data['option_values'], $data['size_labels'], $data['size_guides'], $data['tags_text']);
+        unset($data['details_text'], $data['image'], $data['option_labels'], $data['option_values'], $data['option_image_files'], $data['size_labels'], $data['size_guides'], $data['tags_text']);
 
         if (! $data['price_amount'] && ! empty($data['price_label'])) {
             $data['price_amount'] = Money::parseLabel($data['price_label']);

@@ -24,8 +24,11 @@
 @section('content')
     <section
         class="container-shell section-lg"
+        x-init="syncOptionImage()"
         x-data="{
             gallery: {{ \Illuminate\Support\Js::from($gallery) }},
+            optionImageMap: {{ \Illuminate\Support\Js::from($property['option_images'] ?? []) }},
+            variantImage: '',
             active: 0,
             qty: 1,
             intent: '',
@@ -49,6 +52,22 @@
                 math_answer: '',
             },
             options: {{ \Illuminate\Support\Js::from($optionDefaults) }},
+            selectOption(label, value) {
+                this.options[label] = value;
+                this.syncOptionImage();
+            },
+            syncOptionImage() {
+                this.active = 0;
+                this.variantImage = '';
+                for (const [label, value] of Object.entries(this.options)) {
+                    const image = this.optionImageMap[label]?.[value];
+                    if (!image) continue;
+                    const index = this.gallery.indexOf(image);
+                    if (index === -1) this.variantImage = image;
+                    else this.active = index;
+                    return;
+                }
+            },
             productTitle: {{ \Illuminate\Support\Js::from($property['title']) }},
             purchasePrice: {{ \Illuminate\Support\Js::from($property['price']) }},
             hirePrice: {{ \Illuminate\Support\Js::from($property['hire_price'] ?? 'Hire price to be confirmed') }},
@@ -163,7 +182,7 @@
             <div>
                 <div class="overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-50">
                     <img
-                        :src="gallery[active]"
+                        :src="variantImage || gallery[active]"
                         alt="{{ $property['title'] }}"
                         class="aspect-square w-full object-contain p-6 md:p-10"
                     >
@@ -174,8 +193,8 @@
                             <button
                                 type="button"
                                 class="h-20 w-20 shrink-0 overflow-hidden rounded-xl border bg-zinc-50"
-                                :class="active === {{ $index }} ? 'border-[#d42127]' : 'border-zinc-200'"
-                                @click="active = {{ $index }}"
+                                :class="!variantImage && active === {{ $index }} ? 'border-[#d42127]' : 'border-zinc-200'"
+                                @click="active = {{ $index }}; variantImage = ''"
                             >
                                 <img src="{{ $image }}" alt="" class="h-full w-full object-contain p-1">
                             </button>
@@ -207,7 +226,7 @@
                                         type="button"
                                         class="product-option-btn"
                                         :class="options[{{ \Illuminate\Support\Js::from($label) }}] === {{ \Illuminate\Support\Js::from($value) }} ? 'is-active' : ''"
-                                        @click="options[{{ \Illuminate\Support\Js::from($label) }}] = {{ \Illuminate\Support\Js::from($value) }}"
+                                        @click="selectOption({{ \Illuminate\Support\Js::from($label) }}, {{ \Illuminate\Support\Js::from($value) }})"
                                     >
                                         {{ $value }}
                                     </button>

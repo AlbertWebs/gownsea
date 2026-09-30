@@ -41,7 +41,16 @@
             slug: {{ \Illuminate\Support\Js::from(old('slug', $product->slug)) }},
             slugLocked: {{ $product->exists ? 'true' : 'false' }},
             options: {{ \Illuminate\Support\Js::from($optionRows->values()) }},
+            optionImages: {{ \Illuminate\Support\Js::from($product->option_images ?? []) }},
+            optionImagePreviews: {},
             sizes: {{ \Illuminate\Support\Js::from($sizeRows->values()) }},
+            previewOptionImage(label, value, event) {
+                const file = event.target.files?.[0];
+                if (file) this.optionImagePreviews[label + '::' + value] = URL.createObjectURL(file);
+            },
+            optionImagePreview(label, value) {
+                return this.optionImagePreviews[label + '::' + value] || this.optionImages[label]?.[value] || '';
+            },
             slugify(value) {
                 return String(value || '').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
             }
@@ -223,6 +232,29 @@
                             </div>
                         </template>
                         <button type="button" class="text-sm font-semibold text-[#d42127]" @click="options.push({ label: '', values: '' })">Add option</button>
+                    </div>
+                    <div class="rounded-xl border border-zinc-200 bg-zinc-50 p-4">
+                        <p class="text-sm font-semibold">Images for option values</p>
+                        <p class="mt-1 text-xs text-zinc-500">Upload a JPG, PNG, or WEBP photo up to 4 MB for a colour or size. The product image changes when a customer selects that value.</p>
+                        <template x-for="(option, optionIndex) in options" :key="'images-'+optionIndex">
+                            <div class="mt-4 border-t border-zinc-200 pt-4">
+                                <p class="text-xs font-semibold text-zinc-700" x-text="option.label || 'Product option'"></p>
+                                <div class="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                                    <template x-for="(value, valueIndex) in option.values.split(',').map(value => value.trim()).filter(value => value !== '')" :key="value">
+                                        <label class="flex min-w-0 items-center gap-3 rounded-lg border border-zinc-200 bg-white p-2">
+                                            <span class="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded bg-zinc-100 text-[10px] text-zinc-400">
+                                                <img x-show="optionImagePreview(option.label, value)" :src="optionImagePreview(option.label, value)" alt="" class="h-full w-full object-cover">
+                                                <span x-show="!optionImagePreview(option.label, value)">No image</span>
+                                            </span>
+                                            <span class="min-w-0 flex-1">
+                                                <span class="block truncate text-xs font-medium text-zinc-800" x-text="value"></span>
+                                                <input class="mt-1 block w-full text-[11px] text-zinc-500" type="file" accept="image/jpeg,image/png,image/webp" :name="'option_image_files['+optionIndex+']['+valueIndex+']'" @change="previewOptionImage(option.label, value, $event)">
+                                            </span>
+                                        </label>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
                     </div>
                     <div>
                         <p class="text-sm font-semibold">Size guide</p>
