@@ -31,14 +31,14 @@ class CatalogueService
                 ->orderBy('sort_order')
                 ->orderBy('name')
                 ->get()
-                ->map(fn (Product $product) => $product->toStorefrontArray())
+                ->map(fn (Product $product) => $this->storefrontArray($product))
                 ->all();
         }
 
         $featured = collect(config('gownsea.properties', []))->where('category', $category);
         $hire = collect(config('gownsea.hire_products', []))->where('category', $category);
 
-        return $featured->merge($hire)->unique('slug')->map(fn (array $item) => $this->applySalePrice($item))->values()->all();
+        return $featured->merge($hire)->unique('slug')->map(fn (array $item) => $this->applyProfileSummary($this->applySalePrice($item)))->values()->all();
     }
 
     /**
@@ -53,12 +53,12 @@ class CatalogueService
                 ->where('is_hire', true)
                 ->orderBy('sort_order')
                 ->get()
-                ->map(fn (Product $product) => $product->toStorefrontArray())
+                ->map(fn (Product $product) => $this->storefrontArray($product))
                 ->all();
         }
 
         return collect(config('gownsea.hire_products', []))
-            ->map(fn (array $item) => $this->applySalePrice($item))
+            ->map(fn (array $item) => $this->applyProfileSummary($this->applySalePrice($item)))
             ->all();
     }
 
@@ -74,12 +74,12 @@ class CatalogueService
                 ->where('featured', true)
                 ->orderBy('id')
                 ->get()
-                ->map(fn (Product $product) => $product->toStorefrontArray())
+                ->map(fn (Product $product) => $this->storefrontArray($product))
                 ->all();
         }
 
         return collect(config('gownsea.properties', []))
-            ->map(fn (array $item) => $this->applySalePrice($item))
+            ->map(fn (array $item) => $this->applyProfileSummary($this->applySalePrice($item)))
             ->all();
     }
 
@@ -97,7 +97,7 @@ class CatalogueService
             if ($product && $product->isPublic()) {
                 $product->increment('views_count');
 
-                return $product->toStorefrontArray();
+                return $this->storefrontArray($product);
             }
 
             if ($product) {
@@ -143,6 +143,24 @@ class CatalogueService
                 ['size' => 'X-Large', 'guide' => 'Generous fit over a full gown'],
             ],
         ], $property, $profile);
+    }
+
+    /** @return array<string, mixed> */
+    private function storefrontArray(Product $product): array
+    {
+        return $this->applyProfileSummary($product->toStorefrontArray());
+    }
+
+    /** @param array<string, mixed> $item @return array<string, mixed> */
+    private function applyProfileSummary(array $item): array
+    {
+        $summary = config('gownsea.product_profiles.'.($item['slug'] ?? '').'.description');
+
+        if (filled($summary) && mb_strlen(strip_tags((string) ($item['description'] ?? ''))) < 150) {
+            $item['description'] = $summary;
+        }
+
+        return $item;
     }
 
     /** @param array<string, mixed> $item */
