@@ -1,21 +1,25 @@
 @extends('layouts.public')
 
+@push('json_ld')
+    <script type="application/ld+json">{!! json_encode($structuredData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) !!}</script>
+@endpush
+
 @section('content')
     <x-ui.page-banner
         title="Graduation Attire"
-        subtitle="University-standard graduation attire"
+        subtitle="Graduation gowns, academic sets and accessories"
         ctaLabel="Shop Now"
         ctaHref="#shop"
         image="{{ $bannerImage }}"
-        alt="University-standard graduation gowns, caps, and hoods"
+        alt="Graduation gowns, caps and academic hoods in Kenya"
     />
 
     <section id="shop" class="bg-zinc-50 section-lg scroll-mt-24">
         <div class="container-shell">
             <div class="featured-rail__intro">
                 <p class="kicker">Graduation Attire</p>
-                <h2 class="featured-rail__heading mt-3 font-semibold">Graduation Wear in Kenya</h2>
-                <p class="featured-rail__lede mt-4 text-zinc-600">Premium gowns, caps, hoods, stoles, and complete sets for hire and sale.</p>
+                <h2 class="featured-rail__heading mt-3 font-semibold">{{ $categoryHeading }}</h2>
+                <p class="featured-rail__lede mt-4 text-zinc-600">{{ $categoryIntro }}</p>
             </div>
 
             <div class="luxury-grid mt-8 md:grid-cols-2 lg:grid-cols-4">
@@ -24,6 +28,10 @@
                 @endforeach
             </div>
         </div>
+    </section>
+
+    <section class="container-shell pb-8" aria-label="More graduation attire information">
+        <p class="max-w-4xl text-sm leading-7 text-zinc-600">Choose individual graduation accessories or explore complete sets for your ceremony. For help with an order, <a class="font-semibold text-zinc-900 underline" href="{{ route('gown-for-hire') }}">learn about graduation gown hire</a>, request a <a class="font-semibold text-zinc-900 underline" href="{{ route('bulk-inquiry') }}">bulk graduation attire quote</a>, or browse our <a class="font-semibold text-zinc-900 underline" href="{{ route('legal-attire') }}">legal attire</a> and <a class="font-semibold text-zinc-900 underline" href="{{ route('church-wear') }}">church wear</a>.</p>
     </section>
 
     <section class="container-shell section-md">

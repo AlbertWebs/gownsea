@@ -7,6 +7,7 @@
 
     <title>{{ $meta['title'] ?? config('app.name') }}</title>
     <meta name="description" content="{{ $meta['description'] ?? 'Gownsea premium ceremonial attire.' }}">
+    @if (filled($meta['robots'] ?? null))<meta name="robots" content="{{ $meta['robots'] }}">@endif
     <meta name="theme-color" content="#d42127">
     <link rel="icon" href="{{ asset('favicon-rpimary.png') }}" type="image/png">
     <link rel="shortcut icon" href="{{ asset('favicon-rpimary.png') }}" type="image/png">
@@ -14,11 +15,20 @@
     <link rel="canonical" href="{{ $meta['canonical'] ?? url()->current() }}">
 
     <meta property="og:site_name" content="Gownsea LTD">
+    <meta property="og:locale" content="en_KE">
     <meta property="og:title" content="{{ $meta['og_title'] ?? ($meta['title'] ?? config('app.name')) }}">
     <meta property="og:description" content="{{ $meta['og_description'] ?? ($meta['description'] ?? 'Gownsea premium ceremonial attire.') }}">
     <meta property="og:type" content="{{ $meta['og_type'] ?? 'website' }}">
     <meta property="og:url" content="{{ $meta['og_url'] ?? ($meta['canonical'] ?? url()->current()) }}">
     <meta property="og:image" content="{{ $meta['og_image'] ?? url('/favicon.ico') }}">
+    @if (filled($meta['product_price'] ?? null) && filled($meta['product_currency'] ?? null))
+        <meta property="product:price:amount" content="{{ $meta['product_price'] }}">
+        <meta property="product:price:currency" content="{{ $meta['product_currency'] }}">
+    @endif
+    @if (filled($meta['product_availability'] ?? null))<meta property="product:availability" content="{{ $meta['product_availability'] }}">@endif
+    @if (filled($meta['product_condition'] ?? null))<meta property="product:condition" content="{{ $meta['product_condition'] }}">@endif
+    @if (filled($meta['product_sku'] ?? null))<meta property="product:retailer_item_id" content="{{ $meta['product_sku'] }}">@endif
+    @if (filled($meta['product_brand'] ?? null))<meta property="product:brand" content="{{ $meta['product_brand'] }}">@endif
 
     <meta name="twitter:card" content="{{ $meta['twitter_card'] ?? 'summary_large_image' }}">
     <meta name="twitter:title" content="{{ $meta['twitter_title'] ?? ($meta['og_title'] ?? ($meta['title'] ?? config('app.name'))) }}">
@@ -33,6 +43,50 @@
 
     @stack('meta')
     @stack('json_ld')
+    @php
+        $siteUrl = url('/');
+        $pageUrl = $meta['canonical'] ?? url()->current();
+        $pageTitle = $meta['title'] ?? config('app.name');
+        $pageDescription = $meta['description'] ?? 'Gownsea ceremonial attire in Kenya.';
+        $brandSchema = [
+            '@context' => 'https://schema.org',
+            '@graph' => [
+                [
+                    '@type' => 'Organization',
+                    '@id' => $siteUrl.'#organization',
+                    'name' => 'Gownsea LTD',
+                    'url' => $siteUrl,
+                    'telephone' => config('gownsea.brand.phone'),
+                    'email' => config('gownsea.brand.email'),
+                    'address' => [
+                        '@type' => 'PostalAddress',
+                        'streetAddress' => config('gownsea.brand.address'),
+                        'addressLocality' => 'Nairobi',
+                        'addressCountry' => 'KE',
+                    ],
+                ],
+                [
+                    '@type' => 'WebSite',
+                    '@id' => $siteUrl.'#website',
+                    'url' => $siteUrl,
+                    'name' => 'Gownsea LTD',
+                    'publisher' => ['@id' => $siteUrl.'#organization'],
+                    'inLanguage' => 'en-KE',
+                ],
+                [
+                    '@type' => 'WebPage',
+                    '@id' => $pageUrl.'#webpage',
+                    'url' => $pageUrl,
+                    'name' => $pageTitle,
+                    'description' => $pageDescription,
+                    'isPartOf' => ['@id' => $siteUrl.'#website'],
+                    'publisher' => ['@id' => $siteUrl.'#organization'],
+                    'inLanguage' => 'en-KE',
+                ],
+            ],
+        ];
+    @endphp
+    <script type="application/ld+json">{!! json_encode($brandSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) !!}</script>
 
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
         @vite(['resources/css/app.css', 'resources/js/app.js'])

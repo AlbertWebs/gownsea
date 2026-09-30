@@ -1,21 +1,25 @@
 @extends('layouts.public')
 
+@push('json_ld')
+    <script type="application/ld+json">{!! json_encode($structuredData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) !!}</script>
+@endpush
+
 @section('content')
     <x-ui.page-banner
         title="Church Wear"
-        subtitle="Quality church and choral attire"
+        subtitle="Church garments and coordinated choral attire"
         ctaLabel="Shop Now"
         ctaHref="#shop"
         image="{{ $bannerImage }}"
-        alt="Church and choral wear for congregations in Kenya"
+        alt="Church and choral attire for clergy, choirs and congregations in Kenya"
     />
 
     <section id="shop" class="bg-zinc-50 section-lg scroll-mt-24">
         <div class="container-shell">
             <div class="featured-rail__intro">
                 <p class="kicker">Church Wear</p>
-                <h2 class="featured-rail__heading mt-3 font-semibold">Church and Choral Wear in Kenya</h2>
-                <p class="featured-rail__lede mt-4 text-zinc-600">Clergy robes, cassocks, choir gowns, and liturgical accessories for hire and sale.</p>
+                <h2 class="featured-rail__heading mt-3 font-semibold">{{ $categoryHeading }}</h2>
+                <p class="featured-rail__lede mt-4 text-zinc-600">{{ $categoryIntro }}</p>
             </div>
 
             <div class="luxury-grid mt-8 md:grid-cols-2 lg:grid-cols-4">

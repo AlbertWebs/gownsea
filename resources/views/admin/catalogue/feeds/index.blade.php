@@ -19,8 +19,9 @@
             <div>
                 <h2>Google Merchant Center</h2>
                 <p class="mt-1 text-sm text-zinc-500">
-                    Product feed with Google fields (`id`, `title`, `link`, `image_link`, `availability`, `price`, and more).
+                    Product feed with Google fields (`id`, `title`, `link`, `image_link`, `availability`, `price`, and more). CSV is the easiest format to upload to Merchant Center.
                 </p>
+                <p class="mt-2 text-xs font-medium text-zinc-600">Preview shows up to 3 items; exports include all {{ number_format($productCount) }} published, public products.</p>
             </div>
             <div class="flex flex-wrap gap-3">
                 <a
@@ -60,8 +61,9 @@
             <div>
                 <h2>Facebook / Meta catalogue</h2>
                 <p class="mt-1 text-sm text-zinc-500">
-                    Feed for Meta Commerce Manager / Facebook product catalogues and pixel matching.
+                    Product feed for Meta Commerce Manager and Facebook catalogues. Upload the CSV to sync product details with your catalogue.
                 </p>
+                <p class="mt-2 text-xs font-medium text-zinc-600">Preview shows up to 3 items; exports include all {{ number_format($productCount) }} published, public products.</p>
             </div>
             <div class="flex flex-wrap gap-3">
                 <a
@@ -105,6 +107,7 @@
             <li>Upload the Google CSV/Excel into <strong>Google Merchant Center → Products → Add products → Upload</strong>.</li>
             <li>Upload the Facebook CSV/Excel into <strong>Meta Commerce Manager → Catalogue → Add items → Upload file</strong>.</li>
             <li>Prices use your website currency setting (default KES). Products without a price export as <code>0.00</code>.</li>
+            <li>These files are product catalogue feeds. The Meta Pixel is a separate tracking integration, not a product file.</li>
         </ul>
     </section>
 @endsection

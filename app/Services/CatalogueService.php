@@ -31,14 +31,14 @@ class CatalogueService
                 ->orderBy('sort_order')
                 ->orderBy('name')
                 ->get()
-                ->map(fn (Product $product) => $product->toStorefrontArray())
+                ->map(fn (Product $product) => $this->storefrontArray($product))
                 ->all();
         }
 
         $featured = collect(config('gownsea.properties', []))->where('category', $category);
         $hire = collect(config('gownsea.hire_products', []))->where('category', $category);
 
-        return $featured->merge($hire)->unique('slug')->map(fn (array $item) => $this->applySalePrice($item))->values()->all();
+        return $featured->merge($hire)->unique('slug')->map(fn (array $item) => $this->applyProfileSummary($this->applySalePrice($item)))->values()->all();
     }
 
     /**
@@ -53,12 +53,12 @@ class CatalogueService
                 ->where('is_hire', true)
                 ->orderBy('sort_order')
                 ->get()
-                ->map(fn (Product $product) => $product->toStorefrontArray())
+                ->map(fn (Product $product) => $this->storefrontArray($product))
                 ->all();
         }
 
         return collect(config('gownsea.hire_products', []))
-            ->map(fn (array $item) => $this->applySalePrice($item))
+            ->map(fn (array $item) => $this->applyProfileSummary($this->applySalePrice($item)))
             ->all();
     }
 
@@ -74,12 +74,12 @@ class CatalogueService
                 ->where('featured', true)
                 ->orderBy('id')
                 ->get()
-                ->map(fn (Product $product) => $product->toStorefrontArray())
+                ->map(fn (Product $product) => $this->storefrontArray($product))
                 ->all();
         }
 
         return collect(config('gownsea.properties', []))
-            ->map(fn (array $item) => $this->applySalePrice($item))
+            ->map(fn (array $item) => $this->applyProfileSummary($this->applySalePrice($item)))
             ->all();
     }
 
@@ -97,12 +97,10 @@ class CatalogueService
             if ($product && $product->isPublic()) {
                 $product->increment('views_count');
 
-                return $product->toStorefrontArray();
+                return $this->storefrontArray($product);
             }
 
-            if ($product) {
-                return $product->toStorefrontArray();
-            }
+            abort_if($product, 404);
         }
 
         $property = collect(config('gownsea.hire_products', []))
@@ -119,10 +117,11 @@ class CatalogueService
     public function enrich(array $property): array
     {
         $property = $this->applySalePrice($property);
-        $profile = config('gownsea.product_profiles.'.$property['slug'], []);
+        $slug = (string) ($property['slug'] ?? '');
+        $profile = config('gownsea.product_profiles.'.$slug, []);
         $image = $property['image'] ?? '/images/site/hero.webp';
 
-        return array_merge([
+        $enriched = array_merge([
             'gallery' => [$image],
             'options' => [
                 'Size' => ['Small', 'Medium', 'Large', 'X-Large'],
@@ -142,7 +141,54 @@ class CatalogueService
                 ['size' => 'Large', 'guide' => 'Taller frame or layered clothing'],
                 ['size' => 'X-Large', 'guide' => 'Generous fit over a full gown'],
             ],
-        ], $property, $profile);
+        ], $profile, $property);
+
+        $enriched = $this->applyProfileSummary($enriched);
+        $about = trim(strip_tags((string) ($property['about'] ?? '')));
+        $legacyHoodCopy = $slug === 'undergraduate-academic-hoods'
+            && str_starts_with($about, 'Your graduation look is not complete without the academic hood.');
+
+        if (filled($profile['about'] ?? null) && ($about === '' || $this->matchesCatalogueDescription($slug, $about) || $legacyHoodCopy)) {
+            $enriched['about'] = $profile['about'];
+        }
+
+        $details = $property['details'] ?? [];
+        $legacyHoodDetails = $slug === 'undergraduate-academic-hoods'
+            && ($details[0] ?? null) === 'Traditional undergraduate academic hood';
+
+        if (empty($details) || $legacyHoodDetails) {
+            $enriched['details'] = $profile['details'] ?? $enriched['details'];
+        }
+
+        return $enriched;
+    }
+
+    /** @return array<string, mixed> */
+    private function storefrontArray(Product $product): array
+    {
+        return $this->applyProfileSummary($product->toStorefrontArray());
+    }
+
+    /** @param array<string, mixed> $item @return array<string, mixed> */
+    private function applyProfileSummary(array $item): array
+    {
+        $summary = config('gownsea.product_profiles.'.($item['slug'] ?? '').'.description');
+        $current = trim(strip_tags((string) ($item['description'] ?? '')));
+
+        if (filled($summary) && ($current === '' || $this->matchesCatalogueDescription((string) ($item['slug'] ?? ''), $current))) {
+            $item['description'] = $summary;
+        }
+
+        return $item;
+    }
+
+    private function matchesCatalogueDescription(string $slug, string $description): bool
+    {
+        $baseline = collect(config('gownsea.hire_products', []))
+            ->merge(config('gownsea.properties', []))
+            ->firstWhere('slug', $slug)['description'] ?? null;
+
+        return is_string($baseline) && trim(strip_tags($baseline)) === trim($description);
     }
 
     /** @param array<string, mixed> $item */

@@ -1,24 +1,5 @@
 @extends('layouts.public')
 
-@push('json_ld')
-    @php
-        $orgSchema = [
-            '@context' => 'https://schema.org',
-            '@type' => 'Organization',
-            'name' => 'Gownsea LTD',
-            'url' => url('/'),
-            'telephone' => config('gownsea.brand.phone'),
-            'address' => [
-                '@type' => 'PostalAddress',
-                'streetAddress' => config('gownsea.brand.address'),
-            ],
-        ];
-    @endphp
-    <script type="application/ld+json">
-        {!! json_encode($orgSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
-    </script>
-@endpush
-
 @section('content')
     <div class="home-page">
     <x-ui.hero-section

@@ -265,7 +265,78 @@ return [
     ],
 
     'product_profiles' => [
+        'graduation-stoles' => [
+            'description' => 'Complete graduation attire with a stole chosen to complement your gown, faculty colours, or institution identity. Ask Gownsea about options for individual graduates and group orders in Nairobi.',
+            'details' => ['A finishing piece for graduation and academic regalia', 'Choose colours that complement your gown or institution', 'Suitable for individual enquiries and group planning', 'Ask about current hire and purchase options'],
+            'about' => '<p>A graduation stole adds colour and personal meaning to an academic outfit. Select a shade that works with your gown and reflects the style of your institution or faculty.</p><p>Gownsea can help graduates and organisers plan stoles for a ceremony in Nairobi. Share the colours, quantity, and date you have in mind so the team can confirm available options and provide a suitable quote.</p>',
+        ],
+        'graduation-tassels' => [
+            'description' => 'Find graduation tassels to complete mortarboards for school, college, or university ceremonies. Share your preferred colour and quantity with Gownsea to confirm a match for your graduation set.',
+            'details' => ['Designed to finish a graduation mortarboard', 'Check colours against your institution’s requirements', 'Useful for individual orders and ceremony quantities', 'Confirm availability and the correct match before ordering'],
+            'about' => '<p>A tassel is a small detail that makes a graduation cap feel complete. Choose a colour that follows your school or institution’s guidance, then pair it with the rest of your academic regalia for a coordinated ceremony look.</p><p>If you are ordering for a group, send Gownsea the required colours, quantity, and event date. The team can help confirm the best available match and provide a quote before you place your order.</p>',
+        ],
+        'certificate-gowns' => [
+            'description' => 'Prepare for a certificate graduation ceremony with an academic gown for hire or purchase. Gownsea can help graduates and institutions confirm the right size, quantity, and collection or delivery plan.',
+            'details' => ['Intended for certificate-level graduation ceremonies', 'Hire and purchase enquiries available', 'Sizing support for individual graduates and groups', 'Confirm ceremony colours and set contents with your institution', 'Plan Nairobi collection or delivery with your quote'],
+            'about' => '<p>Mark a certificate graduation with attire that feels appropriate for the occasion. Gownsea’s certificate gowns are offered for hire and purchase, with support to help graduates and organisers plan quantities and sizing ahead of ceremony day.</p><p>Institutional colours and regalia requirements can vary. Check your school’s guidance, then share the event date and number of gowns needed so Gownsea can confirm suitable options and a clear quote.</p>',
+        ],
+        'diploma-graduation-gowns' => [
+            'description' => 'Plan a diploma graduation with gowns available for hire or purchase in Kenya. Get help with sizing, group quantities, and the ceremony details that matter to your college or training institution.',
+            'details' => ['For diploma and college graduation ceremonies', 'Hire and purchase enquiries available', 'Sizing support for individual and group orders', 'Confirm institution colours and regalia requirements before ordering', 'Delivery timing arranged around your ceremony date'],
+            'about' => '<p>Diploma ceremonies bring together graduates, families, and the institution that has supported their studies. Gownsea helps make attire planning easier with diploma gowns for hire or purchase and practical sizing support for both individuals and groups.</p><p>Tell us your institution, ceremony date, and estimated quantity. We can help check the appropriate style and colour requirements, then prepare a quote and discuss collection or delivery arrangements in Kenya.</p>',
+        ],
+        'degree-graduation-gowns' => [
+            'description' => 'Get ready for a university degree ceremony with graduation gowns for hire or purchase. Gownsea supports graduates and institutions with sizing, group planning, and ceremony-ready regalia in Kenya.',
+            'details' => ['Designed for degree conferment and graduation ceremonies', 'Hire and purchase enquiries available', 'Sizing support for graduates and institution orders', 'Check gown and faculty colour requirements with your university', 'Share your event date to plan collection or delivery'],
+            'about' => '<p>A degree ceremony is a major milestone, and the right academic attire helps graduates feel ready for the procession, photographs, and celebrations that follow. Gownsea offers degree gowns for hire or purchase, with support for sizing and group requirements.</p><p>Universities set their own regalia and colour guidance, so confirm the details with your institution before ordering. Send Gownsea your ceremony date, quantity, and requirements to receive a tailored quote and arrange the next steps.</p>',
+        ],
+        'masters-gown' => [
+            'description' => 'Celebrate a master’s degree conferment in an academic gown suited to the occasion. Ask Gownsea about hire or purchase, sizing, and planning for individual graduates or university groups.',
+            'details' => ['For master’s degree graduations and conferment ceremonies', 'Hire and purchase enquiries available', 'Sizing assistance for individuals and organised groups', 'Confirm university gown and hood requirements before ordering', 'Plan a quote and delivery timing around your event'],
+            'about' => '<p>Completing a master’s degree deserves a ceremony look that feels considered and comfortable. Gownsea can help you plan a master’s gown for hire or purchase, whether you are preparing for one graduate or coordinating attire for a university event.</p><p>Regalia details vary between institutions. Check your university’s specifications, then share the required size, quantity, and ceremony date so the team can confirm availability and provide a quote.</p>',
+        ],
+        'preschool-graduation' => [
+            'description' => 'Make a preschool graduation feel special with a child-size gown set for school ceremonies and family photographs. Ask Gownsea to confirm available sizes, colours, set contents, and group quantities.',
+            'details' => ['For preschool graduation celebrations and photographs', 'Designed with young graduates in mind', 'Ask the team to confirm available sizes and colours', 'Confirm exactly what is included in the set before ordering', 'Suitable for parent enquiries and school group planning'],
+            'about' => '<p>A preschool graduation is a proud moment for children, families, and teachers. A child-size gown set helps make the event memorable and gives families a polished look for the ceremony and photographs.</p><p>For the best fit, share the child’s age or measurements, preferred colour, and event date. Schools planning for a class can provide the number of children and any uniform or colour guidance. Gownsea will confirm available sizes, set contents, and pricing before you order.</p>',
+        ],
+        'phd-caps' => [
+            'description' => 'Complete doctoral regalia with a PhD cap selected to suit your graduation attire. Contact Gownsea to confirm the cap style, colour, availability, and your university requirements.',
+            'details' => ['For PhD graduation and doctoral conferment ceremonies', 'Complements a doctoral gown and other academic regalia', 'Confirm style and colour requirements with your university', 'Ask the team to check availability before ordering'],
+            'about' => '<p>The doctoral cap is an important finishing piece for PhD regalia. Choose a style that works with your gown and follows your university’s ceremony requirements, especially where faculty or institution colours are specified.</p><p>Share your event date and the cap details provided by your university with Gownsea. The team can confirm which options are available and help arrange a quote for an individual order or a larger ceremony requirement.</p>',
+        ],
+        'phd-graduation-gown' => [
+            'description' => 'Prepare for a PhD conferment with a doctoral graduation gown for hire or purchase. Gownsea can help confirm university specifications, sizing, and arrangements for your ceremony date.',
+            'details' => ['For PhD and doctoral graduation ceremonies', 'Hire and purchase enquiries available', 'Sizing and ceremony planning support', 'Confirm doctoral colours and gown style with your university', 'Request a quote based on your event date and requirements'],
+            'about' => '<p>A PhD graduation marks years of research and dedication. Gownsea helps doctoral graduates and institutions plan academic attire, with hire and purchase enquiries for PhD gowns and practical support around sizing and event arrangements.</p><p>Doctoral gown styles and colours can differ by university. Check your institution’s requirements, then send Gownsea the relevant details, quantity, and ceremony date. The team can confirm availability and prepare a quote for your needs.</p>',
+        ],
+        'bachelors-graduation-gown-cap-hood-set' => [
+            'description' => 'Prepare for a bachelor’s degree ceremony with a graduation gown, cap, and hood set. Ask Gownsea to confirm university colours, available sizing, and hire or purchase options for your date.',
+            'details' => ['Gown, cap, and hood set for bachelor’s degree ceremonies', 'Hire and purchase enquiries available', 'Confirm colours and hood requirements with your university', 'Share your size and ceremony date for planning support', 'Suitable for individual graduates and group enquiries'],
+            'about' => '<p>A bachelor’s graduation set brings the key pieces of academic regalia together for the ceremony. This listing includes a gown, cap, and hood, giving graduates a clear starting point when planning attire for the procession and photographs.</p><p>University colours and hood specifications can vary, so check your institution’s requirements before ordering. Contact Gownsea with your size, ceremony date, and quantity to confirm the set details, availability, and quote.</p>',
+        ],
+        'traditional-barrister-wig-and-gown' => [
+            'description' => 'Choose traditional barrister court attire with a wig and gown for advocates and legal professionals. Contact Gownsea to discuss fit, current availability, and the requirements of your practice or occasion.',
+            'details' => ['Traditional wig and gown combination for legal practice', 'For advocates and legal professionals', 'Ask about available sizing and fitting support in Nairobi', 'Confirm current availability and quote before ordering'],
+            'about' => '<p>Traditional court dress helps advocates present themselves appropriately in formal legal settings. This wig and gown combination is intended for legal professionals who need courtroom attire and want to check fit and availability before making arrangements.</p><p>Court dress requirements can depend on the setting and local practice. Contact Gownsea with the items you need, your preferred timing, and any fitting questions. The team can discuss current options and provide a quote from Nairobi.</p>',
+        ],
+        'plain-english-bib' => [
+            'description' => 'Add a plain English bib to complete traditional court dress for advocates and barristers. Ask Gownsea about fit, compatibility with your legal gown, and current availability before ordering.',
+            'details' => ['Plain English style bib for courtroom attire', 'For advocates and barristers', 'Designed as part of formal legal dress', 'Check fit and compatibility with your gown before ordering'],
+            'about' => '<p>A bib is a small but visible part of traditional legal attire. This plain English style is intended for advocates and barristers completing their court dress, and can be considered alongside a legal gown and shirt.</p><p>If you are unsure which style is appropriate for your practice, check your professional or court guidance first. Gownsea can help confirm availability and answer questions about fit and coordination with your existing attire.</p>',
+        ],
+        'advocates-shirt' => [
+            'description' => 'Find a white advocates shirt for formal courtroom attire and professional legal wear. Contact Gownsea to check available sizing and how the shirt can be coordinated with your gown and bib.',
+            'details' => ['White shirt for advocates and legal professionals', 'Suitable for formal courtroom attire', 'Ask about available sizes before ordering', 'Can be planned alongside a legal gown and bib'],
+            'about' => '<p>A white shirt provides a simple foundation for formal legal attire. Advocates can wear it with the appropriate gown and bib for a coordinated courtroom look, while checking that the style follows their professional requirements.</p><p>Contact Gownsea with your size and the other pieces you need. The team can confirm current availability and help you plan a complete legal attire order in Nairobi.</p>',
+        ],
+        'choral-and-church-attire-pack' => [
+            'description' => 'Plan coordinated church or choir attire for your ministry team with a custom group enquiry. Share garment needs, colours, sizes, and quantity so Gownsea can prepare suitable options and a quote.',
+            'details' => ['Group attire planning for choirs and ministry teams', 'Discuss garment types, colours, and fitting needs', 'Share sizes and quantities for an accurate group quote', 'Customisation can be discussed for your congregation', 'Delivery planning available by arrangement'],
+            'about' => '<p>Coordinated attire can help a choir or ministry team feel unified during services and special occasions. This pack is a starting point for a group enquiry, with garment choices and fitting details discussed around your congregation’s needs.</p><p>Tell Gownsea which garments you need, your preferred colours, the number of people, and the event date. The team can discuss customisation, sizing, availability, and delivery arrangements before preparing a quote.</p>',
+        ],
         'undergraduate-academic-hoods' => [
+            'description' => 'Complete an undergraduate graduation set with an academic hood in a faculty colour selected to match your university’s guidance. Ask Gownsea about sizing, hire or purchase options, and group orders in Nairobi.',
             'gallery' => [
                 '/images/products/academic-gradduation-hoods-hoods-(18)-Photoroom.jpg',
                 '/images/products/academic-gradduation-hoods-hoods-(17)-Photoroom.jpg',
@@ -277,13 +348,13 @@ return [
                 'Size' => ['Small', 'Medium', 'Large', 'X-Large'],
             ],
             'details' => [
-                'Traditional undergraduate academic hood',
-                'Faculty-colour lining to match your award',
-                'Durable and comfortable for a full ceremony day',
-                'Available for hire and purchase',
-                'Pairs with degree gowns and mortarboards',
+                'Academic hood for undergraduate degree ceremonies',
+                'Faculty colour options to check against your university guidance',
+                'Available for hire and purchase enquiries',
+                'Pairs with a degree gown and mortarboard',
+                'Sizing support for individuals and institution orders',
             ],
-            'about' => 'Your graduation look is not complete without the academic hood. Gownsea undergraduate hoods are cut to traditional specifications, with faculty colours that represent your discipline. Whether this is your first conferment or a repeat hire for an institution, the hood gives the ceremony its official finish — ready for the hall, the photographs, and the procession.',
+            'about' => '<p>An academic hood completes an undergraduate graduation set and adds the faculty colour associated with your degree. Choose a shade that follows your university’s guidance, then pair the hood with a gown and mortarboard for the ceremony, procession, and photographs.</p><p>Gownsea can help graduates and institutions plan hoods for hire or purchase. Share your faculty, required colour, size, quantity, and ceremony date so the team can confirm a suitable option and provide a quote.</p>',
             'fit_note' => 'If you are between sizes, we recommend the larger option for a more comfortable fit over your gown and clothing.',
             'size_guide' => [
                 ['size' => 'Small', 'guide' => 'Shorter gowns and petite frames'],
@@ -317,6 +388,22 @@ return [
             'date' => '2025-06-14',
             'excerpt' => 'Feedback insights that can improve satisfaction and institutional ceremony quality.',
             'image' => '/images/blogs/img_20211111_163231_401.jpg',
+        ],
+    ],
+
+    'journal_seo' => [
+        'graduation-regalia-boost-tvet-status' => [
+            'heading' => 'How Graduation Regalia Can Boost TVET Status in Kenya',
+            'title' => 'How Graduation Regalia Boosts TVET Status in Kenya | Gownsea',
+            'description' => 'Explore how graduation regalia boosts TVET status in Kenya, celebrates skills, strengthens college identity and supports affordable, dignified ceremonies.',
+            'keywords' => [
+                'TVET graduation regalia',
+                'TVET graduation gowns Kenya',
+                'graduation regalia in Kenya',
+                'academic regalia for TVET institutions',
+                'graduation gown hire for colleges',
+                'local garment manufacturing in Kenya',
+            ],
         ],
     ],
 ];

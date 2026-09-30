@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\CatalogueFeedController;
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\InquiryController;
+use App\Http\Controllers\Admin\JournalPostController;
 use App\Http\Controllers\Admin\LeadController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\ProductController;
@@ -15,6 +16,7 @@ use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SaleController;
 use App\Http\Controllers\Admin\SearchController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\SocialFunnelController;
 use App\Http\Controllers\Admin\HeroCarouselController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Middleware\EnsureAdminAuthenticated;
@@ -46,6 +48,18 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('categories', CategoryController::class)->except(['show']);
         Route::get('feeds', [CatalogueFeedController::class, 'index'])->name('feeds.index');
         Route::get('feeds/export', [CatalogueFeedController::class, 'export'])->name('feeds.export');
+    });
+
+    Route::middleware(['auth', EnsureAdminAuthenticated::class.':catalogue'])->prefix('social-funnels')->name('marketing.')->group(function () {
+        Route::get('/', [SocialFunnelController::class, 'index'])->name('index');
+        Route::post('/', [SocialFunnelController::class, 'store'])->name('store');
+        Route::delete('{campaignLink}', [SocialFunnelController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::middleware(['auth', EnsureAdminAuthenticated::class.':journal'])->group(function () {
+        Route::get('journal/images', [JournalPostController::class, 'images'])->name('journal.images');
+        Route::post('journal/images', [JournalPostController::class, 'uploadImages'])->name('journal.images.upload');
+        Route::resource('journal', JournalPostController::class)->except(['show'])->parameters(['journal' => 'journalPost']);
     });
 
     Route::middleware(['auth', EnsureAdminAuthenticated::class.':inquiries'])->group(function () {

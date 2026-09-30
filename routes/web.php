@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\AssistantController;
 use App\Http\Controllers\PageController;
+use App\Models\JournalPost;
+use App\Models\Product;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
 
@@ -34,13 +36,39 @@ Route::post('/assistant/submit', [AssistantController::class, 'submit'])
     ->name('assistant.submit');
 
 Route::get('/sitemap.xml', function (): Response {
-    $urls = collect(config('gownsea.protected_routes', []))
+    // Keep only canonical, permanent public pages here. Dynamic products and
+    // articles are added below from their currently published records.
+    $staticRoutes = [
+        '/', '/about-us', '/contact-us', '/legal-attire', '/graduation-attire',
+        '/church-wear', '/gown-for-hire', '/bulk-inquiry', '/the-gown-journal',
+        '/privacy-policy', '/terms-and-conditions', '/return-policy', '/copyright',
+    ];
+
+    $urls = collect($staticRoutes)
         ->map(fn (string $path) => [
             'loc' => url($path),
-            'lastmod' => now()->toDateString(),
         ])->all();
 
+    $journalUrls = JournalPost::published()->get()->map(fn (JournalPost $post) => [
+        'loc' => route('journal.show', $post->slug),
+        'lastmod' => ($post->updated_at ?? now())->toDateString(),
+    ])->all();
+
+    $productUrls = Product::published()->get()->map(function (Product $product) {
+        $path = (string) ($product->url_path ?: route('products.show', $product->slug, false));
+        if (! str_starts_with($path, '/') || str_starts_with($path, '//') || in_array(rtrim($path, '/'), [
+            '/shop-attire/graduation-attire', '/shop-attire/legal-attire', '/shop-attire/church-wear',
+        ], true)) {
+            $path = route('products.show', $product->slug, false);
+        }
+
+        return [
+            'loc' => url($path),
+            'lastmod' => ($product->updated_at ?? now())->toDateString(),
+        ];
+    })->all();
+
     return response()
-        ->view('sitemap', ['urls' => $urls])
+        ->view('sitemap', ['urls' => collect(array_merge($urls, $journalUrls, $productUrls))->unique('loc')->values()->all()])
         ->header('Content-Type', 'application/xml');
 })->name('sitemap');
