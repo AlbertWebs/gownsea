@@ -34,13 +34,14 @@
         </div>
 
         <div class="flex min-w-0 flex-1 flex-col">
-            <header class="sticky top-0 z-20 flex items-center gap-3 border-b border-zinc-200 bg-white px-4 py-3">
-                <button type="button" class="rounded-lg border border-zinc-200 px-3 py-2 text-sm lg:hidden" @click="sidebar = true">Menu</button>
+            <header class="admin-topbar sticky top-0 z-20 flex items-center gap-3 border-b border-zinc-200 bg-white px-4 py-3 md:px-6">
+                <button type="button" class="admin-menu-toggle rounded-lg border border-zinc-200 px-3 py-2 text-sm lg:hidden" @click="sidebar = true" aria-label="Open navigation menu">Menu</button>
                 <form action="{{ route('admin.search') }}" class="min-w-0 flex-1">
-                    <input name="q" value="{{ request('q') }}" class="admin-input max-w-xl" placeholder="Search products, customers, leads, inquiries, sales...">
+                    <label class="sr-only" for="admin-search">Search admin records</label>
+                    <input id="admin-search" name="q" value="{{ request('q') }}" class="admin-input admin-search-input max-w-xl" placeholder="Search products, customers, leads, inquiries, sales...">
                 </form>
                 <div class="relative" x-data="{ open: false }">
-                    <button type="button" class="rounded-2xl border border-zinc-200 px-3 py-2 text-sm" @click="open = !open">
+                    <button type="button" class="admin-alert-button rounded-2xl border border-zinc-200 px-3 py-2 text-sm" @click="open = !open" :aria-expanded="open.toString()">
                         Alerts @if(($unreadNotifications ?? 0) > 0)<span class="ml-1 text-[#d42127]">{{ $unreadNotifications }}</span>@endif
                     </button>
                     <div x-show="open" x-cloak class="absolute right-0 mt-2 w-80 rounded-xl border border-zinc-200 bg-white p-3 shadow-lg">
