@@ -15,6 +15,7 @@
     <link rel="canonical" href="{{ $meta['canonical'] ?? url()->current() }}">
 
     <meta property="og:site_name" content="Gownsea LTD">
+    <meta property="og:locale" content="en_KE">
     <meta property="og:title" content="{{ $meta['og_title'] ?? ($meta['title'] ?? config('app.name')) }}">
     <meta property="og:description" content="{{ $meta['og_description'] ?? ($meta['description'] ?? 'Gownsea premium ceremonial attire.') }}">
     <meta property="og:type" content="{{ $meta['og_type'] ?? 'website' }}">
@@ -42,6 +43,50 @@
 
     @stack('meta')
     @stack('json_ld')
+    @php
+        $siteUrl = url('/');
+        $pageUrl = $meta['canonical'] ?? url()->current();
+        $pageTitle = $meta['title'] ?? config('app.name');
+        $pageDescription = $meta['description'] ?? 'Gownsea ceremonial attire in Kenya.';
+        $brandSchema = [
+            '@context' => 'https://schema.org',
+            '@graph' => [
+                [
+                    '@type' => 'Organization',
+                    '@id' => $siteUrl.'#organization',
+                    'name' => 'Gownsea LTD',
+                    'url' => $siteUrl,
+                    'telephone' => config('gownsea.brand.phone'),
+                    'email' => config('gownsea.brand.email'),
+                    'address' => [
+                        '@type' => 'PostalAddress',
+                        'streetAddress' => config('gownsea.brand.address'),
+                        'addressLocality' => 'Nairobi',
+                        'addressCountry' => 'KE',
+                    ],
+                ],
+                [
+                    '@type' => 'WebSite',
+                    '@id' => $siteUrl.'#website',
+                    'url' => $siteUrl,
+                    'name' => 'Gownsea LTD',
+                    'publisher' => ['@id' => $siteUrl.'#organization'],
+                    'inLanguage' => 'en-KE',
+                ],
+                [
+                    '@type' => 'WebPage',
+                    '@id' => $pageUrl.'#webpage',
+                    'url' => $pageUrl,
+                    'name' => $pageTitle,
+                    'description' => $pageDescription,
+                    'isPartOf' => ['@id' => $siteUrl.'#website'],
+                    'publisher' => ['@id' => $siteUrl.'#organization'],
+                    'inLanguage' => 'en-KE',
+                ],
+            ],
+        ];
+    @endphp
+    <script type="application/ld+json">{!! json_encode($brandSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) !!}</script>
 
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
         @vite(['resources/css/app.css', 'resources/js/app.js'])

@@ -36,10 +36,17 @@ Route::post('/assistant/submit', [AssistantController::class, 'submit'])
     ->name('assistant.submit');
 
 Route::get('/sitemap.xml', function (): Response {
-    $urls = collect(config('gownsea.protected_routes', []))
+    // Keep only canonical, permanent public pages here. Dynamic products and
+    // articles are added below from their currently published records.
+    $staticRoutes = [
+        '/', '/about-us', '/contact-us', '/legal-attire', '/graduation-attire',
+        '/church-wear', '/gown-for-hire', '/bulk-inquiry', '/the-gown-journal',
+        '/privacy-policy', '/terms-and-conditions', '/return-policy', '/copyright',
+    ];
+
+    $urls = collect($staticRoutes)
         ->map(fn (string $path) => [
             'loc' => url($path),
-            'lastmod' => now()->toDateString(),
         ])->all();
 
     $journalUrls = JournalPost::published()->get()->map(fn (JournalPost $post) => [

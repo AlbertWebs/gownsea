@@ -342,12 +342,43 @@ class PageController extends Controller
 
     public function journalIndex(): View
     {
+        $posts = $this->journalPosts();
+        $canonical = route('journal.index');
+        $title = 'The Gown Journal | Graduation & Ceremony Guides | Gownsea';
+        $description = 'Read practical guides from Gownsea on graduation gowns, academic regalia, legal attire, church wear and ceremony planning in Kenya.';
+        $structuredData = [
+            '@context' => 'https://schema.org',
+            '@graph' => [
+                [
+                    '@type' => 'CollectionPage',
+                    '@id' => $canonical.'#journal',
+                    'url' => $canonical,
+                    'name' => $title,
+                    'description' => $description,
+                    'mainEntity' => [
+                        '@type' => 'ItemList',
+                        'itemListElement' => collect($posts)->values()->map(fn (array $post, int $index) => [
+                            '@type' => 'ListItem',
+                            'position' => $index + 1,
+                            'url' => route('journal.show', $post['slug']),
+                            'name' => $post['title'],
+                        ])->all(),
+                    ],
+                ],
+                [
+                    '@type' => 'BreadcrumbList',
+                    'itemListElement' => [
+                        ['@type' => 'ListItem', 'position' => 1, 'name' => 'Home', 'item' => route('home')],
+                        ['@type' => 'ListItem', 'position' => 2, 'name' => 'The Gown Journal', 'item' => $canonical],
+                    ],
+                ],
+            ],
+        ];
+
         return view('pages.journal.index', [
-            'meta' => $this->meta(
-                'The Gown Journal | Gownsea Blog & Insights',
-                'Read the latest Gownsea stories, tips, and ceremony planning insights.'
-            ),
-            'posts' => $this->journalPosts(),
+            'meta' => $this->meta($title, $description),
+            'posts' => $posts,
+            'structuredData' => $structuredData,
         ]);
     }
 
@@ -461,27 +492,18 @@ class PageController extends Controller
         ]);
     }
 
-    public function shopAttireCollection(string $slug): View
+    public function shopAttireCollection(string $slug): \Illuminate\Http\RedirectResponse
     {
-        $title = $this->titleFromSlug($slug);
-
-        $category = match ($slug) {
-            'graduation-attire' => 'graduation',
-            'legal-attire' => 'legal',
-            'church-wear' => 'church',
+        $route = match ($slug) {
+            'graduation-attire' => 'graduation-attire',
+            'legal-attire' => 'legal-attire',
+            'church-wear' => 'church-wear',
             default => null,
         };
 
-        $items = $category
-            ? $this->catalogue->itemsByCategory($category)
-            : [];
+        abort_if($route === null, 404);
 
-        return view('pages.shop.show', [
-            'meta' => $this->meta($title.' | Gownsea LTD', 'Shop graduation and ceremonial attire at Gownsea.'),
-            'heading' => $title,
-            'subheading' => 'Explore our collection.',
-            'items' => $items,
-        ]);
+        return redirect()->route($route, [], 301);
     }
 
     public function shopAttireCategory(string $mainSlug, string $slug): View
@@ -492,15 +514,7 @@ class PageController extends Controller
             return $this->productShow($slug);
         }
 
-        $mainTitle = $this->titleFromSlug($mainSlug);
-        $title = $this->titleFromSlug($slug);
-
-        return view('pages.shop.show', [
-            'meta' => $this->meta($title.' | Gownsea LTD', 'Find premium regalia for purchase and hire.'),
-            'heading' => $title,
-            'subheading' => $mainTitle.' collection',
-            'items' => $this->catalogue->itemsByCategory($this->categoryFromSlug($mainSlug) ?? 'graduation'),
-        ]);
+        abort(404);
     }
 
     public function ourProduct(string $slug): View
@@ -534,18 +548,20 @@ class PageController extends Controller
         return Arr::only([
             'title' => $title,
             'description' => $description,
+            'robots' => 'index,follow,max-image-preview:large',
             'og_title' => $title,
             'og_description' => $description,
             'og_type' => 'website',
-            'og_image' => url('/favicon.ico'),
+            'og_image' => url('/images/site/hero.webp'),
             'twitter_card' => 'summary_large_image',
             'twitter_title' => $title,
             'twitter_description' => $description,
-            'twitter_image' => url('/favicon.ico'),
+            'twitter_image' => url('/images/site/hero.webp'),
             'canonical' => url()->current(),
         ], [
             'title',
             'description',
+            'robots',
             'og_title',
             'og_description',
             'og_type',
