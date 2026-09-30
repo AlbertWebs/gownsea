@@ -50,6 +50,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     });
 
     Route::middleware(['auth', EnsureAdminAuthenticated::class.':journal'])->group(function () {
+        Route::get('journal/images', [JournalPostController::class, 'images'])->name('journal.images');
+        Route::post('journal/images', [JournalPostController::class, 'uploadImages'])->name('journal.images.upload');
         Route::resource('journal', JournalPostController::class)->except(['show'])->parameters(['journal' => 'journalPost']);
     });
 

@@ -21,10 +21,53 @@
                     <div><p class="text-sm font-semibold">Article body</p><div class="mt-2"><x-admin.editor name="body" :value="old('body', $post->body)" /></div></div>
                 </section>
                 <section class="admin-card space-y-4">
-                    <div><h2>Cover image</h2><p class="mt-1 text-sm text-zinc-500">Optional. JPG, PNG, or WEBP up to 4MB.</p></div>
-                    @if($imageUrl)<img src="{{ $imageUrl }}" alt="Article cover" class="max-h-64 rounded-xl object-cover">@endif
-                    <input type="file" name="image" accept="image/jpeg,image/png,image/webp" class="admin-input">
-                    @if($imageUrl)<label class="flex items-center gap-2 text-sm"><input type="checkbox" name="remove_image" value="1"> Remove current cover</label>@endif
+                    <div class="flex flex-wrap items-start justify-between gap-3">
+                        <div><h2>Cover image</h2><p class="mt-1 text-sm text-zinc-500">Upload a new cover or choose one from your Journal library.</p></div>
+                        <x-admin.btn :href="route('admin.journal.images')" variant="ghost" icon="image" target="_blank" rel="noopener">Open image library</x-admin.btn>
+                    </div>
+                    @if($imageUrl)
+                        <div>
+                            <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-500">Current cover</p>
+                            <img src="{{ $imageUrl }}" alt="Current article cover" class="max-h-64 rounded-xl object-cover">
+                        </div>
+                    @endif
+
+                    <div class="admin-dropzone" :class="hover ? 'is-hover' : ''" x-data="dropzone({ multiple: false })" @dragover.prevent="hover = true" @dragleave.prevent="hover = false" @drop.prevent="hover = false; addFiles($event.dataTransfer.files)">
+                        <input x-ref="input" class="sr-only" type="file" name="image" accept="image/jpeg,image/png,image/webp" @change="addFromInput($event)">
+                        <button type="button" class="admin-dropzone__hit" @click="$refs.input.click()">
+                            <span class="admin-dropzone__title">Drop a new cover image here</span>
+                            <span class="admin-dropzone__hint">Or click to browse · JPG, PNG, WEBP · max 4MB</span>
+                        </button>
+                        <div class="admin-dropzone__previews" x-show="urls.length">
+                            <template x-for="(url, index) in urls" :key="url">
+                                <figure class="admin-dropzone__thumb"><img :src="url" alt="New cover preview"><button type="button" @click="remove(index)">Remove</button></figure>
+                            </template>
+                        </div>
+                        <p class="admin-dropzone__error" x-show="error" x-text="error"></p>
+                    </div>
+
+                    <div>
+                        <div class="mb-3 flex items-end justify-between gap-3">
+                            <div><h3 class="text-lg">Choose from the library</h3><p class="mt-1 text-xs text-zinc-500">{{ count($images) }} image{{ count($images) === 1 ? '' : 's' }} available. Choosing one reuses the upload.</p></div>
+                        </div>
+                        @if(count($images))
+                            <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
+                                @foreach($images as $libraryImage)
+                                    <label class="cursor-pointer">
+                                        <input class="peer sr-only" type="radio" name="existing_image" value="{{ $libraryImage }}" @checked(old('existing_image', $post->image) === $libraryImage)>
+                                        <span class="block overflow-hidden rounded-xl border border-zinc-200 bg-white transition peer-checked:border-[#d42127] peer-checked:ring-2 peer-checked:ring-[#d42127]/30 hover:border-zinc-400">
+                                            <img src="{{ asset(ltrim($libraryImage, '/')) }}" alt="{{ basename($libraryImage) }}" loading="lazy" class="aspect-[4/3] w-full object-cover">
+                                            <span class="block truncate px-2 py-2 text-xs text-zinc-600">{{ basename($libraryImage) }}</span>
+                                        </span>
+                                    </label>
+                                @endforeach
+                            </div>
+                        @else
+                            <div class="rounded-xl border border-dashed border-zinc-300 bg-zinc-50 px-4 py-6 text-center text-sm text-zinc-500">No images in the library yet. Upload one here or <a class="font-semibold text-[#d42127] underline" href="{{ route('admin.journal.images') }}" target="_blank" rel="noopener">open the image library</a>.</div>
+                        @endif
+                    </div>
+
+                    @if($imageUrl)<label class="flex items-center gap-2 text-sm"><input type="checkbox" name="remove_image" value="1"> Remove this article's cover</label>@endif
                 </section>
                 <section class="admin-card space-y-4">
                     <h2>Search preview</h2>

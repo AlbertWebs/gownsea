@@ -7,7 +7,10 @@
             <h1>Blogs &amp; Articles</h1>
             <p class="mt-1 text-sm text-zinc-600">Write and publish stories for The Gown Journal.</p>
         </div>
-        <x-admin.btn :href="route('admin.journal.create')" icon="plus">New article</x-admin.btn>
+        <div class="flex flex-wrap gap-2">
+            <x-admin.btn :href="route('admin.journal.images')" variant="secondary" icon="image">Image library</x-admin.btn>
+            <x-admin.btn :href="route('admin.journal.create')" icon="plus">New article</x-admin.btn>
+        </div>
     </div>
 
     <div class="mt-6 grid gap-3 sm:grid-cols-3">

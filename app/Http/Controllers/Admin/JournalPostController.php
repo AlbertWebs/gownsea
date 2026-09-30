@@ -7,6 +7,7 @@ use App\Models\JournalPost;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\Contracts\View\View;
 
 class JournalPostController extends Controller
@@ -34,7 +35,10 @@ class JournalPostController extends Controller
 
     public function create(): View
     {
-        return view('admin.journal.form', ['post' => new JournalPost(['status' => 'draft'])]);
+        return view('admin.journal.form', [
+            'post' => new JournalPost(['status' => 'draft']),
+            'images' => $this->imageOptions(),
+        ]);
     }
 
     public function store(Request $request): RedirectResponse
@@ -48,7 +52,32 @@ class JournalPostController extends Controller
 
     public function edit(JournalPost $journalPost): View
     {
-        return view('admin.journal.form', ['post' => $journalPost]);
+        return view('admin.journal.form', ['post' => $journalPost, 'images' => $this->imageOptions()]);
+    }
+
+    public function images(): View
+    {
+        return view('admin.journal.images', ['images' => $this->imageOptions()]);
+    }
+
+    public function uploadImages(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'images' => ['required', 'array', 'min:1', 'max:12'],
+            'images.*' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
+        ]);
+
+        $directory = public_path('images/blogs');
+        if (! is_dir($directory)) {
+            mkdir($directory, 0755, true);
+        }
+
+        foreach ($data['images'] as $file) {
+            $name = 'journal-'.Str::random(12).'.'.strtolower($file->getClientOriginalExtension());
+            $file->move($directory, $name);
+        }
+
+        return redirect()->route('admin.journal.images')->with('status', count($data['images']).' image'.(count($data['images']) === 1 ? '' : 's').' uploaded to the Journal library.');
     }
 
     public function update(Request $request, JournalPost $journalPost): RedirectResponse
@@ -60,7 +89,6 @@ class JournalPostController extends Controller
 
     public function destroy(JournalPost $journalPost): RedirectResponse
     {
-        $this->deleteImage($journalPost->image);
         $journalPost->delete();
 
         return redirect()->route('admin.journal.index')->with('status', 'Article deleted.');
@@ -77,6 +105,7 @@ class JournalPostController extends Controller
             'excerpt' => ['required', 'string', 'max:600'],
             'body' => ['nullable', 'string', 'max:50000'],
             'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
+            'existing_image' => ['nullable', 'string', Rule::in($this->imageOptions())],
             'status' => ['required', 'in:draft,published'],
             'published_at' => ['nullable', 'date'],
             'seo_title' => ['nullable', 'string', 'max:190'],
@@ -89,7 +118,6 @@ class JournalPostController extends Controller
         $data['published_at'] = $data['published_at'] ?: ($data['status'] === 'published' ? now()->toDateString() : null);
 
         if ($request->boolean('remove_image') && ! $request->hasFile('image')) {
-            $this->deleteImage($post?->image);
             $data['image'] = null;
         } elseif ($request->hasFile('image')) {
             $file = $request->file('image');
@@ -99,13 +127,14 @@ class JournalPostController extends Controller
             }
             $name = 'article-'.Str::random(12).'.'.strtolower($file->getClientOriginalExtension());
             $file->move($directory, $name);
-            $this->deleteImage($post?->image);
             $data['image'] = '/images/blogs/'.$name;
+        } elseif (filled($data['existing_image'] ?? null)) {
+            $data['image'] = $data['existing_image'];
         } else {
             unset($data['image']);
         }
 
-        unset($data['remove_image']);
+        unset($data['remove_image'], $data['existing_image']);
         return $data;
     }
 
@@ -133,15 +162,15 @@ class JournalPostController extends Controller
         }, $html) ?? $html;
     }
 
-    private function deleteImage(?string $url): void
+    /** @return list<string> */
+    private function imageOptions(): array
     {
-        if (! $url || ! str_starts_with($url, '/images/blogs/article-')) {
-            return;
-        }
-        $filename = basename($url);
-        $path = public_path('images/blogs/'.$filename);
-        if (is_file($path)) {
-            unlink($path);
-        }
+        $files = glob(public_path('images/blogs/*')) ?: [];
+        return collect($files)
+            ->filter(fn (string $path) => is_file($path) && in_array(strtolower(pathinfo($path, PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png', 'webp'], true))
+            ->map(fn (string $path) => '/images/blogs/'.basename($path))
+            ->sortDesc()
+            ->values()
+            ->all();
     }
 }
