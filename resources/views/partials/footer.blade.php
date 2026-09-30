@@ -36,16 +36,16 @@
                 </div>
 
                 <div class="mt-6 flex flex-wrap gap-2">
-                    <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="social-icon" aria-label="Facebook">
+                    <a href="https://www.facebook.com/GownseaLtd/" target="_blank" rel="noopener noreferrer" class="social-icon" aria-label="Facebook">
                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 8.5h2.3V5.4h-2.3c-2.6 0-4.3 1.6-4.3 4.3v1.7H8v3.2h2.2V20h3.2v-5.4h2.4l.5-3.2h-2.9V9.8c0-.8.4-1.3 1.1-1.3Z"/></svg>
                     </a>
-                    <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="social-icon" aria-label="Instagram">
+                    <a href="https://www.instagram.com/gownsea_ke/" target="_blank" rel="noopener noreferrer" class="social-icon" aria-label="Instagram">
                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7.4A4.6 4.6 0 1 0 16.6 12 4.6 4.6 0 0 0 12 7.4Zm0 7.6A3 3 0 1 1 15 12a3 3 0 0 1-3 3Zm5.8-8.7a1.1 1.1 0 1 0 1.1 1.1 1.1 1.1 0 0 0-1.1-1.1ZM12 4.5c2 0 2.3 0 3.1.1a4 4 0 0 1 2.6 1 4 4 0 0 1 1 2.6c.1.8.1 1.1.1 3.1s0 2.3-.1 3.1a4 4 0 0 1-1 2.6 4 4 0 0 1-2.6 1c-.8.1-1.1.1-3.1.1s-2.3 0-3.1-.1a4 4 0 0 1-2.6-1 4 4 0 0 1-1-2.6C4.5 14.3 4.5 14 4.5 12s0-2.3.1-3.1a4 4 0 0 1 1-2.6 4 4 0 0 1 2.6-1C9.7 4.5 10 4.5 12 4.5Zm0-1.5C9.9 3 9.6 3 8.8 3.1A5.5 5.5 0 0 0 5 4.9 5.5 5.5 0 0 0 3.1 8.8C3 9.6 3 9.9 3 12s0 2.4.1 3.2A5.5 5.5 0 0 0 5 19.1a5.5 5.5 0 0 0 3.8 1.8c.8.1 1.1.1 3.2.1s2.4 0 3.2-.1A5.5 5.5 0 0 0 19.1 19a5.5 5.5 0 0 0 1.8-3.8c.1-.8.1-1.1.1-3.2s0-2.4-.1-3.2A5.5 5.5 0 0 0 19.1 5 5.5 5.5 0 0 0 15.2 3.1C14.4 3 14.1 3 12 3Z"/></svg>
                     </a>
-                    <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" class="social-icon" aria-label="TikTok">
+                    <a href="https://www.tiktok.com/@gownsea" target="_blank" rel="noopener noreferrer" class="social-icon" aria-label="TikTok">
                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 3v2.4a5.6 5.6 0 0 0 5.3 3.3v2.5a8 8 0 0 1-5.3-1.9v7.2A6.5 6.5 0 1 1 11 9.2v2.6a4 4 0 1 0 2.7 3.8V3Z"/></svg>
                     </a>
-                    <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="social-icon" aria-label="LinkedIn">
+                    <a href="https://www.linkedin.com/company/gownsea-ltd/" target="_blank" rel="noopener noreferrer" class="social-icon" aria-label="LinkedIn">
                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.7 9.3H4V20h2.7V9.3ZM5.3 4A1.6 1.6 0 1 0 5.4 7.2 1.6 1.6 0 0 0 5.3 4ZM20 20h-2.7v-5.6c0-1.6-.6-2.6-2-2.6a2.1 2.1 0 0 0-2 1.5 2.7 2.7 0 0 0-.1 1v5.7H10.6s.1-9.2 0-10.2H13.3v1.6c.4-.8 1.6-2 3.8-2 2.7 0 4.9 1.8 4.9 5.6V20Z"/></svg>
                     </a>
                 </div>
@@ -72,10 +72,10 @@
                     <a href="{{ route('church-wear') }}" class="block transition-colors hover:text-[#0f2744]">Church Wear</a>
                     <a href="{{ route('gown-for-hire') }}" class="block transition-colors hover:text-[#0f2744]">Gown for Hire</a>
                     <a href="/shop-attire-collection/graduation-attire/graduation-cap" class="block transition-colors hover:text-[#0f2744]">Graduation Cap</a>
-                    <a href="/shop-attire-collection/graduation-attire/graduation-hoods" class="block transition-colors hover:text-[#0f2744]">Graduation Hoods</a>
-                    <a href="/shop-attire-collection/graduation-attire/masters-gowns" class="block transition-colors hover:text-[#0f2744]">Masters Gowns</a>
-                    <a href="/shop-attire-collection/graduation-attire/phd-gowns" class="block transition-colors hover:text-[#0f2744]">PhD Gowns</a>
-                    <a href="/shop-attire-collection/graduation-attire/degree-gown" class="block transition-colors hover:text-[#0f2744]">Degree Gown</a>
+                    <a href="{{ route('our-products.show', ['slug' => 'undergraduate-academic-hoods']) }}" class="block transition-colors hover:text-[#0f2744]">Graduation Hoods</a>
+                    <a href="{{ route('our-products.show', ['slug' => 'masters-gown']) }}" class="block transition-colors hover:text-[#0f2744]">Masters Gowns</a>
+                    <a href="{{ route('our-products.show', ['slug' => 'phd-graduation-gown']) }}" class="block transition-colors hover:text-[#0f2744]">PhD Gowns</a>
+                    <a href="{{ route('our-products.show', ['slug' => 'degree-graduation-gowns']) }}" class="block transition-colors hover:text-[#0f2744]">Degree Gown</a>
                     <a href="/our-products/graduation-stoles" class="block transition-colors hover:text-[#0f2744]">Graduation Stoles</a>
                 </div>
             </div>

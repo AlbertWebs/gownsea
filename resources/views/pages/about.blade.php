@@ -55,10 +55,10 @@
                     'name' => 'Kenya',
                 ],
                 'sameAs' => [
-                    'https://facebook.com',
-                    'https://instagram.com',
-                    'https://tiktok.com',
-                    'https://linkedin.com',
+                    'https://www.facebook.com/GownseaLtd/',
+                    'https://www.instagram.com/gownsea_ke/',
+                    'https://www.tiktok.com/@gownsea',
+                    'https://www.linkedin.com/company/gownsea-ltd/',
                 ],
             ],
             [
