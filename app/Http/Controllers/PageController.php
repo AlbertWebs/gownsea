@@ -75,39 +75,95 @@ class PageController extends Controller
 
     public function legalAttire(): View
     {
-        return view('pages.legal-attire', [
-            'meta' => $this->meta(
-                'Legal Wear in Kenya | Barrister Wigs & Advocates Robes',
-                'Premium legal attire for advocates, barristers, and institutions in Kenya.'
-            ),
-            'properties' => $this->catalogue->itemsByCategory('legal'),
-            'bannerImage' => $this->catalogue->categoryImage('legal', '/images/site/Amazon-seller-lawyer-renaldo-matamoro-86JiKaHF4I8-unsplash-min.jpg'),
-        ]);
+        return view('pages.legal-attire', $this->categoryPage('legal', [
+            'title' => 'Legal Attire in Kenya | Advocate Robes, Wigs & Bibs | Gownsea',
+            'description' => 'Shop legal attire in Kenya from Gownsea: advocate gowns, barrister wigs, bibs and shirts. Ask about sizing, hire or purchase, and institutional orders.',
+            'heading' => 'Legal attire for advocates and legal institutions',
+            'intro' => 'Explore courtroom attire from Gownsea, including advocate gowns, barrister wigs, bibs and shirts. Ask our Nairobi team about available sizes, hire or purchase options, and orders for law firms, institutions and individual advocates.',
+            'banner' => '/images/site/Amazon-seller-lawyer-renaldo-matamoro-86JiKaHF4I8-unsplash-min.jpg',
+        ]));
     }
 
     public function graduationAttire(): View
     {
-        return view('pages.graduation-attire', [
-            'meta' => $this->meta(
-                'Graduation Attire in Kenya | Gowns, Caps, Hoods & Sets',
-                'University-standard graduation attire for hire and sale in Kenya.'
-            ),
-            'properties' => $this->catalogue->itemsByCategory('graduation'),
-            'bannerImage' => $this->catalogue->categoryImage('graduation', '/images/site/graduation-attire.jpg'),
-        ]);
+        return view('pages.graduation-attire', $this->categoryPage('graduation', [
+            'title' => 'Graduation Gowns, Caps & Hoods in Kenya | Gownsea',
+            'description' => 'Find graduation gowns, caps, hoods, tassels and complete sets in Kenya. Explore Gownsea products and enquire about hire, purchase and bulk orders.',
+            'heading' => 'Graduation gowns and ceremony attire in Kenya',
+            'intro' => 'Browse graduation gowns, caps, academic hoods, tassels and ceremony sets for different award levels. Gownsea supports students, schools, colleges, universities and event teams with product guidance and enquiries for hire, purchase or bulk orders.',
+            'banner' => '/images/site/graduation-attire.jpg',
+        ]));
     }
 
     public function churchWear(): View
     {
-        return view('pages.church-wear', [
-            'meta' => $this->meta(
-                'Church Wear in Kenya | Clergy Robes, Cassocks & Vestments',
-                'Premium church and choral wear for hire and sale in Kenya.'
-            ),
-            'properties' => $this->catalogue->itemsByCategory('church'),
-            'faqs' => config('gownsea.hire_faqs', []),
-            'bannerImage' => $this->catalogue->categoryImage('church', '/images/site/clergy-wear.webp'),
-        ]);
+        return view('pages.church-wear', $this->categoryPage('church', [
+            'title' => 'Church Wear in Kenya | Clergy Robes & Choir Attire | Gownsea',
+            'description' => 'Browse church wear in Kenya, including clergy robes and choral attire. Explore Gownsea products and ask about custom colours, sizing and group orders.',
+            'heading' => 'Church and choral wear for congregations',
+            'intro' => 'Explore church and choral attire for clergy, choir members and ministry teams. Share your preferred colours, sizes, quantity and event date with Gownsea to discuss suitable garments and group order options.',
+            'banner' => '/images/site/clergy-wear.webp',
+            'faqs' => [
+                'What church and choir garments can I enquire about?' => 'Browse the products shown on this page, then contact Gownsea with the garment, quantity and intended use so the team can confirm the available options.',
+                'Can church attire be coordinated by colour?' => 'Include your church or choir colours and any design requirements in your enquiry. Gownsea can advise on available colours and suitable options.',
+                'Can I request attire for a choir or ministry group?' => 'Yes. Send the number of people, sizes if known, preferred colours and required date so the team can respond about a group order.',
+            ],
+        ]));
+    }
+
+    /** Build consistent metadata and structured data for a public category collection. */
+    private function categoryPage(string $slug, array $content): array
+    {
+        $properties = $this->catalogue->itemsByCategory($slug);
+        $canonical = route(match ($slug) {
+            'graduation' => 'graduation-attire',
+            'legal' => 'legal-attire',
+            default => 'church-wear',
+        });
+        $category = $this->catalogue->category($slug);
+        $title = filled($category?->seo_title) ? $category->seo_title : $content['title'];
+        $description = filled($category?->seo_description) ? $category->seo_description : $content['description'];
+        $image = $this->catalogue->categoryImage($slug, $content['banner']);
+        $imageUrl = preg_match('/^https?:\/\//i', $image) ? $image : url('/'.ltrim($image, '/'));
+        $meta = $this->meta($title, $description);
+        $meta['canonical'] = $canonical;
+        $meta['og_url'] = $canonical;
+        $meta['og_image'] = $imageUrl;
+        $meta['twitter_image'] = $imageUrl;
+        $meta['robots'] = 'index,follow,max-image-preview:large';
+
+        $itemList = [];
+        foreach ($properties as $property) {
+            $slugName = (string) ($property['slug'] ?? '');
+            $itemUrl = (string) ($property['url'] ?? '');
+            if ($slugName !== '' && ($itemUrl === '' || ! str_starts_with($itemUrl, '/') || str_starts_with($itemUrl, '//') || in_array(rtrim($itemUrl, '/'), ['/shop-attire/graduation-attire', '/shop-attire/legal-attire', '/shop-attire/church-wear'], true))) {
+                $itemUrl = route('products.show', $slugName, false);
+            }
+            $itemImage = (string) (($property['gallery'][0] ?? null) ?: ($property['image'] ?? ''));
+            $item = ['@type' => 'Product', 'name' => trim(strip_tags((string) ($property['title'] ?? '')))];
+            if ($itemUrl !== '') $item['url'] = url($itemUrl);
+            if ($itemImage !== '') $item['image'] = preg_match('/^https?:\/\//i', $itemImage) ? $itemImage : url('/'.ltrim($itemImage, '/'));
+            $itemList[] = ['@type' => 'ListItem', 'position' => count($itemList) + 1, 'item' => $item];
+        }
+
+        return [
+            'meta' => $meta,
+            'properties' => $properties,
+            'bannerImage' => $image,
+            'categoryHeading' => $content['heading'],
+            'categoryIntro' => $content['intro'],
+            'structuredData' => [
+                '@context' => 'https://schema.org',
+                '@graph' => [
+                    ['@type' => 'CollectionPage', '@id' => $canonical.'#collection', 'url' => $canonical, 'name' => $title, 'description' => $description, 'inLanguage' => 'en-KE', 'primaryImageOfPage' => ['@type' => 'ImageObject', 'url' => $imageUrl], 'mainEntity' => ['@type' => 'ItemList', 'itemListElement' => $itemList]],
+                    ['@type' => 'BreadcrumbList', 'itemListElement' => [
+                        ['@type' => 'ListItem', 'position' => 1, 'name' => 'Home', 'item' => url('/')],
+                        ['@type' => 'ListItem', 'position' => 2, 'name' => $content['heading'], 'item' => $canonical],
+                    ]],
+                ],
+            ],
+            'faqs' => $content['faqs'] ?? [],
+        ];
     }
 
     public function gownForHire(): View

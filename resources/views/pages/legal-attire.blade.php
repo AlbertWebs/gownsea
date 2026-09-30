@@ -1,21 +1,25 @@
 @extends('layouts.public')
 
+@push('json_ld')
+    <script type="application/ld+json">{!! json_encode($structuredData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) !!}</script>
+@endpush
+
 @section('content')
     <x-ui.page-banner
         title="Legal Attire"
-        subtitle="Courtroom-standard legal attire"
+        subtitle="Court attire and professional legal garments"
         ctaLabel="Shop Now"
         ctaHref="#shop"
         image="{{ $bannerImage }}"
-        alt="Premium legal attire for advocates and barristers"
+        alt="Legal attire including advocate gowns and barrister dress in Kenya"
     />
 
     <section id="shop" class="bg-zinc-50 section-lg scroll-mt-24">
         <div class="container-shell">
             <div class="featured-rail__intro">
                 <p class="kicker">Legal Attire</p>
-                <h2 class="featured-rail__heading mt-3 font-semibold">Legal Wear in Kenya</h2>
-                <p class="featured-rail__lede mt-4 text-zinc-600">Premium barrister wigs, gowns, bibs, and advocates shirts for hire and sale.</p>
+                <h2 class="featured-rail__heading mt-3 font-semibold">{{ $categoryHeading }}</h2>
+                <p class="featured-rail__lede mt-4 text-zinc-600">{{ $categoryIntro }}</p>
             </div>
 
             <div class="luxury-grid mt-8 md:grid-cols-2 lg:grid-cols-4">
@@ -25,6 +29,10 @@
             </div>
         </div>
 
+    </section>
+
+    <section class="container-shell pb-8" aria-label="More legal attire information">
+        <p class="max-w-4xl text-sm leading-7 text-zinc-600">Review the listed pieces and enquire with the garment, quantity and sizing details you need. For a coordinated institutional order, <a class="font-semibold text-zinc-900 underline" href="{{ route('bulk-inquiry') }}">request a bulk quote</a>. You can also browse <a class="font-semibold text-zinc-900 underline" href="{{ route('graduation-attire') }}">graduation attire</a> and <a class="font-semibold text-zinc-900 underline" href="{{ route('church-wear') }}">church wear</a>.</p>
     </section>
 
     <section class="container-shell section-md">
