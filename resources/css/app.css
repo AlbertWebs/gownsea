@@ -212,9 +212,9 @@
     }
 
     .site-header__logo {
-        height: 2.75rem;
+        height: 3.25rem;
         width: auto;
-        max-width: 12rem;
+        max-width: 14rem;
         max-height: 100%;
         object-fit: contain;
     }
@@ -2107,6 +2107,15 @@
         @apply relative inline-flex h-12 w-12 items-center justify-center rounded-full text-white;
         background: var(--brand-primary);
         box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    .assistant-widget-trigger--whatsapp .assistant-widget-trigger__shell {
+        background: linear-gradient(145deg, #f0fff5 0%, #dcfce7 100%);
+        box-shadow: 0 8px 16px rgb(37 211 102 / 0.22);
+    }
+
+    .assistant-widget-trigger--whatsapp .assistant-widget-trigger__core {
+        background: #25d366;
     }
 
     .assistant-widget-trigger__dot {
