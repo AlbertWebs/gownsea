@@ -50,29 +50,36 @@
             },
             options: {{ \Illuminate\Support\Js::from($optionDefaults) }},
             productTitle: {{ \Illuminate\Support\Js::from($property['title']) }},
-            productPrice: {{ \Illuminate\Support\Js::from($property['price']) }},
+            purchasePrice: {{ \Illuminate\Support\Js::from($property['price']) }},
+            hirePrice: {{ \Illuminate\Support\Js::from($property['hire_price'] ?? 'Hire price to be confirmed') }},
             productUrl: {{ \Illuminate\Support\Js::from($productUrl) }},
             submitUrl: {{ \Illuminate\Support\Js::from(route('assistant.submit')) }},
+            inquiryPrice() {
+                return this.intent === 'hire' ? this.hirePrice : this.purchasePrice;
+            },
             composedMessage() {
                 const selected = Object.entries(this.options).map(([key, value]) => key + ': ' + value).join(', ');
                 const action = this.intent === 'hire' ? 'hire' : 'purchase';
-                return 'I would like to ' + action + ' ' + this.productTitle + ' (' + this.productPrice + ').\\n' + selected + '\\nQuantity: ' + this.qty + '\\nProduct: ' + this.productUrl + '\\nCeremony date:';
+                const priceLabel = this.intent === 'hire' ? 'Hire price' : 'Purchase price';
+                return 'I would like to ' + action + ' ' + this.productTitle + ' (' + priceLabel + ': ' + this.inquiryPrice() + ').\\n' + selected + '\\nQuantity: ' + this.qty + '\\nProduct: ' + this.productUrl + '\\nCeremony date:';
             },
             whatsappHref() {
                 const action = this.intent === 'hire' ? 'hire' : 'purchase';
+                const priceLabel = this.intent === 'hire' ? 'Hire price' : 'Purchase price';
                 const selected = Object.entries(this.options).map(([key, value]) => key + ': ' + value).join(', ');
-                const text = 'Hello Gownsea, I want to ' + action + ' ' + this.productTitle + ' (' + this.productPrice + '). ' + selected + '. Qty: ' + this.qty + '. ' + this.productUrl;
+                const text = 'Hello Gownsea, I want to ' + action + ' ' + this.productTitle + ' (' + priceLabel + ': ' + this.inquiryPrice() + '). ' + selected + '. Qty: ' + this.qty + '. ' + this.productUrl;
                 return 'https://wa.me/{{ config('gownsea.brand.whatsapp') }}?text=' + encodeURIComponent(text);
             },
             submittedWhatsAppHref() {
                 const action = this.intent === 'hire' ? 'hire' : 'purchase';
+                const priceLabel = this.intent === 'hire' ? 'Hire price' : 'Purchase price';
                 const selected = Object.entries(this.options).map(([key, value]) => key + ': ' + value).join('\n');
                 const text = [
                     'Hello Gownsea, I just submitted an enquiry on the website and would like to continue here.',
                     '',
                     'Enquiry: ' + action,
                     'Item: ' + this.productTitle,
-                    'Price: ' + this.productPrice,
+                    priceLabel + ': ' + this.inquiryPrice(),
                     selected,
                     'Quantity: ' + this.qty,
                     'Name: ' + this.form.name,
@@ -185,7 +192,7 @@
                 @else
                     <p class="mt-4 text-3xl font-semibold text-zinc-950">{{ $property['price'] }}</p>
                 @endif
-                <p class="mt-2 text-sm text-zinc-500">Tax included. Delivery calculated with your quote.</p>
+                <p class="mt-2 text-sm text-zinc-500">Purchase price. Tax included; delivery calculated with your quote.</p>
 
                 <div class="mt-8 space-y-6">
                     @foreach ($options as $label => $values)
