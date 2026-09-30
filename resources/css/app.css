@@ -2889,7 +2889,7 @@
 
 /* Shared admin workspace polish */
 .admin-app { background: #f4f6f9; }
-.admin-app main { width: 100%; max-width: 1760px; margin-inline: auto; }
+.admin-app main { width: 100%; max-width: none; margin-inline: 0; }
 .admin-topbar { min-height: 4.25rem; border-color: #e7eaf0; box-shadow: 0 2px 10px rgb(15 39 68 / 0.035); }
 .admin-search-input { border-color: #e2e7ee; background: #f8fafc; }
 .admin-search-input:focus { background: #fff; border-color: #0f2744; box-shadow: 0 0 0 3px rgb(15 39 68 / .08); }
