@@ -9,25 +9,22 @@ use RuntimeException;
 class ProductSellingPricesSeeder extends Seeder
 {
     /**
-     * Apply the selling prices from the 2026-09-29 product export.
-     * Price amount is the regular price; sale price is nullable when the export had no sale price.
+     * Apply the prices visible in the WhatsApp catalogue screenshots captured on 2026-10-01.
+     * For PP2 Graduation Gown, the struck-through KES 3,000 is the regular price and KES 2,500 is the sale price.
+     * This map only includes catalogue items represented by existing product slugs.
      */
     public function run(): void
     {
         $prices = [
-            'bachelors-graduation-gown-cap-hood-set' => [7500, 'KES 7,500', 6500],
-            'certificate-gowns' => [2500, 'KES 2,500', 2500],
-            'advocates-shirt' => [2600, 'KES 2,600', 2600],
-            'degree-graduation-gowns' => [7500, 'KES 7,500', 6500],
-            'diploma-graduation-gowns' => [5000, 'KES 5,000', 4800],
+            'degree-graduation-gowns' => [6500, 'KES 6,500', null],
+            'diploma-graduation-gowns' => [4500, 'KES 4,500', null],
             'graduation-stoles' => [1500, 'KES 1,500', null],
-            'graduation-tassels' => [350, 'KES 350', 350],
-            'masters-gown' => [8500, 'KES 8,500', null],
-            'phd-caps' => [5000, 'KES 5,000', 4500],
-            'phd-graduation-gown' => [18500, 'KES 18,500', 18500],
-            'plain-english-bib' => [500, 'KES 500', null],
-            'preschool-graduation' => [3500, 'KES 3,500', 3000],
-            'undergraduate-academic-hoods' => [2500, 'KES 2,500', 2500],
+            'graduation-tassels' => [350, 'KES 350', null],
+            'masters-gown' => [7500, 'KES 7,500', null],
+            'phd-caps' => [4900, 'KES 4,900', null],
+            'phd-graduation-gown' => [18500, 'KES 18,500', null],
+            'preschool-graduation' => [3000, 'KES 3,000', 2500],
+            'undergraduate-academic-hoods' => [1800, 'KES 1,800', null],
         ];
 
         DB::transaction(function () use ($prices): void {

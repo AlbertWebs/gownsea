@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
 
         $this->seedCategories();
         $this->seedProducts();
+        $this->call(ProductSellingPricesSeeder::class);
     }
 
     private function seedCategories(): void
