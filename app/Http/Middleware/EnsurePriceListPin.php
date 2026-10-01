@@ -10,7 +10,7 @@ class EnsurePriceListPin
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (! $request->session()->boolean('price_list_unlocked')) {
+        if (! (bool) $request->session()->get('price_list_unlocked', false)) {
             return response()->json(['message' => 'Enter the price list PIN to continue.'], 401);
         }
 

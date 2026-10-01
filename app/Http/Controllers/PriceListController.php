@@ -18,7 +18,7 @@ class PriceListController extends Controller
 
         return view('price-list.index', [
             'products' => $products,
-            'unlocked' => request()->session()->boolean('price_list_unlocked'),
+            'unlocked' => (bool) request()->session()->get('price_list_unlocked', false),
         ]);
     }
 
