@@ -24,6 +24,11 @@ Route::get('/copyright', [PageController::class, 'copyright'])->name('copyright'
 
 // Shopping & product discovery (URL parity with gownsea.com)
 Route::get('/shop-attire/{slug}', [PageController::class, 'shopAttireCollection'])->name('shop-attire.collection');
+Route::redirect(
+    '/shop-attire-collection/graduation-attire/degree-gown',
+    '/our-products/degree-graduation-gowns',
+    301
+);
 Route::get('/shop-attire-collection/{mainSlug}/{slug}', [PageController::class, 'shopAttireCategory'])->name('shop-attire.category');
 Route::get('/product/{slug}', [PageController::class, 'productShow'])->name('products.show');
 Route::get('/our-products/{slug}', [PageController::class, 'ourProduct'])->name('our-products.show');

@@ -56,7 +56,6 @@ return [
         '/shop-attire-collection/graduation-attire/masters-gowns',
         '/shop-attire-collection/graduation-attire/phd-gowns',
         '/our-products/phd-graduation-gown',
-        '/shop-attire-collection/graduation-attire/degree-gown',
         '/our-products/degree-graduation-gowns',
         '/our-products/certificate-gowns',
         '/our-products/diploma-graduation-gowns',
