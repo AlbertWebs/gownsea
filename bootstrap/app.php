@@ -18,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectGuestsTo('/admin/login');
         $middleware->redirectUsersTo('/admin');
         $middleware->appendToGroup('web', \App\Http\Middleware\TrackSiteVisit::class);
+        $middleware->alias(['price-list.pin' => \App\Http\Middleware\EnsurePriceListPin::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

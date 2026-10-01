@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AssistantController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\PriceListController;
 use App\Models\JournalPost;
 use App\Models\Product;
 use Illuminate\Http\Response;
@@ -14,6 +15,12 @@ Route::get('/legal-attire', [PageController::class, 'legalAttire'])->name('legal
 Route::get('/graduation-attire', [PageController::class, 'graduationAttire'])->name('graduation-attire');
 Route::get('/church-wear', [PageController::class, 'churchWear'])->name('church-wear');
 Route::get('/gown-for-hire', [PageController::class, 'gownForHire'])->name('gown-for-hire');
+
+Route::get('/price-list', [PriceListController::class, 'index'])->name('price-list');
+Route::post('/price-list/unlock', [PriceListController::class, 'unlock'])
+    ->middleware('throttle:5,1')->name('price-list.unlock');
+Route::patch('/price-list/products/{product}', [PriceListController::class, 'update'])
+    ->middleware('price-list.pin')->name('price-list.update');
 
 Route::get('/the-gown-journal', [PageController::class, 'journalIndex'])->name('journal.index');
 Route::get('/the-gown-journal/{slug}', [PageController::class, 'journalShow'])->name('journal.show');

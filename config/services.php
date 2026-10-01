@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'price_list' => [
+        'pin_hash' => env('PRICE_LIST_PIN_HASH', 'ca9d3233997481c47516ef1cb9b30206728db5e88d04bd376c746135818b640f'),
+    ],
+
 ];
