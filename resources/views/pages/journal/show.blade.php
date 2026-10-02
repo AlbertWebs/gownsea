@@ -39,6 +39,19 @@
             <img src="{{ $post['image'] }}" alt="{{ $post['display_title'] }}" class="journal-article__cover">
         @endif
 
+        @if(count($post['images'] ?? []) > 1)
+            <section class="journal-gallery" aria-label="Article photo gallery">
+                <h2 class="journal-gallery__title">More photos</h2>
+                <div class="journal-gallery__grid">
+                    @foreach(array_slice($post['images'], 1) as $index => $galleryImage)
+                        <a class="journal-gallery__item" href="{{ $galleryImage }}" target="_blank" rel="noopener" aria-label="Open article photo {{ $index + 2 }}">
+                            <img src="{{ $galleryImage }}" alt="{{ $post['display_title'] }} — photo {{ $index + 2 }}" loading="lazy">
+                        </a>
+                    @endforeach
+                </div>
+            </section>
+        @endif
+
         <div class="journal-article__body">
             @if(filled($post['body'] ?? null))
                 {!! $post['body'] !!}

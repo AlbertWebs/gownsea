@@ -394,9 +394,11 @@ class PageController extends Controller
         $seoDescription = $record->seo_description ?: ($seo['description'] ?? $post['excerpt']);
         $post['display_title'] = $seo['heading'] ?? $post['title'];
         $meta = $this->meta($seoTitle, $seoDescription);
-        $image = filled($post['image'] ?? null)
-            ? (str_starts_with($post['image'], 'http') ? $post['image'] : url(ltrim($post['image'], '/')))
-            : url('/images/site/hero.webp');
+        $galleryImages = array_map(
+            fn (string $path) => str_starts_with($path, 'http') ? $path : url(ltrim($path, '/')),
+            $post['images'] ?? [],
+        );
+        $image = $galleryImages[0] ?? url('/images/site/hero.webp');
         $meta['og_type'] = 'article';
         $meta['og_image'] = $image;
         $meta['twitter_image'] = $image;
@@ -415,7 +417,7 @@ class PageController extends Controller
                     'mainEntityOfPage' => ['@type' => 'WebPage', '@id' => $meta['canonical']],
                     'headline' => $post['display_title'],
                     'description' => $seoDescription,
-                    'image' => [$image],
+                    'image' => $galleryImages ?: [$image],
                     'datePublished' => $publishedAt->toAtomString(),
                     'dateModified' => $modifiedAt->toAtomString(),
                     'author' => $author,

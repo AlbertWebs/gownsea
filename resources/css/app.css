@@ -142,6 +142,44 @@
         box-shadow: 0 24px 60px rgb(15 39 68 / 0.12);
     }
 
+    .journal-gallery {
+        max-width: 68rem;
+        margin: 0 auto 3.5rem;
+    }
+
+    .journal-gallery__title {
+        margin-bottom: 1rem;
+        color: #0f2744;
+        font-family: "Crimson Text", ui-serif, Georgia, serif;
+        font-size: 1.65rem;
+    }
+
+    .journal-gallery__grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+        gap: 1rem;
+    }
+
+    .journal-gallery__item {
+        display: block;
+        overflow: hidden;
+        border-radius: 1rem;
+        background: #f4f4f5;
+        outline-offset: 3px;
+    }
+
+    .journal-gallery__item img {
+        display: block;
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        object-fit: cover;
+        transition: transform 220ms ease;
+    }
+
+    .journal-gallery__item:hover img {
+        transform: scale(1.035);
+    }
+
     .journal-article__body {
         max-width: 68ch;
         margin: 3rem auto 0;

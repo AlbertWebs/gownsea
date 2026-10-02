@@ -4,6 +4,7 @@ import { initScrollReveal } from './scroll-reveal';
 
 Alpine.data('dropzone', (config = {}) => ({
     multiple: Boolean(config.multiple),
+    maxFiles: Number(config.maxFiles || Infinity),
     hover: false,
     error: '',
     files: [],
@@ -30,6 +31,10 @@ Alpine.data('dropzone', (config = {}) => ({
         }
 
         const next = this.multiple ? [...this.files, ...incoming] : incoming.slice(0, 1);
+        if (next.length > this.maxFiles) {
+            this.error = `Choose no more than ${this.maxFiles} images.`;
+            return;
+        }
         this.urls.forEach((url) => URL.revokeObjectURL(url));
         this.files = next;
         this.urls = next.map((file) => URL.createObjectURL(file));

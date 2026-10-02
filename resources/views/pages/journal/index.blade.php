@@ -15,7 +15,7 @@
         <div class="luxury-grid mt-10 md:grid-cols-2">
             @foreach ($posts as $post)
                 <article class="surface p-6">
-                    @if(!empty($post['image']))<img src="{{ $post['image'] }}" alt="{{ $post['title'] }}" loading="lazy" class="mb-5 aspect-[16/9] w-full rounded-xl object-cover">@endif
+                    @if(!empty($post['image']))<div class="relative mb-5"><img src="{{ $post['image'] }}" alt="{{ $post['title'] }}" loading="lazy" class="aspect-[16/9] w-full rounded-xl object-cover">@if(count($post['images'] ?? []) > 1)<span class="absolute bottom-3 right-3 rounded-full bg-[#0f2744]/90 px-3 py-1 text-xs font-semibold text-white">{{ count($post['images']) }} photos</span>@endif</div>@endif
                     <p class="kicker">{{ $post['category'] }}</p>
                     <h3 class="mt-2 font-semibold">{{ $post['title'] }}</h3>
                     <p class="mt-3 text-sm text-zinc-600">{{ $post['excerpt'] }}</p>

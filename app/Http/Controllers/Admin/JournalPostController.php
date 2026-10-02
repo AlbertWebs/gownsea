@@ -106,6 +106,10 @@ class JournalPostController extends Controller
             'body' => ['nullable', 'string', 'max:50000'],
             'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
             'existing_image' => ['nullable', 'string', Rule::in($this->imageOptions())],
+            'gallery_images' => ['nullable', 'array', 'max:12'],
+            'gallery_images.*' => ['required', 'string', Rule::in($this->imageOptions())],
+            'gallery_uploads' => ['nullable', 'array', 'max:12'],
+            'gallery_uploads.*' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
             'status' => ['required', 'in:draft,published'],
             'published_at' => ['nullable', 'date'],
             'seo_title' => ['nullable', 'string', 'max:190'],
@@ -134,7 +138,24 @@ class JournalPostController extends Controller
             unset($data['image']);
         }
 
-        unset($data['remove_image'], $data['existing_image']);
+        $gallery = $data['gallery_images'] ?? [];
+        if (count($gallery) + count($data['gallery_uploads'] ?? []) > 12) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'gallery_images' => 'Choose or upload no more than 12 gallery images.',
+            ]);
+        }
+        foreach ($data['gallery_uploads'] ?? [] as $file) {
+            $directory = public_path('images/blogs');
+            if (! is_dir($directory)) {
+                mkdir($directory, 0755, true);
+            }
+            $name = 'article-'.Str::random(12).'.'.strtolower($file->getClientOriginalExtension());
+            $file->move($directory, $name);
+            $gallery[] = '/images/blogs/'.$name;
+        }
+        $data['gallery'] = array_values(array_unique($gallery));
+
+        unset($data['remove_image'], $data['existing_image'], $data['gallery_images'], $data['gallery_uploads']);
         return $data;
     }
 

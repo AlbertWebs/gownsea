@@ -1,5 +1,6 @@
 @php
     $imageUrl = $post->image ? (str_starts_with($post->image, 'http') ? $post->image : asset(ltrim($post->image, '/'))) : '';
+    $selectedGallery = old('gallery_images', $post->gallery ?? []);
 @endphp
 @extends('layouts.admin')
 @section('title', $post->exists ? 'Edit article' : 'New article')
@@ -68,6 +69,40 @@
                     </div>
 
                     @if($imageUrl)<label class="flex items-center gap-2 text-sm"><input type="checkbox" name="remove_image" value="1"> Remove this article's cover</label>@endif
+
+                    <div class="border-t border-zinc-200 pt-5">
+                        <h3 class="text-lg">Article gallery</h3>
+                        <p class="mt-1 text-sm text-zinc-500">Select up to 12 images from the library or upload multiple images. The cover image is shown separately.</p>
+                        @if(count($images))
+                            <div class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
+                                @foreach($images as $libraryImage)
+                                    <label class="cursor-pointer">
+                                        <input class="peer sr-only" type="checkbox" name="gallery_images[]" value="{{ $libraryImage }}" @checked(in_array($libraryImage, $selectedGallery, true))>
+                                        <span class="block overflow-hidden rounded-xl border border-zinc-200 bg-white transition peer-checked:border-[#d42127] peer-checked:ring-2 peer-checked:ring-[#d42127]/30 hover:border-zinc-400">
+                                            <img src="{{ asset(ltrim($libraryImage, '/')) }}" alt="{{ basename($libraryImage) }}" loading="lazy" class="aspect-[4/3] w-full object-cover">
+                                            <span class="block truncate px-2 py-2 text-xs text-zinc-600">{{ basename($libraryImage) }}</span>
+                                        </span>
+                                    </label>
+                                @endforeach
+                            </div>
+                        @else
+                            <p class="mt-3 text-sm text-zinc-500">Upload images below or use the image library to add gallery photos.</p>
+                        @endif
+
+                        <div class="admin-dropzone mt-4" :class="hover ? 'is-hover' : ''" x-data="dropzone({ multiple: true, maxFiles: 12 })" @dragover.prevent="hover = true" @dragleave.prevent="hover = false" @drop.prevent="hover = false; addFiles($event.dataTransfer.files)">
+                            <input x-ref="input" class="sr-only" type="file" name="gallery_uploads[]" accept="image/jpeg,image/png,image/webp" multiple @change="addFromInput($event)">
+                            <button type="button" class="admin-dropzone__hit" @click="$refs.input.click()">
+                                <span class="admin-dropzone__title">Add images to the article gallery</span>
+                                <span class="admin-dropzone__hint">Select or drop up to 12 JPG, PNG, or WEBP images · max 4MB each</span>
+                            </button>
+                            <div class="admin-dropzone__previews" x-show="urls.length">
+                                <template x-for="(url, index) in urls" :key="url">
+                                    <figure class="admin-dropzone__thumb"><img :src="url" alt="Gallery image preview"><button type="button" @click="remove(index)">Remove</button></figure>
+                                </template>
+                            </div>
+                            <p class="admin-dropzone__error" x-show="error" x-text="error"></p>
+                        </div>
+                    </div>
                 </section>
                 <section class="admin-card space-y-4">
                     <h2>Search preview</h2>
