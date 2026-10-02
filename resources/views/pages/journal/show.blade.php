@@ -44,12 +44,56 @@
                 <h2 class="journal-gallery__title">More photos</h2>
                 <div class="journal-gallery__grid">
                     @foreach(array_slice($post['images'], 1) as $index => $galleryImage)
-                        <a class="journal-gallery__item" href="{{ $galleryImage }}" target="_blank" rel="noopener" aria-label="Open article photo {{ $index + 2 }}">
+                        <button type="button" class="journal-gallery__item" data-gallery-index="{{ $index }}" aria-label="View article photo {{ $index + 2 }}">
                             <img src="{{ $galleryImage }}" alt="{{ $post['display_title'] }} — photo {{ $index + 2 }}" loading="lazy">
-                        </a>
+                        </button>
                     @endforeach
                 </div>
             </section>
+            <dialog class="journal-lightbox" id="journal-lightbox" aria-label="Photo viewer">
+                <div class="journal-lightbox__topbar">
+                    <span id="journal-lightbox-count" aria-live="polite"></span>
+                    <button type="button" class="journal-lightbox__close" aria-label="Close photo viewer">Close <span aria-hidden="true">×</span></button>
+                </div>
+                <div class="journal-lightbox__stage">
+                    <button type="button" class="journal-lightbox__nav" data-gallery-previous aria-label="Previous photo">‹</button>
+                    <img id="journal-lightbox-image" src="" alt="">
+                    <button type="button" class="journal-lightbox__nav" data-gallery-next aria-label="Next photo">›</button>
+                </div>
+                <p class="journal-lightbox__caption" id="journal-lightbox-caption"></p>
+            </dialog>
+            <script>
+                (() => {
+                    const dialog = document.getElementById('journal-lightbox');
+                    const items = [...document.querySelectorAll('[data-gallery-index]')];
+                    if (!dialog || !items.length) return;
+                    const image = document.getElementById('journal-lightbox-image');
+                    const caption = document.getElementById('journal-lightbox-caption');
+                    const count = document.getElementById('journal-lightbox-count');
+                    let activeIndex = 0;
+                    const showImage = (index) => {
+                        activeIndex = (index + items.length) % items.length;
+                        const thumbnail = items[activeIndex].querySelector('img');
+                        image.src = thumbnail.currentSrc || thumbnail.src;
+                        image.alt = thumbnail.alt;
+                        caption.textContent = thumbnail.alt;
+                        count.textContent = `${activeIndex + 1} / ${items.length}`;
+                    };
+                    items.forEach((item, index) => item.addEventListener('click', () => {
+                        showImage(index);
+                        dialog.showModal();
+                        dialog.querySelector('.journal-lightbox__close').focus();
+                    }));
+                    dialog.querySelector('.journal-lightbox__close').addEventListener('click', () => dialog.close());
+                    dialog.querySelector('[data-gallery-previous]').addEventListener('click', () => showImage(activeIndex - 1));
+                    dialog.querySelector('[data-gallery-next]').addEventListener('click', () => showImage(activeIndex + 1));
+                    dialog.addEventListener('click', (event) => { if (event.target === dialog) dialog.close(); });
+                    dialog.addEventListener('keydown', (event) => {
+                        if (event.key === 'ArrowLeft') showImage(activeIndex - 1);
+                        if (event.key === 'ArrowRight') showImage(activeIndex + 1);
+                    });
+                })();
+            </script>
         @endif
 
         <div class="journal-article__body">
