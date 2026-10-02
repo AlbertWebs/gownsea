@@ -73,36 +73,46 @@
                 }
             },
             productTitle: {{ \Illuminate\Support\Js::from($property['title']) }},
-            purchasePrice: {{ \Illuminate\Support\Js::from($property['price']) }},
+            purchasePrice: {{ \Illuminate\Support\Js::from($property['purchase_price'] ?? $property['price']) }},
             hirePrice: {{ \Illuminate\Support\Js::from($property['hire_price'] ?? 'Hire price to be confirmed') }},
             productUrl: {{ \Illuminate\Support\Js::from($productUrl) }},
             submitUrl: {{ \Illuminate\Support\Js::from(route('assistant.submit')) }},
-            inquiryPrice() {
-                return this.intent === 'hire' ? this.hirePrice : this.purchasePrice;
-            },
             composedMessage() {
                 const selected = Object.entries(this.options).map(([key, value]) => key + ': ' + value).join(', ');
                 const action = this.intent === 'hire' ? 'hire' : 'purchase';
-                const priceLabel = this.intent === 'hire' ? 'Hire price' : 'Purchase price';
-                return 'I would like to ' + action + ' ' + this.productTitle + ' (' + priceLabel + ': ' + this.inquiryPrice() + ').\\n' + selected + '\\nQuantity: ' + this.qty + '\\nProduct: ' + this.productUrl + '\\nCeremony date:';
+                return [
+                    'I would like to ' + action + ' ' + this.productTitle + '.',
+                    'Purchase price: ' + this.purchasePrice,
+                    'Hire price: ' + this.hirePrice,
+                    selected,
+                    'Quantity: ' + this.qty,
+                    'Product: ' + this.productUrl,
+                    'Ceremony date:',
+                ].filter(Boolean).join('\n');
             },
             whatsappHref() {
                 const action = this.intent === 'hire' ? 'hire' : 'purchase';
-                const priceLabel = this.intent === 'hire' ? 'Hire price' : 'Purchase price';
                 const selected = Object.entries(this.options).map(([key, value]) => key + ': ' + value).join(', ');
-                const text = 'Hello Gownsea, I want to ' + action + ' ' + this.productTitle + ' (' + priceLabel + ': ' + this.inquiryPrice() + '). ' + selected + '. Qty: ' + this.qty + '. ' + this.productUrl;
+                const text = [
+                    'Hello Gownsea, I want to ' + action + ' ' + this.productTitle + '.',
+                    'Purchase price: ' + this.purchasePrice,
+                    'Hire price: ' + this.hirePrice,
+                    selected,
+                    'Quantity: ' + this.qty,
+                    this.productUrl,
+                ].filter(Boolean).join('\n');
                 return 'https://wa.me/{{ config('gownsea.brand.whatsapp') }}?text=' + encodeURIComponent(text);
             },
             submittedWhatsAppHref() {
                 const action = this.intent === 'hire' ? 'hire' : 'purchase';
-                const priceLabel = this.intent === 'hire' ? 'Hire price' : 'Purchase price';
                 const selected = Object.entries(this.options).map(([key, value]) => key + ': ' + value).join('\n');
                 const text = [
                     'Hello Gownsea, I just submitted an enquiry on the website and would like to continue here.',
                     '',
                     'Enquiry: ' + action,
                     'Item: ' + this.productTitle,
-                    priceLabel + ': ' + this.inquiryPrice(),
+                    'Purchase price: ' + this.purchasePrice,
+                    'Hire price: ' + this.hirePrice,
                     selected,
                     'Quantity: ' + this.qty,
                     'Name: ' + this.form.name,

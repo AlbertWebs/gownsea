@@ -87,6 +87,8 @@ class Product extends Model
             'title' => $this->name,
             'location' => $this->location ?: 'Nairobi',
             'price' => $this->displayPrice(),
+            'purchase_price' => Money::format($this->price_amount),
+            'hire_price' => $this->hire_price_amount === null ? 'Hire price to be confirmed' : Money::format($this->hire_price_amount),
             'price_amount' => $this->price_amount,
             'sale_price_amount' => $this->sale_price_amount,
             'availability' => $this->availability,
