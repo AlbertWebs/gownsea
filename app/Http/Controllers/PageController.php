@@ -291,9 +291,11 @@ class PageController extends Controller
             $productSchema['@graph'][0]['additionalProperty'] = $optionProperties;
         }
 
-        $amount = $property['sale_price_amount'] ?? $property['price_amount'] ?? null;
+        // A product can be offered for hire without a purchase price. Keep a
+        // priced Offer in structured data for that case as well.
+        $amount = $property['sale_price_amount'] ?? $property['price_amount'] ?? $property['hire_price_amount'] ?? null;
         if ($amount === null) {
-            $listedPrice = (string) ($property['sale_price'] ?? $property['price'] ?? '');
+            $listedPrice = (string) ($property['sale_price'] ?? $property['price'] ?? $property['hire_price'] ?? '');
             $amount = preg_match('/(?:KES|KSh|KShs?)\\s*([0-9][0-9,]*(?:\\.\\d{1,2})?)/i', $listedPrice, $match)
                 ? str_replace(',', '', $match[1])
                 : null;

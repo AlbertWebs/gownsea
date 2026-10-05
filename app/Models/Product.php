@@ -91,6 +91,7 @@ class Product extends Model
             'hire_price' => $this->hire_price_amount === null ? 'Hire price to be confirmed' : Money::format($this->hire_price_amount),
             'price_amount' => $this->price_amount,
             'sale_price_amount' => $this->sale_price_amount,
+            'hire_price_amount' => $this->hire_price_amount,
             'availability' => $this->availability,
             'is_hire' => $this->is_hire,
             'brand' => $this->brand,
