@@ -133,6 +133,7 @@
                                 src="{{ $slide['src'] }}"
                                 alt="{{ $slide['headline'] }}"
                                 loading="{{ $idx === 0 ? 'eager' : 'lazy' }}"
+                                fetchpriority="{{ $idx === 0 ? 'high' : 'auto' }}"
                                 decoding="async"
                                 width="1400"
                                 height="788"

@@ -1,5 +1,11 @@
 @extends('layouts.public')
 
+@push('meta')
+    @if (!empty($heroSlides[0]['src']))
+        <link rel="preload" as="image" href="{{ $heroSlides[0]['src'] }}" fetchpriority="high">
+    @endif
+@endpush
+
 @section('content')
     <div class="home-page">
     <x-ui.hero-section
